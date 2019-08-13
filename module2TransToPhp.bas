@@ -209,189 +209,190 @@
 
 
 
-Private Sub PerturbSolution(solution As solution_data, container_id As Long, percent_time_left As Double)
+' Private Sub PerturbSolution(solution As solution_data, container_id As Long, percent_time_left As Double)
     
-    Dim i As Long
-    Dim j As Long
-    Dim k As Long
-    Dim l As Long
+'     Dim i As Long
+'     Dim j As Long
+'     Dim k As Long
+'     Dim l As Long
     
-    Dim swap_long As Long
+'     Dim swap_long As Long
     
-    Dim operator_selection As Double
-    Dim container_emptying_probability As Double
-    Dim item_removal_probability As Double
-    Dim repack_flag As Boolean
-    Dim continue_flag As Boolean
+'     Dim operator_selection As Double
+'     Dim container_emptying_probability As Double
+'     Dim item_removal_probability As Double
+'     Dim repack_flag As Boolean
+'     Dim continue_flag As Boolean
     
-    Dim max_z As Double
+'     Dim max_z As Double
     
-    With solution.container(container_id)
+'     With solution.container(container_id)
     
-'            container_emptying_probability = 1 - 0.8 * (.volume_packed / .volume_capacity)
-'            item_removal_probability = 1 - 0.8 * (.volume_packed / .volume_capacity)
+' '            container_emptying_probability = 1 - 0.8 * (.volume_packed / .volume_capacity)
+' '            item_removal_probability = 1 - 0.8 * (.volume_packed / .volume_capacity)
         
-        'test
+'         'test
         
-        container_emptying_probability = 0.05 + 0.15 * percent_time_left
-        item_removal_probability = 0.05 + 0.15 * percent_time_left
+'         container_emptying_probability = 0.05 + 0.15 * percent_time_left
+'         item_removal_probability = 0.05 + 0.15 * percent_time_left
         
-        If .item_cnt > 0 Then
+'         If .item_cnt > 0 Then
         
-            If Rnd() < container_emptying_probability Then
+'             If Rnd() < container_emptying_probability Then
                 
-                'empty the container
+'                 'empty the container
                 
-                For j = 1 To .item_cnt
+'                 For j = 1 To .item_cnt
                 
-                    solution.unpacked_item_count(.items(j).item_type) = solution.unpacked_item_count(.items(j).item_type) + 1
-                    solution.net_profit = solution.net_profit - item_list.item_types(.items(j).item_type).profit
+'                     solution.unpacked_item_count(.items(j).item_type) = solution.unpacked_item_count(.items(j).item_type) + 1
+'                     solution.net_profit = solution.net_profit - item_list.item_types(.items(j).item_type).profit
                     
-                Next j
+'                 Next j
                 
-                solution.net_profit = solution.net_profit + .cost
-                solution.total_volume = solution.total_volume - .volume_packed
-                solution.total_weight = solution.total_weight - .weight_packed
+'                 solution.net_profit = solution.net_profit + .cost
+'                 solution.total_volume = solution.total_volume - .volume_packed
+'                 solution.total_weight = solution.total_weight - .weight_packed
                 
-                .item_cnt = 0
-                .volume_packed = 0
-                .weight_packed = 0
-                .addition_point_count = 1
-                .addition_points(1).origin_x = 0
-                .addition_points(1).origin_y = 0
-                .addition_points(1).origin_z = 0
+'                 .item_cnt = 0
+'                 .volume_packed = 0
+'                 .weight_packed = 0
+'                 .addition_point_count = 1
+'                 .addition_points(1).origin_x = 0
+'                 .addition_points(1).origin_y = 0
+'                 .addition_points(1).origin_z = 0
                 
-            Else
+'             Else
             
-                repack_flag = False
+'                 repack_flag = False
 
-                operator_selection = Rnd
+'                 operator_selection = Rnd
                 
-                If operator_selection < 0.3 Then
+'                 If operator_selection < 0.3 Then
 
-                    For j = 1 To .item_cnt
+'                     For j = 1 To .item_cnt
 
-                        If ((solution.feasible = False) And (.items(j).mandatory = 0)) Or (Rnd() < item_removal_probability) Then
+'                         If ((solution.feasible = False) And (.items(j).mandatory = 0)) Or (Rnd() < item_removal_probability) Then
 
-                            solution.unpacked_item_count(.items(j).item_type) = solution.unpacked_item_count(.items(j).item_type) + 1
+'                             solution.unpacked_item_count(.items(j).item_type) = solution.unpacked_item_count(.items(j).item_type) + 1
 
-                            solution.net_profit = solution.net_profit - item_list.item_types(.items(j).item_type).profit
+'                             solution.net_profit = solution.net_profit - item_list.item_types(.items(j).item_type).profit
 
-                            .items(j).item_type = 0
+'                             .items(j).item_type = 0
 
-                            repack_flag = True
-                        End If
+'                             repack_flag = True
+'                         End If
 
-                    Next j
+'                     Next j
                    
-                ElseIf operator_selection < 0.3 Then
+'                 ElseIf operator_selection < 0.3 Then
                     
-                    max_z = 0
-                    For j = 1 To .item_cnt
-                        If max_z < .items(j).opposite_z Then max_z = .items(j).opposite_z
-                    Next j
+'                     max_z = 0
+'                     For j = 1 To .item_cnt
+'                         If max_z < .items(j).opposite_z Then max_z = .items(j).opposite_z
+'                     Next j
                     
-                    max_z = max_z * (0.1 + 0.5 * percent_time_left * Rnd)
+'                     max_z = max_z * (0.1 + 0.5 * percent_time_left * Rnd)
                     
-                    For j = 1 To .item_cnt
+'                     For j = 1 To .item_cnt
 
-                        If ((solution.feasible = False) And (.items(j).mandatory = 0)) Or (.items(j).opposite_z < max_z) Then
+'                         If ((solution.feasible = False) And (.items(j).mandatory = 0)) Or (.items(j).opposite_z < max_z) Then
 
-                            solution.unpacked_item_count(.items(j).item_type) = solution.unpacked_item_count(.items(j).item_type) + 1
+'                             solution.unpacked_item_count(.items(j).item_type) = solution.unpacked_item_count(.items(j).item_type) + 1
 
-                            solution.net_profit = solution.net_profit - item_list.item_types(.items(j).item_type).profit
+'                             solution.net_profit = solution.net_profit - item_list.item_types(.items(j).item_type).profit
 
-                            .items(j).item_type = 0
+'                             .items(j).item_type = 0
 
-                            repack_flag = True
-                        End If
+'                             repack_flag = True
+'                         End If
 
-                    Next j
+'                     Next j
                     
-                Else
+'                 Else
                     
-                    max_z = 0
-                    For j = 1 To .item_cnt
-                        If max_z < .items(j).opposite_z Then max_z = .items(j).opposite_z
-                    Next j
+'                     max_z = 0
+'                     For j = 1 To .item_cnt
+'                         If max_z < .items(j).opposite_z Then max_z = .items(j).opposite_z
+'                     Next j
                     
-                    max_z = max_z * (0.6 - 0.5 * percent_time_left * Rnd)
+'                     max_z = max_z * (0.6 - 0.5 * percent_time_left * Rnd)
                     
-                    For j = 1 To .item_cnt
+'                     For j = 1 To .item_cnt
 
-                        If ((solution.feasible = False) And (.items(j).mandatory = 0)) Or (.items(j).opposite_z > max_z) Then
+'                         If ((solution.feasible = False) And (.items(j).mandatory = 0)) Or (.items(j).opposite_z > max_z) Then
 
-                            solution.unpacked_item_count(.items(j).item_type) = solution.unpacked_item_count(.items(j).item_type) + 1
+'                             solution.unpacked_item_count(.items(j).item_type) = solution.unpacked_item_count(.items(j).item_type) + 1
 
-                            solution.net_profit = solution.net_profit - item_list.item_types(.items(j).item_type).profit
+'                             solution.net_profit = solution.net_profit - item_list.item_types(.items(j).item_type).profit
 
-                            .items(j).item_type = 0
+'                             .items(j).item_type = 0
 
-                            repack_flag = True
-                        End If
+'                             repack_flag = True
+'                         End If
 
-                    Next j
+'                     Next j
                 
-                End If
+'                 End If
 
-                If repack_flag = True Then
+'                 If repack_flag = True Then
 
-                    For j = 1 To .item_cnt
+'                     For j = 1 To .item_cnt
 
-                        If .items(j).item_type > 0 Then
-                            solution.net_profit = solution.net_profit - item_list.item_types(.items(j).item_type).profit
-                        End If
+'                         If .items(j).item_type > 0 Then
+'                             solution.net_profit = solution.net_profit - item_list.item_types(.items(j).item_type).profit
+'                         End If
 
-                    Next j
-                    solution.net_profit = solution.net_profit + .cost
-                    solution.total_volume = solution.total_volume - .volume_packed
-                    solution.total_weight = solution.total_weight - .weight_packed
+'                     Next j
+'                     solution.net_profit = solution.net_profit + .cost
+'                     solution.total_volume = solution.total_volume - .volume_packed
+'                     solution.total_weight = solution.total_weight - .weight_packed
 
-                    For j = 1 To item_list.num_item_types
-                        .repack_item_count(j) = 0
-                    Next j
+'                     For j = 1 To item_list.num_item_types
+'                         .repack_item_count(j) = 0
+'                     Next j
 
-                    For j = 1 To .item_cnt
+'                     For j = 1 To .item_cnt
 
-                        If .items(j).item_type > 0 Then
-                            .repack_item_count(.items(j).item_type) = .repack_item_count(.items(j).item_type) + 1
-                        End If
+'                         If .items(j).item_type > 0 Then
+'                             .repack_item_count(.items(j).item_type) = .repack_item_count(.items(j).item_type) + 1
+'                         End If
 
-                    Next j
+'                     Next j
 
-                    .volume_packed = 0
-                    .weight_packed = 0
-                    .item_cnt = 0
-                    .addition_point_count = 1
-                    .addition_points(1).origin_x = 0
-                    .addition_points(1).origin_y = 0
-                    .addition_points(1).origin_z = 0
+'                     .volume_packed = 0
+'                     .weight_packed = 0
+'                     .item_cnt = 0
+'                     .addition_point_count = 1
+'                     .addition_points(1).origin_x = 0
+'                     .addition_points(1).origin_y = 0
+'                     .addition_points(1).origin_z = 0
 
-                    'repack now
+'                     'repack now
 
-                    For j = 1 To item_list.num_item_types
+'                     For j = 1 To item_list.num_item_types
 
-                        continue_flag = True
-                        Do While (.repack_item_count(solution.item_type_order(j)) > 0) And (continue_flag = True)
-                            continue_flag = AddItemToContainer(solution, container_id, solution.item_type_order(j), 2, True)
-                        Loop
+'                         continue_flag = True
+'                         Do While (.repack_item_count(solution.item_type_order(j)) > 0) And (continue_flag = True)
+'                             continue_flag = AddItemToContainer(solution, container_id, solution.item_type_order(j), 2, True)
+'                         Loop
 
-                        ' put the remaining items in the unpacked items list
+'                         ' put the remaining items in the unpacked items list
 
-                        solution.unpacked_item_count(solution.item_type_order(j)) = solution.unpacked_item_count(solution.item_type_order(j)) + .repack_item_count(solution.item_type_order(j))
-                        .repack_item_count(solution.item_type_order(j)) = 0
+'                         solution.unpacked_item_count(solution.item_type_order(j)) = solution.unpacked_item_count(solution.item_type_order(j)) + .repack_item_count(solution.item_type_order(j))
+'                         .repack_item_count(solution.item_type_order(j)) = 0
 
-                    Next j
+'                     Next j
 
-                End If
+'                 End If
             
-            End If
+'             End If
         
-        End If
+'         End If
         
-    End With
+'     End With
     
-End Sub
+' End Sub
+
 Private Sub PerturbRotationAndOrderOfItems(solution As solution_data)
     
     Dim i As Long

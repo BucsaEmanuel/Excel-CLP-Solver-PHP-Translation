@@ -2,6 +2,7 @@
 /**
  * Module2.bas
  * Option Explicit
+ * TODO: remove all useless comments and DocBlocks when done translating whole file.
  */
 
 /**
@@ -636,7 +637,6 @@ class candidate_data
     public $item_type_to_be_added;
 }
 
-
 /**
  * helper for Rnd in VBA
  * @return float|int
@@ -645,7 +645,6 @@ function random()
 {
     return mt_rand() / mt_getrandmax();
 }
-
 
 /**
  * Private Sub SortContainers(solution As solution_data, random_reorder_probability As Double)
@@ -800,11 +799,16 @@ function SortContainers(solution_data $solution, float $random_reorder_probabili
 
 /**
  * Private Sub PerturbSolution(solution As solution_data, container_id As Long, percent_time_left As Double)
+ *
+ * * added item_list to param list to avoid dealing with globals
+ *
  * @param solution_data $solution
  * @param int $container_id
  * @param float $percent_time_left
+ * @param item_list_data $item_list
  */
-function PerturbSolution(solution_data $solution, int $container_id, float $percent_time_left) {
+function PerturbSolution(solution_data $solution, int $container_id, float $percent_time_left, item_list_data $item_list)
+{
     /**
      * Dim i As Long
      * @var integer
@@ -857,13 +861,406 @@ function PerturbSolution(solution_data $solution, int $container_id, float $perc
      * Dim repack_flag As Boolean
      * @var boolean
      */
-    $repack_flag = true;
+    $repack_flag = false;
 
     /**
      * Dim continue_flag As Boolean
      * @var boolean
      */
-    $continue_flag = true;
+    $continue_flag = false;
 
+    /**
+     * Dim max_z As Double
+     * @var float
+     */
+    $max_z = 0.0;
 
+    /**
+     * With solution.container(container_id)
+     */
+    $sc = $solution->container[$container_id];
+
+    /*
+     * '            container_emptying_probability = 1 - 0.8 * (.volume_packed / .volume_capacity)
+     * '            item_removal_probability = 1 - 0.8 * (.volume_packed / .volume_capacity)
+     *         'test
+     * */
+
+    /**
+     * container_emptying_probability = 0.05 + 0.15 * percent_time_left
+     * @var float
+     */
+    $container_emptying_probability = 0.05 + 0.15 * $percent_time_left;
+
+    /**
+     * item_removal_probability = 0.05 + 0.15 * percent_time_left
+     * @var float
+     */
+    $item_removal_probability = 0.05 + 0.15 * $percent_time_left;
+
+    /**
+     * If .item_cnt > 0 Then
+     */
+    if ($sc->item_cnt > 0) {
+        /**
+         * If Rnd() < container_emptying_probability Then
+         */
+        if (random() < $container_emptying_probability) {
+            /*
+             * 'empty the container
+             * */
+
+            /**
+             * For j = 1 To .item_cnt
+             */
+            for ($j = 1; $j <= $sc->item_cnt; ++$j) {
+                /**
+                 * solution.unpacked_item_count(.items(j).item_type) = solution.unpacked_item_count(.items(j).item_type) + 1
+                 */
+                $solution->unpacked_item_count[$sc->items[$j]->item_type] = $solution->unpacked_item_count[$sc->items[$j]->item_type] + 1;
+
+                /*
+                 * NOTE: had to add item_list to params if
+                 * I didn't want to deal with global nonsense.
+                 * */
+                /**
+                 * solution.net_profit = solution.net_profit - item_list.item_types(.items(j).item_type).profit
+                 */
+                $solution->net_profit = $solution->net_profit - $item_list->item_types[$sc->items[$j]->item_type]->profit;
+            }
+
+            /**
+             * solution.net_profit = solution.net_profit + .cost
+             */
+            $solution->net_profit = $solution->net_profit + $sc->cost;
+
+            /**
+             * solution.total_volume = solution.total_volume - .volume_packed
+             */
+            $solution->total_volume = $solution->total_volume - $sc->volume_packed;
+
+            /**
+             * solution.total_weight = solution.total_weight - .weight_packed
+             */
+            $solution->total_weight = $solution->total_weight - $sc->weight_packed;
+
+            /**
+             * .item_cnt = 0
+             */
+            $sc->item_cnt = 0;
+
+            /**
+             * .volume_packed = 0
+             */
+            $sc->volume_packed = 0;
+
+            /**
+             * .weight_packed = 0
+             */
+            $sc->weight_packed = 0;
+
+            /**
+             * .addition_point_count = 1
+             */
+            $sc->addition_point_count = 1;
+
+            /**
+             * TODO: find out how this would translate.
+             * .addition_points(1).origin_x = 0
+             */
+            $sc->addition_points[1]->origin_x = 0;
+
+            /**
+             * TODO: find out how this would translate.
+             * .addition_points(1).origin_y = 0
+             */
+            $sc->addition_points[1]->origin_y = 0;
+
+            /**
+             * TODO: find out how this would translate.
+             * .addition_points(1).origin_z = 0
+             */
+            $sc->addition_points[1]->origin_z = 0;
+
+        } else {
+            /**
+             * repack_flag = False
+             */
+            $repack_flag = false;
+
+            /**
+             * TODO: noticed in the original code there's both Rnd and Rnd() -> find out what's the difference.
+             * operator_selection = Rnd
+             */
+            $operator_selection = random();
+
+            /**
+             * If operator_selection < 0.3 Then
+             */
+            if ($operator_selection < 0.3) {
+                /**
+                 * For j = 1 To .item_cnt
+                 */
+                for ($j = 1; $j <= $sc->item_cnt; ++$j) {
+                    /**
+                     * If ((solution.feasible = False) And (.items(j).mandatory = 0)) Or (Rnd() < item_removal_probability) Then
+                     */
+                    if (($solution->feasible == false && $sc->items[$j]->mandatory == 0) || random() < $item_removal_probability) {
+                        /**
+                         * solution.unpacked_item_count(.items(j).item_type) = solution.unpacked_item_count(.items(j).item_type) + 1
+                         */
+                        $solution->unpacked_item_count[$sc->items[$j]->item_type] = $solution->unpacked_item_count[$sc->items[$j]->item_type] + 1;
+
+                        /**
+                         * solution.net_profit = solution.net_profit - item_list.item_types(.items(j).item_type).profit
+                         */
+                        $solution->net_profit = $solution->net_profit - $item_list->item_types[$sc->items[$j]->item_type]->profit;
+
+                        /**
+                         * .items(j).item_type = 0
+                         */
+                        $sc->items[$j]->item_type = 0;
+
+                        /**
+                         * repack_flag = True
+                         */
+                        $repack_flag = true;
+                    }
+                }
+                /**
+                 * ElseIf operator_selection < 0.3 Then
+                 */
+                /*
+                 * TODO: Why are we checking again if operator_selection is < 0.3. Find a way to merge with original if
+                 * */
+            } else if ($operator_selection < 0.3) {
+                /**
+                 * max_z = 0
+                 */
+                $max_z = 0;
+
+                /**
+                 * For j = 1 To .item_cnt
+                 */
+                for ($j = 1; $j <= $sc->item_cnt; ++$j) {
+                    /**
+                     * If max_z < .items(j).opposite_z Then max_z = .items(j).opposite_z
+                     */
+                    if ($max_z < $sc->items[$j]->opposite_z) {
+                        $max_z = $sc->items[$j]->opposite_z;
+                    }
+                }
+
+                /**
+                 * max_z = max_z * (0.1 + 0.5 * percent_time_left * Rnd)
+                 */
+                $max_z = $max_z * (0.1 + 0.5 * $percent_time_left * random());
+
+                /**
+                 * For j = 1 To .item_cnt
+                 */
+                for ($j = 1; $j <= $sc->item_cnt; ++$j) {
+                    /**
+                     * If ((solution.feasible = False) And (.items(j).mandatory = 0)) Or (.items(j).opposite_z < max_z) Then
+                     */
+                    if (($solution->feasible == false && $sc->items[$j]->mandatory == 0) || $sc->items[$j]->opposite_z < $max_z) {
+                        /**
+                         * solution.unpacked_item_count(.items(j).item_type) = solution.unpacked_item_count(.items(j).item_type) + 1
+                         */
+                        $solution->unpacked_item_count[$sc->items[$j]->item_type] = $solution->unpacked_item_count[$sc->items[$j]->item_type] + 1;
+
+                        /**
+                         * solution.net_profit = solution.net_profit - item_list.item_types(.items(j).item_type).profit
+                         */
+                        $solution->net_profit = $solution->net_profit - $item_list->item_types[$sc->items[$j]->item_type]->profit;
+
+                        /**
+                         * .items(j).item_type = 0
+                         */
+                        $sc->items[$j]->item_type = 0;
+
+                        /**
+                         * repack_flag = True
+                         */
+                        $repack_flag = true;
+                    }
+                }
+            } else {
+                /**
+                 * max_z = 0
+                 */
+                $max_z = 0;
+
+                /**
+                 * For j = 1 To .item_cnt
+                 */
+                for ($j = 1; $j <= $sc->item_cnt; ++$j) {
+                    /**
+                     * If max_z < .items(j).opposite_z Then max_z = .items(j).opposite_z
+                     */
+                    if ($max_z < $sc->items[$j]->opposite_z) {
+                        $max_z = $sc->items[$j]->opposite_z;
+                    }
+                }
+                /**
+                 * max_z = max_z * (0.6 - 0.5 * percent_time_left * Rnd)
+                 */
+                $max_z = $max_z * (0.6 - 0.5 * $percent_time_left * random());
+
+                /**
+                 * For j = 1 To .item_cnt
+                 */
+                for ($j = 1; $j <= $sc->item_cnt; ++$j) {
+                    /**
+                     * If ((solution.feasible = False) And (.items(j).mandatory = 0)) Or (.items(j).opposite_z > max_z) Then
+                     */
+
+                    if (($solution->feasible == false && $sc->items[$j]->mandatory == 0) || ($sc->items[$j]->opposite_z > $max_z)) {
+                        /**
+                         * solution.unpacked_item_count(.items(j).item_type) = solution.unpacked_item_count(.items(j).item_type) + 1
+                         */
+                        $solution->unpacked_item_count[$sc->items[$j]->item_type] = $solution->unpacked_item_count[$sc->items[$j]->item_type] + 1;
+
+                        /**
+                         * solution.net_profit = solution.net_profit - item_list.item_types(.items(j).item_type).profit
+                         */
+                        $solution->net_profit = $solution->net_profit - $item_list->item_types[$sc->items[$j]->item_type]->profit;
+
+                        $sc->items[$j]->item_type = 0;
+                        $repack_flag = true;
+                    }
+                }
+            }
+            /**
+             * If repack_flag = True Then
+             */
+            if ($repack_flag == true) {
+                /**
+                 * For j = 1 To .item_cnt
+                 */
+                for ($j = 1; $j <= $sc->item_cnt; ++$j) {
+                    /**
+                     * If .items(j).item_type > 0 Then
+                     */
+                    if ($sc->items[$j]->item_type > 0) {
+                        /**
+                         * solution.net_profit = solution.net_profit - item_list.item_types(.items(j).item_type).profit
+                         */
+                        $solution->net_profit = $solution->net_profit - $item_list->item_types[$sc->items[$j]->item_type]->profit;
+                    }
+                }
+
+                /**
+                 * solution.net_profit = solution.net_profit + .cost
+                 */
+                $solution->net_profit = $solution->net_profit + $sc->cost;
+
+                /**
+                 * solution.total_volume = solution.total_volume - .volume_packed
+                 */
+                $solution->total_volume = $solution->total_volume - $sc->volume_packed;
+
+                /**
+                 * solution.total_weight = solution.total_weight - .weight_packed
+                 */
+                $solution->total_weight = $solution->total_weight - $sc->weight_packed;
+
+                /**
+                 * For j = 1 To item_list.num_item_types
+                 */
+                for ($j = 1; $j <= $item_list->num_item_types; ++$j) {
+                    /**
+                     * .repack_item_count(j) = 0
+                     */
+                    $sc->repack_item_count[$j] = 0;
+                }
+
+                /**
+                 * For j = 1 To .item_cnt
+                 */
+                for ($j = 1; $j <= $sc->item_cnt; ++$j) {
+                    /**
+                     * If .items(j).item_type > 0 Then
+                     */
+                    if ($sc->items[$j]->item_type > 0) {
+                        /**
+                         * .repack_item_count(.items(j).item_type) = .repack_item_count(.items(j).item_type) + 1
+                         */
+                        $sc->repack_item_count[$sc->items[$j]->item_type] = $sc->repack_item_count[$sc->items[$j]->item_type] + 1;
+                    }
+                }
+
+                /**
+                 * .volume_packed = 0
+                 */
+                $sc->volume_packed = 0;
+
+                /**
+                 * .weight_packed = 0
+                 */
+                $sc->weight_packed = 0;
+
+                /**
+                 * .item_cnt = 0
+                 */
+                $sc->item_cnt = 0;
+
+                /**
+                 * .addition_point_count = 1
+                 */
+                $sc->addition_point_count = 1;
+
+                /**
+                 * .addition_points(1).origin_x = 0
+                 */
+                $sc->addition_points[1]->origin_x = 0;
+
+                /**
+                 * .addition_points(1).origin_y = 0
+                 */
+                $sc->addition_points[1]->origin_y = 0;
+
+                /**
+                 * .addition_points(1).origin_z = 0
+                 */
+                $sc->addition_points[1]->origin_z = 0;
+
+                /*
+                 * 'repack now
+                 * */
+                /**
+                 * For j = 1 To item_list.num_item_types
+                 */
+                for ($j = 1; $j <= $item_list->num_item_types; ++$j) {
+                    /**
+                     * continue_flag = True
+                     */
+                    $continue_flag = true;
+                    /**
+                     * Do While (.repack_item_count(solution.item_type_order(j)) > 0) And (continue_flag = True)
+                     */
+                    do {
+                        /**
+                         * continue_flag = AddItemToContainer(solution, container_id, solution.item_type_order(j), 2, True)
+                         */
+                        $continue_flag = AddItemToContainer($solution, $container_id, $solution->item_type_order[$j], 2, true);
+                    } while ($sc->repack_item_count[$solution->item_type_order[$j]] > 0 && $continue_flag == true);
+
+                    /*
+                     * ' put the remaining items in the unpacked items list
+                     * */
+
+                    /**
+                     * solution.unpacked_item_count(solution.item_type_order(j)) = solution.unpacked_item_count(solution.item_type_order(j)) + .repack_item_count(solution.item_type_order(j))
+                     */
+                    $solution->unpacked_item_count[$solution->item_type_order[$j]] = $solution->unpacked_item_count[$solution->item_type_order[$j]] + $sc->repack_item_count[$solution->item_type_order[$j]];
+
+                    /**
+                     * .repack_item_count(solution.item_type_order(j)) = 0
+                     */
+                    $sc->repack_item_count[$solution->item_type_order[$j]] = 0;
+                }
+            }
+        }
+    }
 }
