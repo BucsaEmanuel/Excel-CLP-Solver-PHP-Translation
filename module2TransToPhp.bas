@@ -393,45 +393,47 @@
     
 ' End Sub
 
-Private Sub PerturbRotationAndOrderOfItems(solution As solution_data)
+' Private Sub PerturbRotationAndOrderOfItems(solution As solution_data)
     
-    Dim i As Long
-    Dim j As Long
-    Dim k As Long
+'     Dim i As Long
+'     Dim j As Long
+'     Dim k As Long
     
-    Dim swap_long As Long
+'     Dim swap_long As Long
     
-    'change the preferred rotation order randomly
+'     'change the preferred rotation order randomly
     
-    For i = 1 To item_list.num_item_types
+'     For i = 1 To item_list.num_item_types
         
-        For j = 1 To 6
+'         For j = 1 To 6
             
-            k = Int((6 - j + 1) * Rnd + j) ' the order to swap with
+'             k = Int((6 - j + 1) * Rnd + j) ' the order to swap with
             
-            swap_long = solution.rotation_order(i, j)
-            solution.rotation_order(i, j) = solution.rotation_order(i, k)
-            solution.rotation_order(i, k) = swap_long
+'             swap_long = solution.rotation_order(i, j)
+'             solution.rotation_order(i, j) = solution.rotation_order(i, k)
+'             solution.rotation_order(i, k) = swap_long
             
-        Next j
+'         Next j
         
-        'MsgBox ("Item type " & i & " rotation order: " & solution.rotation_order(i, 1) & solution.rotation_order(i, 2) & solution.rotation_order(i, 3) & solution.rotation_order(i, 4) & solution.rotation_order(i, 5) & solution.rotation_order(i, 6))
+'         'MsgBox ("Item type " & i & " rotation order: " & solution.rotation_order(i, 1) & solution.rotation_order(i, 2) & solution.rotation_order(i, 3) & solution.rotation_order(i, 4) & solution.rotation_order(i, 5) & solution.rotation_order(i, 6))
         
-    Next i
+'     Next i
     
-    'change the item order randomly - test
+'     'change the item order randomly - test
 
-    For i = 1 To item_list.num_item_types
+'     For i = 1 To item_list.num_item_types
 
-        j = Int((item_list.num_item_types - i + 1) * Rnd + i) ' the order to swap with
+'         j = Int((item_list.num_item_types - i + 1) * Rnd + i) ' the order to swap with
 
-        swap_long = solution.item_type_order(i)
-        solution.item_type_order(i) = solution.item_type_order(j)
-        solution.item_type_order(j) = swap_long
+'         swap_long = solution.item_type_order(i)
+'         solution.item_type_order(i) = solution.item_type_order(j)
+'         solution.item_type_order(j) = swap_long
 
-    Next i
+'     Next i
     
-End Sub
+' End Sub
+
+
 Private Function AddItemToContainer(solution As solution_data, container_index As Long, item_type_index As Long, add_type As Long, item_cohesion As Boolean)
     
     Dim i As Long

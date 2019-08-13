@@ -1264,3 +1264,113 @@ function PerturbSolution(solution_data $solution, int $container_id, float $perc
         }
     }
 }
+
+/**
+ * Private Sub PerturbRotationAndOrderOfItems(solution As solution_data)
+ * @param solution_data $solution
+ * @param item_list_data $item_list
+ */
+function PerturbRotationAndOrderOfItems(solution_data $solution, item_list_data $item_list)
+{
+    /**
+     * Dim i As Long
+     * @var integer
+     */
+    $i = 0;
+
+    /**
+     * Dim j As Long
+     * @var integer
+     */
+    $j = 0;
+
+    /**
+     * Dim k As Long
+     * @var integer
+     */
+    $k = 0;
+
+    /**
+     * Dim swap_long As Long
+     * @var integer
+     */
+    $swap_long = 0;
+
+    /*
+     * 'change the preferred rotation order randomly
+     * */
+
+    /**
+     * For i = 1 To item_list.num_item_types
+     */
+    for ($i = 1; $i <= $item_list->num_item_types; ++$i) {
+        /**
+         * For j = 1 To 6
+         */
+        for ($j = 1; $j <= 6; ++$j) {
+            /**
+             * k = Int((6 - j + 1) * Rnd + j) ' the order to swap with
+             */
+            $k = intval((6 - $j + 1) * random() + $j);
+
+            /**
+             * swap_long = solution.rotation_order(i, j)
+             */
+            $swap_long = $solution->rotation_order[$i][$j];
+            /*
+             * TODO: find out if this is translated correctly.
+             * rotation_order is integer[], so an array of integers.
+             * but receiving two params, might mean it's a multidimensional array.
+             * we'll just have to see.
+             * */
+
+            /**
+             * solution.rotation_order(i, j) = solution.rotation_order(i, k)
+             */
+            $solution->rotation_order[$i][$j] = $solution->rotation_order[$i][$k];
+            /*
+             * TODO: recheck this after you know if the above one is translated correctly.
+             * */
+
+            /**
+             * solution.rotation_order(i, k) = swap_long
+             */
+            $solution->rotation_order[$i][$k] = $swap_long;
+            /*
+             * TODO: check this as well.
+             * */
+        }
+        /*
+         * 'MsgBox ("Item type " & i & " rotation order: " & solution.rotation_order(i, 1) & solution.rotation_order(i, 2) & solution.rotation_order(i, 3) & solution.rotation_order(i, 4) & solution.rotation_order(i, 5) & solution.rotation_order(i, 6))
+         * */
+    }
+
+    /*
+     * 'change the item order randomly - test
+     * */
+
+    /**
+     * For i = 1 To item_list.num_item_types
+     */
+    for ($i = 1; $i <= $item_list->num_item_types; ++$i) {
+        /**
+         * j = Int((item_list.num_item_types - i + 1) * Rnd + i) ' the order to swap with
+         */
+        $j = intval(($item_list->num_item_types - $i + 1) * random() + $i);
+
+        /**
+         * swap_long = solution.item_type_order(i)
+         */
+        $swap_long = $solution->item_type_order[$i];
+
+        /**
+         * solution.item_type_order(i) = solution.item_type_order(j)
+         */
+        $solution->item_type_order[$i] = $solution->item_type_order[$j];
+
+        /**
+         * solution.item_type_order(j) = swap_long
+         */
+        $solution->item_type_order[$j] = $swap_long;
+    }
+}
