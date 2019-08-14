@@ -1380,6 +1380,7 @@ function PerturbRotationAndOrderOfItems(solution_data $solution, item_list_data 
  * * Added $instance to params to avoid globalization :))
  * * Added $compatibility_list to params
  * * Added $item_list to params
+ * * Added $solver_options to params
  * @param solution_data $solution
  * @param int $container_index
  * @param int $item_type_index
@@ -1388,8 +1389,9 @@ function PerturbRotationAndOrderOfItems(solution_data $solution, item_list_data 
  * @param instance_data $instance
  * @param compatibility_data $compatibility_list
  * @param item_list_data $item_list
+ * @param solver_option_data $solver_options
  */
-function AddItemToContainer(solution_data $solution, int $container_index, int $item_type_index, int $add_type, bool $item_cohesion, instance_data $instance, compatibility_data $compatibility_list, item_list_data $item_list)
+function AddItemToContainer(solution_data $solution, int $container_index, int $item_type_index, int $add_type, bool $item_cohesion, instance_data $instance, compatibility_data $compatibility_list, item_list_data $item_list, solver_option_data $solver_options)
 {
     /**
      * Dim i As Long
@@ -1582,5 +1584,708 @@ function AddItemToContainer(solution_data $solution, int $container_index, int $
              */
             AddItemToContainer_Finish();
         }
+    }
+
+    /*
+     * 'volume size check
+     * */
+    /**
+     * If .volume_packed + item_list.item_types(item_type_index).volume > .volume_capacity Then GoTo AddItemToContainer_Finish
+     */
+    if ($currentContainer->volume_packed + $item_list->item_types[$item_type_index]->volume > $currentContainer->volume_capacity) {
+        /**
+         * GoTo AddItemToContainer_Finish
+         */
+        AddItemToContainer_Finish();
+    }
+
+    /*
+     * 'weight capacity check
+     * */
+    /**
+     * If .weight_packed + item_list.item_types(item_type_index).weight > .weight_capacity Then GoTo AddItemToContainer_Finish
+     */
+    if ($currentContainer->weight_packed + $item_list->item_types[$item_type_index]->weight > $currentContainer->weight_capacity) {
+        /**
+         * GoTo AddItemToContainer_Finish
+         */
+        AddItemToContainer_Finish();
+    }
+
+    /*
+     * 'item to item compatibility check
+     * */
+    /**
+     * If instance.item_item_compatibility_worksheet = True Then
+     */
+    if ($instance->item_item_compatibility_worksheet == true) {
+        /**
+         * For i = 1 To .item_cnt
+         */
+        for ($i = 1; $i <= $currentContainer->item_cnt; ++$i) {
+            /**
+             * If compatibility_list.item_to_item(item_list.item_types(item_type_index).id, item_list.item_types(.items(i).item_type).id) = False Then GoTo AddItemToContainer_Finish
+             */
+            if ($compatibility_list->item_to_item[$item_list->item_types[$item_type_index]->id][$item_list->item_types[$currentContainer->items[$i]->item_type]->id] == false) {
+                /**
+                 * GoTo AddItemToContainer_Finish
+                 */
+                AddItemToContainer_Finish();
+            }
+        }
+    }
+
+    /**
+     * For rotation_index = 1 To 6
+     */
+
+    for ($rotation_index = 1; $rotation_index <= 6; ++$rotation_index) {
+        /*
+         * 'test
+         * 'If candidate_position <> 0 Then GoTo AddItemToContainer_Finish
+         * */
+
+        /**
+         * current_rotation = solution.rotation_order(item_type_index, rotation_index)
+         */
+        $current_rotation = $solution->rotation_order[$item_type_index][$rotation_index];
+
+        /*
+         * 'forbidden rotations
+         * */
+
+        /**
+         * If ((current_rotation = 3) Or (current_rotation = 4)) And (item_list.item_types(item_type_index).xy_rotatable = False) Then
+         */
+        if (($current_rotation == 3 || $current_rotation == 4) && $item_list->item_types[$item_type_index]->xy_rotatable == false) {
+            /**
+             * GoTo next_rotation_iteration
+             */
+            /*
+             * TODO: find out a better way to write this, because next_rotation_iteration is just a continue statement.
+             * */
+            continue;
+        }
+
+        /**
+         * If ((current_rotation = 5) Or (current_rotation = 6)) And (item_list.item_types(item_type_index).yz_rotatable = False) Then
+         */
+        if (($current_rotation == 5 || $current_rotation == 6) && $item_list->item_types[$item_type_index]->yz_rotatable == false) {
+            /**
+             * GoTo next_rotation_iteration
+             */
+            /*
+             * TODO: find out a better way to write this, because next_rotation_iteration is just a continue statement.
+             * */
+            continue;
+        }
+
+        /*
+         * 'symmetry breaking
+         * */
+
+        /**
+         *  If (current_rotation = 2) And (Abs(item_list.item_types(item_type_index).width - item_list.item_types(item_type_index).length) < epsilon) Then
+         */
+        if ($current_rotation == 2 && abs($item_list->item_types[$item_type_index]->width - $item_list->item_types[$item_type_index]->length) < epsilon) {
+            /**
+             * GoTo next_rotation_iteration
+             */
+            /*
+             * TODO: find out a better way to write this, because next_rotation_iteration is just a continue statement.
+             * */
+            continue;
+        }
+
+        /**
+         * If (current_rotation = 4) And (Abs(item_list.item_types(item_type_index).width - item_list.item_types(item_type_index).height) < epsilon) Then
+         */
+        if ($current_rotation == 4 && abs($item_list->item_types[$item_type_index]->width - $item_list->item_types[$item_type_index]->height) < epsilon) {
+            /**
+             * GoTo next_rotation_iteration
+             */
+            /*
+             * TODO: find out a better way to write this, because next_rotation_iteration is just a continue statement.
+             * */
+            continue;
+        }
+
+        /**
+         * If (current_rotation = 6) And (Abs(item_list.item_types(item_type_index).height - item_list.item_types(item_type_index).length) < epsilon) Then
+         */
+        if (
+            $current_rotation == 6 &&
+            abs($item_list->item_types[$item_type_index]->height - $item_list->item_types[$item_type_index]->length) < epsilon
+        ) {
+            /**
+             * GoTo next_rotation_iteration
+             */
+            /*
+             * TODO: find out a better way to write this, because next_rotation_iteration is just a continue statement.
+             * */
+            continue;
+        }
+
+        /**
+         * For i = 1 To .addition_point_count
+         */
+        for ($i = 1; $i <= $currentContainer->addition_point_count; ++$i) {
+
+            /**
+             * If (item_cohesion = True) And (candidate_position <> 0) And (next_to_item_type = item_type_index) And (.addition_points(i).next_to_item_type <> item_type_index) Then GoTo next_iteration
+             */
+            if ($item_cohesion == true && $candidate_position != 0 && $next_to_item_type == $item_type_index && $currentContainer->addition_points[$i]->next_to_item_type != $item_type_index) {
+                /**
+                 * GoTo next_iteration
+                 */
+                /*
+                 * TODO: find out a better way to write this, because next_iteration is just a continue statement.
+                 * */
+                continue;
+            }
+
+            /**
+             * origin_x = .addition_points(i).origin_x
+             */
+            $origin_x = $currentContainer->addition_points[$i]->origin_x;
+
+            /**
+             * origin_y = .addition_points(i).origin_y
+             */
+            $origin_y = $currentContainer->addition_points[$i]->origin_y;
+
+            /**
+             * origin_z = .addition_points(i).origin_z
+             */
+            $origin_z = $currentContainer->addition_points[$i]->origin_z;
+
+            /**
+             * If (item_list.item_types(item_type_index).heavy = True) And (origin_y > epsilon) Then GoTo next_iteration ' heavy item cannot be placed on any other item
+             */
+            if ($item_list->item_types[$item_type_index]->heavy == true && $origin_y > epsilon) {
+                /**
+                 * GoTo next_iteration
+                 */
+                /*
+                 * TODO: find out a better way to write this, because next_iteration is just a continue statement.
+                 * */
+                continue;
+            }
+
+            /**
+             * If current_rotation = 1 Then
+             */
+            if ($current_rotation == 1) {
+                /**
+                 * opposite_x = origin_x + item_list.item_types(item_type_index).width
+                 */
+                $opposite_x = $origin_x + $item_list->item_types[$item_type_index]->width;
+
+                /**
+                 * opposite_y = origin_y + item_list.item_types(item_type_index).height
+                 */
+                $opposite_y = $origin_y + $item_list->item_types[$item_type_index]->height;
+
+                /**
+                 * opposite_z = origin_z + item_list.item_types(item_type_index).length
+                 */
+                $opposite_z = $origin_z + $item_list->item_types[$item_type_index]->length;
+            /**
+             * ElseIf current_rotation = 2 Then
+             */
+            } else if ($current_rotation == 2) {
+                /**
+                 * opposite_x = origin_x + item_list.item_types(item_type_index).length
+                 */
+                $opposite_x = $origin_x + $item_list->item_types[$item_type_index]->length;
+
+                /**
+                 * opposite_y = origin_y + item_list.item_types(item_type_index).height
+                 */
+                $opposite_y = $origin_y + $item_list->item_types[$item_type_index]->height;
+
+                /**
+                 * opposite_z = origin_z + item_list.item_types(item_type_index).width
+                 */
+                $opposite_z = $origin_z + $item_list->item_types[$item_type_index]->width;
+            /**
+             * ElseIf current_rotation = 3 Then
+             */
+            } else if ($current_rotation == 3) {
+                /**
+                 * opposite_x = origin_x + item_list.item_types(item_type_index).width
+                 */
+                $opposite_x = $origin_x + $item_list->item_types[$item_type_index]->width;
+
+                /**
+                 * opposite_y = origin_y + item_list.item_types(item_type_index).length
+                 */
+                $opposite_y = $origin_y + $item_list->item_types[$item_type_index]->width;
+
+                /**
+                 * opposite_z = origin_z + item_list.item_types(item_type_index).height
+                 */
+                $opposite_z = $origin_z + $item_list->item_types[$item_type_index]->height;
+            /**
+             * ElseIf current_rotation = 4 Then
+             */
+            } else if ($current_rotation == 4) {
+                /**
+                 * opposite_x = origin_x + item_list.item_types(item_type_index).height
+                 */
+                $opposite_x = $origin_x + $item_list->item_types[$item_type_index]->height;
+
+                /**
+                 * opposite_y = origin_y + item_list.item_types(item_type_index).length
+                 */
+                $opposite_y = $origin_y + $item_list->item_types[$item_type_index]->length;
+
+                /**
+                 * opposite_z = origin_z + item_list.item_types(item_type_index).width
+                 */
+                $opposite_z = $origin_z + $item_list->item_types[$item_type_index]->width;
+
+            /**
+             * ElseIf current_rotation = 5 Then
+             */
+            } else if ($current_rotation == 5) {
+                /**
+                 * opposite_x = origin_x + item_list.item_types(item_type_index).height
+                 */
+                $opposite_x = $origin_x + $item_list->item_types[$item_type_index]->height;
+
+                /**
+                 * opposite_y = origin_y + item_list.item_types(item_type_index).width
+                 */
+                $opposite_y = $origin_y + $item_list->item_types[$item_type_index]->width;
+
+                /**
+                 * opposite_z = origin_z + item_list.item_types(item_type_index).length
+                 */
+                $opposite_z = $origin_z + $item_list->item_types[$item_type_index]->length;
+
+            /**
+             * ElseIf current_rotation = 6 Then
+             */
+            } else if ($current_rotation == 6) {
+                /**
+                 * opposite_x = origin_x + item_list.item_types(item_type_index).length
+                 */
+                $opposite_x = $origin_x + $item_list->item_types[$item_type_index]->length;
+
+                /**
+                 * opposite_y = origin_y + item_list.item_types(item_type_index).width
+                 */
+                $opposite_y = $origin_y + $item_list->item_types[$item_type_index]->width;
+
+                /**
+                 * opposite_z = origin_z + item_list.item_types(item_type_index).height
+                 */
+                $opposite_z = $origin_z + $item_list->item_types[$item_type_index]->height;
+            }
+
+            /*
+             * 'check the feasibility of all four corners, w.r.t to the other items
+             * */
+            /**
+             * If (opposite_x > .width + epsilon) Or (opposite_y > .height + epsilon) Or (opposite_z > .length + epsilon) Then GoTo next_iteration
+             */
+            if ($opposite_x > $currentContainer->width + epsilon || $opposite_y > $currentContainer->height + epsilon || $opposite_z > $currentContainer->length + epsilon) {
+                /**
+                 * GoTo next_iteration
+                 */
+                /*
+                 * TODO: find out a better way to write this, because next_iteration is just a continue statement.
+                 * */
+                continue;
+            }
+
+            /**
+             * For j = 1 To .item_cnt
+             *      If (opposite_x < .items(j).origin_x + epsilon) Or _
+             *          (.items(j).opposite_x < origin_x + epsilon) Or _
+             *          (opposite_y < .items(j).origin_y + epsilon) Or _
+             *          (.items(j).opposite_y < origin_y + epsilon) Or _
+             *          (opposite_z < .items(j).origin_z + epsilon) Or _
+             *          (.items(j).opposite_z < origin_z + epsilon) Then
+             *          'no conflict
+             *      Else
+             *          'conflict
+             *          GoTo next_iteration
+             *      End If
+             * Next j
+             */
+            for ($j = 1; $j <= $currentContainer->item_cnt; ++$j) {
+                if (
+                    $opposite_x < $currentContainer->items[$j]->origin_x + epsilon ||
+                    $currentContainer->items[$j]->opposite_x < $origin_x + epsilon ||
+
+                    $opposite_y < $currentContainer->items[$j]->origin_y + epsilon ||
+                    $currentContainer->items[$j]->opposite_y < $origin_y + epsilon ||
+
+                    $opposite_z < $currentContainer->items[$j]->origin_z + epsilon ||
+                    $currentContainer->items[$j]->opposite_z < $origin_z + epsilon
+                ) {
+                    /*
+                     * 'no conflict
+                     * */
+                    /*
+                     * TODO: this statement is empty, the else part is just continue, so the whole loop looks useless.
+                     * */
+                } else {
+                    continue;
+                }
+            }
+
+            /*
+             * 'vertical support
+             * */
+
+            /**
+             * If origin_y < epsilon Then
+             */
+            if ($origin_y < epsilon) {
+                /**
+                 * support_flag = True
+                 */
+                $support_flag = true;
+            /**
+             * Else
+             */
+            } else {
+
+                /**
+                 * area_supported = 0
+                 */
+                $area_supported = 0;
+
+                /**
+                 * area_required = ((opposite_x - origin_x) * (opposite_z - origin_z))
+                 */
+                $area_required = ($opposite_x - $origin_x) * ($opposite_z - $origin_z);
+
+                /**
+                 * support_flag = False
+                 */
+                $support_flag = false;
+
+                /**
+                 * For j = .item_cnt To 1 Step -1
+                 */
+                for ($j = $currentContainer->item_cnt; $j >= 1; --$j) {
+
+                    /**
+                     * If (Abs(origin_y - .items(j).opposite_y) < epsilon) Then
+                     */
+                    if (abs($origin_y - $currentContainer->items[$j]->opposite_y) < epsilon) {
+                        /*
+                         * 'check for intersection
+                         * */
+
+                        /**
+                         * intersection_right = opposite_x
+                         */
+                        $intersection_right = $opposite_x;
+
+                        /**
+                         * If intersection_right > .items(j).opposite_x Then intersection_right = .items(j).opposite_x
+                         */
+                        if ($intersection_right > $currentContainer->items[$j]->opposite_x) {
+                            $intersection_right = $currentContainer->items[$j]->opposite_x;
+                        }
+
+                        /**
+                         * intersection_left = origin_x
+                         */
+                        $intersection_left = $origin_x;
+
+                        /**
+                         * If intersection_left < .items(j).origin_x Then intersection_left = .items(j).origin_x
+                         */
+                        if ($intersection_left < $currentContainer->items[$j]->origin_x) {
+                            $intersection_left = $currentContainer->items[$j]->origin_x;
+                        }
+
+                        /**
+                         * intersection_top = opposite_z
+                         */
+                        $intersection_top = $opposite_z;
+
+                        /**
+                         * If intersection_top > .items(j).opposite_z Then intersection_top = .items(j).opposite_z
+                         */
+                        if ($intersection_top > $currentContainer->items[$j]->opposite_z) {
+                            $intersection_top = $currentContainer->items[$j]->opposite_z;
+                        }
+
+                        /**
+                         * intersection_bottom = origin_z
+                         */
+                        $intersection_bottom = $origin_z;
+
+                        /**
+                         * If intersection_bottom < .items(j).origin_z Then intersection_bottom = .items(j).origin_z
+                         */
+                        if ($intersection_bottom < $currentContainer->items[$j]->origin_z) {
+                            $intersection_bottom = $currentContainer->items[$j]->origin_z;
+                        }
+
+                        /**
+                         * If (intersection_right > intersection_left) And (intersection_top > intersection_bottom) Then
+                         */
+                        if ($intersection_right > $intersection_left && $intersection_top > $intersection_bottom) {
+                            /*
+                             * 'check for fragile items
+                             * */
+                            /**
+                             * If item_list.item_types(.items(j).item_type).fragile = True Then
+                             */
+                            if ($item_list->item_types[$currentContainer->items[$j]->item_type]->fragile == true) {
+                                /**
+                                 * GoTo next_iteration
+                                 */
+                                /*
+                                 * TODO: find out a better way to write this, because next_iteration is just a continue statement.
+                                 * */
+                                continue;
+                            } else {
+                                /**
+                                 * area_supported = area_supported + (intersection_right - intersection_left) * (intersection_top - intersection_bottom)
+                                 */
+                                $area_supported = $area_supported + ($intersection_right - $intersection_left) * ($intersection_top - $intersection_bottom);
+
+                                /**
+                                 * If area_supported > area_required - epsilon Then
+                                 */
+                                if ($area_supported > $area_required - epsilon) {
+                                    /**
+                                     * support_flag = True
+                                     */
+                                    $support_flag = true;
+                                    /**
+                                     * Exit For
+                                     */
+                                    /*
+                                     * TODO: find out what Exit For means. I'm just gonna guess it means break;
+                                     * */
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            /**
+             * If support_flag = False Then GoTo next_iteration
+             */
+            if ($support_flag == false) {
+                /**
+                 * GoTo next_iteration
+                 */
+                continue;
+            }
+
+            /*
+             * 'front side support
+             * */
+            /**
+             * If instance.front_side_support = True Then
+             */
+            if ($instance->front_side_support == true) {
+                /**
+                 * If origin_z < epsilon Then
+                 */
+                if ($origin_z < epsilon) {
+                    /**
+                     * support_flag = True
+                     */
+                    $support_flag = true;
+                } else {
+                    /**
+                     * area_supported = 0
+                     */
+                    $area_supported = 0;
+
+                    /**
+                     * area_required = ((opposite_x - origin_x) * (opposite_y - origin_y))
+                     */
+                    $area_required = (($opposite_x - $origin_x) * ($opposite_y - $origin_y));
+
+                    /**
+                     * support_flag = False
+                     */
+                    $support_flag = false;
+
+                    /**
+                     * For j = .item_cnt To 1 Step -1
+                     */
+                    for ($j = $currentContainer->item_cnt; $j >= 1; --$j) {
+                        /**
+                         * If (Abs(origin_z - .items(j).opposite_z) < epsilon) Then
+                         */
+                        if (abs($origin_z - $currentContainer->items[$j]->opposite_z) < epsilon) {
+                            /*
+                             * 'check for intersection
+                             * */
+
+                            /**
+                             * intersection_right = opposite_x
+                             */
+                            $intersection_right = $opposite_x;
+
+                            /**
+                             * If intersection_right > .items(j).opposite_x Then intersection_right = .items(j).opposite_x
+                             */
+                            if ($intersection_right > $currentContainer->items[$j]->opposite_x) {
+                                $intersection_right = $currentContainer->items[$j]->opposite_x;
+                            }
+
+                            /**
+                             * intersection_left = origin_x
+                             */
+                            $intersection_left = $origin_x;
+
+                            /**
+                             * If intersection_left < .items(j).origin_x Then intersection_left = .items(j).origin_x
+                             */
+                            if ($intersection_left < $currentContainer->items[$j]->origin_x) {
+                                $intersection_left = $currentContainer->items[$j]->origin_x;
+                            }
+
+                            /**
+                             * intersection_top = opposite_y
+                             */
+                            $intersection_top = $opposite_y;
+
+                            /**
+                             * If intersection_top > .items(j).opposite_y Then intersection_top = .items(j).opposite_y
+                             */
+                            if ($intersection_top > $currentContainer->items[$j]->opposite_y) {
+                                $intersection_top = $currentContainer->items[$j]->opposite_y;
+                            }
+
+                            /**
+                             * intersection_bottom = origin_y
+                             */
+                            $intersection_bottom = $origin_y;
+
+                            /**
+                             * If intersection_bottom < .items(j).origin_y Then intersection_bottom = .items(j).origin_y
+                             */
+                            if ($intersection_bottom < $currentContainer->items[$j]->origin_y) {
+                                $intersection_bottom = $currentContainer->items[$j]->origin_y;
+                            }
+
+                            /**
+                             * If (intersection_right > intersection_left) And (intersection_top > intersection_bottom) Then
+                             */
+                            if ($intersection_right > $intersection_left && $intersection_top > $intersection_bottom) {
+
+                                /**
+                                 * area_supported = area_supported + (intersection_right - intersection_left) * (intersection_top - intersection_bottom)
+                                 */
+                                $area_supported = $area_supported + ($intersection_right - $intersection_left) * ($intersection_top - $intersection_bottom);
+
+                                /**
+                                 * If area_supported > area_required - epsilon Then
+                                 */
+                                if ($area_supported > $area_required - epsilon) {
+                                    /**
+                                     * support_flag = True
+                                     */
+                                    $support_flag = true;
+                                    /**
+                                     * Exit For
+                                     */
+                                    /*
+                                     * TODO: find out what Exit For means. I'm just gonna guess it means break;
+                                     * */
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            /**
+             * If support_flag = False Then GoTo next_iteration
+             */
+            if ($support_flag == false) {
+                /**
+                 * GoTo next_iteration
+                 */
+                continue;
+            }
+
+            /*
+             * 'no conflicts at this point
+             * */
+
+            /**
+             * If (item_cohesion = True) And (next_to_item_type <> item_type_index) And (.addition_points(i).next_to_item_type = item_type_index) Then
+             */
+            if ($item_cohesion == true && $next_to_item_type != $item_type_index && $currentContainer->addition_points[$i]->next_to_item_type == $item_type_index) {
+                /**
+                 * min_x = origin_x
+                 */
+                $min_x = $origin_x;
+
+                /**
+                 * min_y = origin_y
+                 */
+                $min_y = $origin_y;
+
+                /**
+                 * min_z = origin_z
+                 */
+                $min_z = $origin_z;
+
+                /**
+                 * candidate_position = i
+                 */
+                $candidate_position = $i;
+
+                /**
+                 * candidate_rotation = current_rotation
+                 */
+                $candidate_rotation = $current_rotation;
+
+                /**
+                 * next_to_item_type = .addition_points(i).next_to_item_type
+                 */
+                $next_to_item_type = $currentContainer->addition_points[$i]->next_to_item_type;
+            /**
+             * Else
+             */
+            } else {
+                /**
+                 * If solver_options.wall_building = True Then
+                 */
+                if ($solver_options->wall_building == true) {
+                    /**
+                     * If (origin_z < min_z) Or _
+                     * ((origin_z <= min_z + epsilon) And (origin_y < min_y)) Or _
+                     * ((origin_z <= min_z + epsilon) And (origin_y <= min_y + epsilon) And (origin_x < min_x)) Then 'Or _
+                     * ((origin_z <= min_z + epsilon) And (origin_y <= min_y + epsilon) And (origin_x <= min_x + epsilon) And ((opposite_x > .width + epsilon) Or (opposite_y > .height + epsilon))) Then
+                     */
+                    /*
+                     * TODO: clarify the 'Or _ on the third line. or clarify the Then and the last line. either way, clarify something.
+                     * */
+                    if (
+                        $origin_z < $min_z ||
+                        ($origin_z <= $min_z + epsilon && $origin_y < $min_y) ||
+                        ($origin_z <= $min_z + epsilon && $origin_y <= $min_y + epsilon && $origin_x && $origin_x < $min_x)
+                        //
+                    ) {
+
+                    }
+                }
+
+            }
+
+        }
+
     }
 }

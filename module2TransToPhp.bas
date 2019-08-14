@@ -481,198 +481,198 @@
 '             If compatibility_list.container_to_item(.type_id, item_list.item_types(item_type_index).id) = False Then GoTo AddItemToContainer_Finish
 '         End If
         
-        'volume size check
+        ' 'volume size check
         
-        If .volume_packed + item_list.item_types(item_type_index).volume > .volume_capacity Then GoTo AddItemToContainer_Finish
+        ' If .volume_packed + item_list.item_types(item_type_index).volume > .volume_capacity Then GoTo AddItemToContainer_Finish
         
-        'weight capacity check
+        ' 'weight capacity check
         
-        If .weight_packed + item_list.item_types(item_type_index).weight > .weight_capacity Then GoTo AddItemToContainer_Finish
+        ' If .weight_packed + item_list.item_types(item_type_index).weight > .weight_capacity Then GoTo AddItemToContainer_Finish
         
         'item to item compatibility check
         
-        If instance.item_item_compatibility_worksheet = True Then
-            For i = 1 To .item_cnt
-                If compatibility_list.item_to_item(item_list.item_types(item_type_index).id, item_list.item_types(.items(i).item_type).id) = False Then GoTo AddItemToContainer_Finish
-            Next i
-        End If
+        ' If instance.item_item_compatibility_worksheet = True Then
+        '     For i = 1 To .item_cnt
+        '         If compatibility_list.item_to_item(item_list.item_types(item_type_index).id, item_list.item_types(.items(i).item_type).id) = False Then GoTo AddItemToContainer_Finish
+        '     Next i
+        ' End If
     
-        For rotation_index = 1 To 6
+        ' For rotation_index = 1 To 6
         
-            'test
-            'If candidate_position <> 0 Then GoTo AddItemToContainer_Finish
+        '     'test
+        '     'If candidate_position <> 0 Then GoTo AddItemToContainer_Finish
         
-            current_rotation = solution.rotation_order(item_type_index, rotation_index)
+        '     current_rotation = solution.rotation_order(item_type_index, rotation_index)
             
-            'forbidden rotations
+        '     'forbidden rotations
             
-            If ((current_rotation = 3) Or (current_rotation = 4)) And (item_list.item_types(item_type_index).xy_rotatable = False) Then
-                GoTo next_rotation_iteration
-            End If
+        '     If ((current_rotation = 3) Or (current_rotation = 4)) And (item_list.item_types(item_type_index).xy_rotatable = False) Then
+        '         GoTo next_rotation_iteration
+        '     End If
 
-            If ((current_rotation = 5) Or (current_rotation = 6)) And (item_list.item_types(item_type_index).yz_rotatable = False) Then
-                GoTo next_rotation_iteration
-            End If
+        '     If ((current_rotation = 5) Or (current_rotation = 6)) And (item_list.item_types(item_type_index).yz_rotatable = False) Then
+        '         GoTo next_rotation_iteration
+        '     End If
             
             'symmetry breaking
             
-            If (current_rotation = 2) And (Abs(item_list.item_types(item_type_index).width - item_list.item_types(item_type_index).length) < epsilon) Then
-                GoTo next_rotation_iteration
-            End If
+            ' If (current_rotation = 2) And (Abs(item_list.item_types(item_type_index).width - item_list.item_types(item_type_index).length) < epsilon) Then
+            '     GoTo next_rotation_iteration
+            ' End If
             
-            If (current_rotation = 4) And (Abs(item_list.item_types(item_type_index).width - item_list.item_types(item_type_index).height) < epsilon) Then
-                GoTo next_rotation_iteration
-            End If
+            ' If (current_rotation = 4) And (Abs(item_list.item_types(item_type_index).width - item_list.item_types(item_type_index).height) < epsilon) Then
+            '     GoTo next_rotation_iteration
+            ' End If
             
-            If (current_rotation = 6) And (Abs(item_list.item_types(item_type_index).height - item_list.item_types(item_type_index).length) < epsilon) Then
-                GoTo next_rotation_iteration
-            End If
+            ' If (current_rotation = 6) And (Abs(item_list.item_types(item_type_index).height - item_list.item_types(item_type_index).length) < epsilon) Then
+            '     GoTo next_rotation_iteration
+            ' End If
                 
-            For i = 1 To .addition_point_count
+            ' For i = 1 To .addition_point_count
                 
-                If (item_cohesion = True) And (candidate_position <> 0) And (next_to_item_type = item_type_index) And (.addition_points(i).next_to_item_type <> item_type_index) Then GoTo next_iteration
+                ' If (item_cohesion = True) And (candidate_position <> 0) And (next_to_item_type = item_type_index) And (.addition_points(i).next_to_item_type <> item_type_index) Then GoTo next_iteration
                 
-                origin_x = .addition_points(i).origin_x
-                origin_y = .addition_points(i).origin_y
-                origin_z = .addition_points(i).origin_z
+                ' origin_x = .addition_points(i).origin_x
+                ' origin_y = .addition_points(i).origin_y
+                ' origin_z = .addition_points(i).origin_z
                 
-                If (item_list.item_types(item_type_index).heavy = True) And (origin_y > epsilon) Then GoTo next_iteration ' heavy item cannot be placed on any other item
+                ' If (item_list.item_types(item_type_index).heavy = True) And (origin_y > epsilon) Then GoTo next_iteration ' heavy item cannot be placed on any other item
                 
-                If current_rotation = 1 Then
-                    opposite_x = origin_x + item_list.item_types(item_type_index).width
-                    opposite_y = origin_y + item_list.item_types(item_type_index).height
-                    opposite_z = origin_z + item_list.item_types(item_type_index).length
-                ElseIf current_rotation = 2 Then
-                    opposite_x = origin_x + item_list.item_types(item_type_index).length
-                    opposite_y = origin_y + item_list.item_types(item_type_index).height
-                    opposite_z = origin_z + item_list.item_types(item_type_index).width
-                ElseIf current_rotation = 3 Then
-                    opposite_x = origin_x + item_list.item_types(item_type_index).width
-                    opposite_y = origin_y + item_list.item_types(item_type_index).length
-                    opposite_z = origin_z + item_list.item_types(item_type_index).height
-                ElseIf current_rotation = 4 Then
-                    opposite_x = origin_x + item_list.item_types(item_type_index).height
-                    opposite_y = origin_y + item_list.item_types(item_type_index).length
-                    opposite_z = origin_z + item_list.item_types(item_type_index).width
-                ElseIf current_rotation = 5 Then
-                    opposite_x = origin_x + item_list.item_types(item_type_index).height
-                    opposite_y = origin_y + item_list.item_types(item_type_index).width
-                    opposite_z = origin_z + item_list.item_types(item_type_index).length
-                ElseIf current_rotation = 6 Then
-                    opposite_x = origin_x + item_list.item_types(item_type_index).length
-                    opposite_y = origin_y + item_list.item_types(item_type_index).width
-                    opposite_z = origin_z + item_list.item_types(item_type_index).height
-                End If
+                ' If current_rotation = 1 Then
+                '     opposite_x = origin_x + item_list.item_types(item_type_index).width
+                '     opposite_y = origin_y + item_list.item_types(item_type_index).height
+                '     opposite_z = origin_z + item_list.item_types(item_type_index).length
+                ' ElseIf current_rotation = 2 Then
+                '     opposite_x = origin_x + item_list.item_types(item_type_index).length
+                '     opposite_y = origin_y + item_list.item_types(item_type_index).height
+                '     opposite_z = origin_z + item_list.item_types(item_type_index).width
+                ' ElseIf current_rotation = 3 Then
+                '     opposite_x = origin_x + item_list.item_types(item_type_index).width
+                '     opposite_y = origin_y + item_list.item_types(item_type_index).length
+                '     opposite_z = origin_z + item_list.item_types(item_type_index).height
+                ' ElseIf current_rotation = 4 Then
+                '     opposite_x = origin_x + item_list.item_types(item_type_index).height
+                '     opposite_y = origin_y + item_list.item_types(item_type_index).length
+                '     opposite_z = origin_z + item_list.item_types(item_type_index).width
+                ' ElseIf current_rotation = 5 Then
+                '     opposite_x = origin_x + item_list.item_types(item_type_index).height
+                '     opposite_y = origin_y + item_list.item_types(item_type_index).width
+                '     opposite_z = origin_z + item_list.item_types(item_type_index).length
+                ' ElseIf current_rotation = 6 Then
+                '     opposite_x = origin_x + item_list.item_types(item_type_index).length
+                '     opposite_y = origin_y + item_list.item_types(item_type_index).width
+                '     opposite_z = origin_z + item_list.item_types(item_type_index).height
+                ' End If
                 
                 'check the feasibility of all four corners, w.r.t to the other items
                 
-                If (opposite_x > .width + epsilon) Or (opposite_y > .height + epsilon) Or (opposite_z > .length + epsilon) Then GoTo next_iteration
+                ' If (opposite_x > .width + epsilon) Or (opposite_y > .height + epsilon) Or (opposite_z > .length + epsilon) Then GoTo next_iteration
                 
-                For j = 1 To .item_cnt
+                ' For j = 1 To .item_cnt
                                
-                    If (opposite_x < .items(j).origin_x + epsilon) Or _
-                        (.items(j).opposite_x < origin_x + epsilon) Or _
-                        (opposite_y < .items(j).origin_y + epsilon) Or _
-                        (.items(j).opposite_y < origin_y + epsilon) Or _
-                        (opposite_z < .items(j).origin_z + epsilon) Or _
-                        (.items(j).opposite_z < origin_z + epsilon) Then
-                        'no conflict
-                    Else
-                        'conflict
-                        GoTo next_iteration
-                    End If
-                Next j
+                '     If (opposite_x < .items(j).origin_x + epsilon) Or _
+                '         (.items(j).opposite_x < origin_x + epsilon) Or _
+                '         (opposite_y < .items(j).origin_y + epsilon) Or _
+                '         (.items(j).opposite_y < origin_y + epsilon) Or _
+                '         (opposite_z < .items(j).origin_z + epsilon) Or _
+                '         (.items(j).opposite_z < origin_z + epsilon) Then
+                '         'no conflict
+                '     Else
+                '         'conflict
+                '         GoTo next_iteration
+                '     End If
+                ' Next j
                                 
                 'vertical support
                 
-                If origin_y < epsilon Then
-                    support_flag = True
-                Else
-                    area_supported = 0
-                    area_required = ((opposite_x - origin_x) * (opposite_z - origin_z))
-                    support_flag = False
-                    For j = .item_cnt To 1 Step -1
+                ' If origin_y < epsilon Then
+                '     support_flag = True
+                ' Else
+                '     area_supported = 0
+                '     area_required = ((opposite_x - origin_x) * (opposite_z - origin_z))
+                '     support_flag = False
+                    ' For j = .item_cnt To 1 Step -1
                                 
-                        If (Abs(origin_y - .items(j).opposite_y) < epsilon) Then
+                    '     If (Abs(origin_y - .items(j).opposite_y) < epsilon) Then
                             
-                            'check for intersection
+                    '         'check for intersection
                             
-                            intersection_right = opposite_x
-                            If intersection_right > .items(j).opposite_x Then intersection_right = .items(j).opposite_x
+                    '         intersection_right = opposite_x
+                    '         If intersection_right > .items(j).opposite_x Then intersection_right = .items(j).opposite_x
                             
-                            intersection_left = origin_x
-                            If intersection_left < .items(j).origin_x Then intersection_left = .items(j).origin_x
+                    '         intersection_left = origin_x
+                    '         If intersection_left < .items(j).origin_x Then intersection_left = .items(j).origin_x
                             
-                            intersection_top = opposite_z
-                            If intersection_top > .items(j).opposite_z Then intersection_top = .items(j).opposite_z
+                    '         intersection_top = opposite_z
+                    '         If intersection_top > .items(j).opposite_z Then intersection_top = .items(j).opposite_z
                             
-                            intersection_bottom = origin_z
-                            If intersection_bottom < .items(j).origin_z Then intersection_bottom = .items(j).origin_z
+                    '         intersection_bottom = origin_z
+                    '         If intersection_bottom < .items(j).origin_z Then intersection_bottom = .items(j).origin_z
                             
-                            If (intersection_right > intersection_left) And (intersection_top > intersection_bottom) Then
+                '             If (intersection_right > intersection_left) And (intersection_top > intersection_bottom) Then
                                 
-                                'check for fragile items
-                                If item_list.item_types(.items(j).item_type).fragile = True Then
-                                    GoTo next_iteration
-                                Else
-                                    area_supported = area_supported + (intersection_right - intersection_left) * (intersection_top - intersection_bottom)
-                                    If area_supported > area_required - epsilon Then
-                                        support_flag = True
-                                        Exit For
-                                    End If
-                                End If
+                '                 'check for fragile items
+                '                 If item_list.item_types(.items(j).item_type).fragile = True Then
+                '                     GoTo next_iteration
+                '                 Else
+                '                     area_supported = area_supported + (intersection_right - intersection_left) * (intersection_top - intersection_bottom)
+                '                     If area_supported > area_required - epsilon Then
+                '                         support_flag = True
+                '                         Exit For
+                '                     End If
+                '                 End If
                                 
-                            End If
+                '             End If
                             
-                        End If
-                    Next j
+                '         End If
+                '     Next j
                     
-                End If
+                ' End If
                 
-                If support_flag = False Then GoTo next_iteration
+                ' If support_flag = False Then GoTo next_iteration
                 
                 'front side support
 
-                If instance.front_side_support = True Then
-                    If origin_z < epsilon Then
-                        support_flag = True
-                    Else
-                        area_supported = 0
-                        area_required = ((opposite_x - origin_x) * (opposite_y - origin_y))
-                        support_flag = False
-                        For j = .item_cnt To 1 Step -1
+                ' If instance.front_side_support = True Then
+                '     If origin_z < epsilon Then
+                '         support_flag = True
+                '     Else
+                '         area_supported = 0
+                '         area_required = ((opposite_x - origin_x) * (opposite_y - origin_y))
+                '         support_flag = False
+                '         For j = .item_cnt To 1 Step -1
     
-                            If (Abs(origin_z - .items(j).opposite_z) < epsilon) Then
+                '             If (Abs(origin_z - .items(j).opposite_z) < epsilon) Then
     
-                                'check for intersection
+                '                 'check for intersection
     
-                                intersection_right = opposite_x
-                                If intersection_right > .items(j).opposite_x Then intersection_right = .items(j).opposite_x
+                '                 intersection_right = opposite_x
+                '                 If intersection_right > .items(j).opposite_x Then intersection_right = .items(j).opposite_x
     
-                                intersection_left = origin_x
-                                If intersection_left < .items(j).origin_x Then intersection_left = .items(j).origin_x
+                '                 intersection_left = origin_x
+                '                 If intersection_left < .items(j).origin_x Then intersection_left = .items(j).origin_x
     
-                                intersection_top = opposite_y
-                                If intersection_top > .items(j).opposite_y Then intersection_top = .items(j).opposite_y
+                '                 intersection_top = opposite_y
+                '                 If intersection_top > .items(j).opposite_y Then intersection_top = .items(j).opposite_y
     
-                                intersection_bottom = origin_y
-                                If intersection_bottom < .items(j).origin_y Then intersection_bottom = .items(j).origin_y
+                '                 intersection_bottom = origin_y
+                '                 If intersection_bottom < .items(j).origin_y Then intersection_bottom = .items(j).origin_y
     
-                                If (intersection_right > intersection_left) And (intersection_top > intersection_bottom) Then
-                                    area_supported = area_supported + (intersection_right - intersection_left) * (intersection_top - intersection_bottom)
-                                    If area_supported > area_required - epsilon Then
-                                        support_flag = True
-                                        Exit For
-                                    End If
-                                End If
+                '                 If (intersection_right > intersection_left) And (intersection_top > intersection_bottom) Then
+                '                     area_supported = area_supported + (intersection_right - intersection_left) * (intersection_top - intersection_bottom)
+                '                     If area_supported > area_required - epsilon Then
+                '                         support_flag = True
+                '                         Exit For
+                '                     End If
+                '                 End If
     
-                            End If
-                        Next j
+                '             End If
+                '         Next j
     
-                    End If
-                End If
+                '     End If
+                ' End If
                 
-                If support_flag = False Then GoTo next_iteration
+                ' If support_flag = False Then GoTo next_iteration
                 
                 'no conflicts at this point
                 
