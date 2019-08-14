@@ -1374,3 +1374,213 @@ function PerturbRotationAndOrderOfItems(solution_data $solution, item_list_data 
         $solution->item_type_order[$j] = $swap_long;
     }
 }
+
+/**
+ * Private Function AddItemToContainer(solution As solution_data, container_index As Long, item_type_index As Long, add_type As Long, item_cohesion As Boolean)
+ * * Added $instance to params to avoid globalization :))
+ * * Added $compatibility_list to params
+ * * Added $item_list to params
+ * @param solution_data $solution
+ * @param int $container_index
+ * @param int $item_type_index
+ * @param int $add_type
+ * @param bool $item_cohesion
+ * @param instance_data $instance
+ * @param compatibility_data $compatibility_list
+ * @param item_list_data $item_list
+ */
+function AddItemToContainer(solution_data $solution, int $container_index, int $item_type_index, int $add_type, bool $item_cohesion, instance_data $instance, compatibility_data $compatibility_list, item_list_data $item_list)
+{
+    /**
+     * Dim i As Long
+     * @var integer
+     */
+    $i = 0;
+
+    /**
+     * Dim j As Long
+     * @var integer
+     */
+    $j = 0;
+
+    /**
+     * Dim k As Long
+     * @var integer
+     */
+    $k = 0;
+
+    /**
+     * Dim rotation_index As Long
+     * @var integer
+     */
+    $rotation_index = 0;
+
+    /**
+     * Dim origin_x As Double
+     * @var float
+     */
+    $origin_x = 0.0;
+
+    /**
+     * Dim origin_y As Double
+     * @var float
+     */
+    $origin_y = 0.0;
+
+    /**
+     * Dim origin_z As Double
+     * @var float
+     */
+    $origin_z = 0.0;
+
+    /**
+     * Dim opposite_x As Double
+     * @var float
+     */
+    $opposite_x = 0.0;
+
+    /**
+     * Dim opposite_y As Double
+     * @var float
+     */
+    $opposite_y = 0.0;
+
+    /**
+     * Dim opposite_z As Double
+     * @var float
+     */
+    $opposite_z = 0.0;
+
+    /**
+     * Dim min_x As Double
+     * @var float
+     */
+    $min_x = 0.0;
+
+    /**
+     * Dim min_y As Double
+     * @var float
+     */
+    $min_y = 0.0;
+
+    /**
+     * Dim min_z As Double
+     * @var float
+     */
+    $min_z = 0.0;
+
+    /**
+     * Dim next_to_item_type As Long
+     * @var integer
+     */
+    $next_to_item_type = 0;
+
+    /**
+     * Dim candidate_position As Double
+     * @var float
+     */
+    $candidate_position = 0.0;
+
+    /**
+     * Dim current_rotation As Long
+     * @var integer
+     */
+    $current_rotation = 0;
+
+    /**
+     * Dim candidate_rotation As Double
+     * @var float
+     */
+    $candidate_rotation = 0.0;
+
+    /**
+     * Dim area_supported as Double
+     * @var float
+     */
+    $area_supported = 0.0;
+
+    /**
+     * Dim area_required as Double
+     * @var float
+     */
+    $area_required = 0.0;
+
+    /**
+     * Dim intersection_right as Double
+     * @var float
+     */
+    $intersection_right = 0.0;
+
+    /**
+     * Dim intersection_left as Double
+     * @var float
+     */
+    $intersection_left = 0.0;
+
+    /**
+     * Dim intersection_top as Double
+     * @var float
+     */
+    $intersection_top = 0.0;
+
+    /**
+     * Dim intersection_bottom as Double
+     * @var float
+     */
+    $intersection_bottom = 0.0;
+
+    /**
+     * Dim support_flag as Boolean
+     * @var boolean
+     */
+    $support_flag = false;
+
+    /**
+     * With solution.container(container_index)
+     */
+    $currentContainer = $solution->container[$container_index];
+
+    /**
+     * min_x = .width + 1
+     */
+    $min_x = $currentContainer->width + 1;
+
+    /**
+     * min_y = .height + 1
+     */
+    $min_y = $currentContainer->height + 1;
+
+    /**
+     * min_z = .length + 1
+     */
+    $min_z = $currentContainer->length + 1;
+
+    /**
+     * next_to_item_type = 0
+     */
+    $next_to_item_type = 0;
+
+    /**
+     * candidate_position = 0;
+     */
+    $candidate_position = 0;
+
+    /*
+     * 'compatibility check
+     * */
+
+    /**
+     * If instance.container_item_compatibility_worksheet = True Then
+     */
+    if ($instance->container_item_compatibility_worksheet == true) {
+        /**
+         * If compatibility_list.container_to_item(.type_id, item_list.item_types(item_type_index).id) = False Then GoTo AddItemToContainer_Finish
+         */
+        if ($compatibility_list->container_to_item[$currentContainer->type_id][$item_list->item_types[$item_type_index]->id] == false) {
+            /**
+             * GoTo AddItemToContainer_Finish
+             */
+            AddItemToContainer_Finish();
+        }
+    }
+}

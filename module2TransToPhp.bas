@@ -434,52 +434,52 @@
 ' End Sub
 
 
-Private Function AddItemToContainer(solution As solution_data, container_index As Long, item_type_index As Long, add_type As Long, item_cohesion As Boolean)
+' Private Function AddItemToContainer(solution As solution_data, container_index As Long, item_type_index As Long, add_type As Long, item_cohesion As Boolean)
     
-    Dim i As Long
-    Dim j As Long
-    Dim k As Long
+'     Dim i As Long
+'     Dim j As Long
+'     Dim k As Long
     
-    Dim rotation_index As Long
+'     Dim rotation_index As Long
     
-    Dim origin_x As Double
-    Dim origin_y As Double
-    Dim origin_z As Double
-    Dim opposite_x As Double
-    Dim opposite_y As Double
-    Dim opposite_z As Double
+'     Dim origin_x As Double
+'     Dim origin_y As Double
+'     Dim origin_z As Double
+'     Dim opposite_x As Double
+'     Dim opposite_y As Double
+'     Dim opposite_z As Double
     
-    Dim min_x As Double
-    Dim min_y As Double
-    Dim min_z As Double
-    Dim next_to_item_type As Long
+'     Dim min_x As Double
+'     Dim min_y As Double
+'     Dim min_z As Double
+'     Dim next_to_item_type As Long
     
-    Dim candidate_position As Double
-    Dim current_rotation As Long
-    Dim candidate_rotation As Long
+'     Dim candidate_position As Double
+'     Dim current_rotation As Long
+'     Dim candidate_rotation As Long
     
-    Dim area_supported As Double
-    Dim area_required As Double
-    Dim intersection_right As Double
-    Dim intersection_left As Double
-    Dim intersection_top As Double
-    Dim intersection_bottom As Double
-    Dim support_flag As Boolean
+'     Dim area_supported As Double
+'     Dim area_required As Double
+'     Dim intersection_right As Double
+'     Dim intersection_left As Double
+'     Dim intersection_top As Double
+'     Dim intersection_bottom As Double
+'     Dim support_flag As Boolean
     
-    With solution.container(container_index)
+'     With solution.container(container_index)
     
-        min_x = .width + 1
-        min_y = .height + 1
-        min_z = .length + 1
-        next_to_item_type = 0
+'         min_x = .width + 1
+'         min_y = .height + 1
+'         min_z = .length + 1
+'         next_to_item_type = 0
         
-        candidate_position = 0
+'         candidate_position = 0
         
-        'compatibility check
+'         'compatibility check
         
-        If instance.container_item_compatibility_worksheet = True Then
-            If compatibility_list.container_to_item(.type_id, item_list.item_types(item_type_index).id) = False Then GoTo AddItemToContainer_Finish
-        End If
+'         If instance.container_item_compatibility_worksheet = True Then
+'             If compatibility_list.container_to_item(.type_id, item_list.item_types(item_type_index).id) = False Then GoTo AddItemToContainer_Finish
+'         End If
         
         'volume size check
         
