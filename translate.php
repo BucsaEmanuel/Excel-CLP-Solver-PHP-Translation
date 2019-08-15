@@ -2815,3 +2815,72 @@ function AddItemToContainer_Finish(float $candidate_position, solution_data $sol
 }
 
 
+/**
+ * Private Sub GetSolverOptions()
+ * I'm guessing that this handles the data retrieval
+ * from the worksheet.
+ * This can be translated with additional params, which can later be retrieved from a frontend form.
+ * @param solver_option_data $solver_options
+ * @param string $item_sort_criterion
+ * @param string $wall_building
+ * @param int $CPU_time_limit
+ */
+function GetSolverOptions(solver_option_data $solver_options, string $item_sort_criterion, string $wall_building, int $CPU_time_limit)
+{
+    /**
+     * ThisWorkbook.Worksheets("CLP Solver Console").Activate
+     */
+    /*
+     * This makes sure that the worksheet is in focus, I'm guessing.
+     * */
+
+    /**
+     * With solver_options
+     * I already have $solver_options as a param.
+     */
+
+    /**
+     * If Cells(12, 3).Value = "Volume" Then
+     *      .item_sort_criterion = 1
+     * ElseIf Cells(12, 3).Value = "Weight" Then
+     *      .item_sort_criterion = 2
+     * Else
+     *      .item_sort_criterion = 3
+     * End If
+     *
+     * In our case, we're getting this data through the $item_sort_criterion param.
+     */
+    if ($item_sort_criterion == "Volume") {
+        $solver_options->item_sort_criterion = 1;
+    } else if ($item_sort_criterion == "Weight") {
+        $solver_options->item_sort_criterion = 2;
+    } else {
+        $solver_options->item_sort_criterion = 3;
+    }
+
+    /**
+     * If Cells(13, 3).Value = "Wall-building" Then
+     *      .wall_building = True
+     * Else
+     *      .wall_building = False
+     * End If
+     *
+     * In our case, we're getting this data through the $wall_building param.
+     */
+    if ($wall_building == "Wall-building") {
+        $solver_options->wall_building = true;
+    } else {
+        $solver_options->wall_building = false;
+    }
+
+    /**
+     * .CPU_time_limit = Cells(14, 3).Value
+     *
+     * In our case, we're getting this data through the $CPU_time_limit param.
+     */
+    $solver_options->CPU_time_limit = $CPU_time_limit;
+
+    /**
+     * End With
+     */
+}

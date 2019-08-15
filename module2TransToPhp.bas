@@ -734,7 +734,7 @@
             ' .items(.item_cnt).origin_y = .addition_points(candidate_position).origin_y
             ' .items(.item_cnt).origin_z = .addition_points(candidate_position).origin_z
 
-            
+
             ' .items(.item_cnt).rotation = candidate_rotation
             ' .items(.item_cnt).mandatory = item_list.item_types(item_type_index).mandatory
             
@@ -842,29 +842,30 @@
     
 ' End Function
 
-Private Sub GetSolverOptions()
-    ThisWorkbook.Worksheets("CLP Solver Console").Activate
+' Private Sub GetSolverOptions()
+'     ThisWorkbook.Worksheets("CLP Solver Console").Activate
     
-    With solver_options
+'     With solver_options
         
-        If Cells(12, 3).Value = "Volume" Then
-            .item_sort_criterion = 1
-        ElseIf Cells(12, 3).Value = "Weight" Then
-            .item_sort_criterion = 2
-        Else
-            .item_sort_criterion = 3
-        End If
+'         If Cells(12, 3).Value = "Volume" Then
+'             .item_sort_criterion = 1
+'         ElseIf Cells(12, 3).Value = "Weight" Then
+'             .item_sort_criterion = 2
+'         Else
+'             .item_sort_criterion = 3
+'         End If
         
-        If Cells(13, 3).Value = "Wall-building" Then
-            .wall_building = True
-        Else
-            .wall_building = False
-        End If
+'         If Cells(13, 3).Value = "Wall-building" Then
+'             .wall_building = True
+'         Else
+'             .wall_building = False
+'         End If
         
-        .CPU_time_limit = Cells(14, 3).Value
+'         .CPU_time_limit = Cells(14, 3).Value
         
-    End With
-End Sub
+'     End With
+' End Sub
+
 Private Sub GetItemData()
     
     item_list.num_item_types = ThisWorkbook.Worksheets("CLP Solver Console").Cells(2, 3).Value
@@ -970,6 +971,7 @@ Private Sub GetItemData()
     End With
     
 End Sub
+
 Private Sub GetContainerData()
     
     container_list.num_container_types = ThisWorkbook.Worksheets("CLP Solver Console").Cells(4, 3).Value
@@ -1010,6 +1012,7 @@ Private Sub GetContainerData()
     End With
     
 End Sub
+
 Private Sub GetCompatibilityData()
     
     With compatibility_list
@@ -1074,6 +1077,7 @@ Private Sub GetCompatibilityData()
     End With
     
 End Sub
+
 Private Sub InitializeSolution(solution As solution_data)
     
     Dim i As Long
@@ -1388,6 +1392,7 @@ Sub ReadSolution(solution As solution_data)
     Application.Calculation = xlCalculationAutomatic
     
 End Sub
+
 Sub CLP_Solver()
     
     Application.ScreenUpdating = False
@@ -1720,11 +1725,11 @@ Sub CLP_Solver()
             
                         best_known = incumbent
                         
-'                        If best_known.feasible = True Then
-'                            Application.StatusBar = "Reorganizing container " & container_id & ". Best net profit found so far: " & best_known.net_profit & " Distance: " & best_known.total_distance
-'                        Else
-'                            Application.StatusBar = "Reorganizing container " & container_id & ". Best net profit found so far: N/A" & " Distance: " & best_known.total_distance
-'                        End If
+                       ' If best_known.feasible = True Then
+                       '     Application.StatusBar = "Reorganizing container " & container_id & ". Best net profit found so far: " & best_known.net_profit & " Distance: " & best_known.total_distance
+                       ' Else
+                       '     Application.StatusBar = "Reorganizing container " & container_id & ". Best net profit found so far: N/A" & " Distance: " & best_known.total_distance
+                       ' End If
                         
                     End If
 
@@ -1895,6 +1900,8 @@ CLP_Solver_Finish:
     Cells(1, 1).Select
     
 End Sub
+
+
 Sub FeasibilityCheckData(infeasibility_count As Long, infeasibility_string As String)
     
     Dim i As Long
@@ -2041,6 +2048,7 @@ Sub FeasibilityCheckData(infeasibility_count As Long, infeasibility_string As St
     End If
     
 End Sub
+
 Sub FeasibilityCheckDataAndSolution()
     
     Application.ScreenUpdating = False
@@ -2644,7 +2652,6 @@ Sub FeasibilityCheckDataAndSolution()
 
 End Sub
 
-
 Private Sub SortItems()
 
     Dim i As Long
@@ -2668,9 +2675,9 @@ Private Sub SortItems()
        Next i
     End If
     
-'    For i = 1 To item_list.num_item_types
-'       MsgBox item_list.item_types(i).id & " " & item_list.item_types(i).weight & " " & item_list.item_types(i).sort_criterion
-'    Next i
+   ' For i = 1 To item_list.num_item_types
+   '    MsgBox item_list.item_types(i).id & " " & item_list.item_types(i).weight & " " & item_list.item_types(i).sort_criterion
+   ' Next i
     
 End Sub
 
