@@ -866,111 +866,111 @@
 '     End With
 ' End Sub
 
-Private Sub GetItemData()
+' Private Sub GetItemData()
     
-    item_list.num_item_types = ThisWorkbook.Worksheets("CLP Solver Console").Cells(2, 3).Value
-    item_list.total_number_of_items = 0
+'     item_list.num_item_types = ThisWorkbook.Worksheets("CLP Solver Console").Cells(2, 3).Value
+'     item_list.total_number_of_items = 0
     
-    ReDim item_list.item_types(1 To item_list.num_item_types)
+'     ReDim item_list.item_types(1 To item_list.num_item_types)
     
-    ThisWorkbook.Worksheets("1.Items").Activate
+'     ThisWorkbook.Worksheets("1.Items").Activate
     
-    Dim i As Long
-    Dim max_volume As Double
-    Dim max_weight As Double
+'     Dim i As Long
+'     Dim max_volume As Double
+'     Dim max_weight As Double
     
-    max_volume = 0
-    max_weight = 0
+'     max_volume = 0
+'     max_weight = 0
     
-    With item_list
+'     With item_list
         
-        For i = 1 To .num_item_types
+'         For i = 1 To .num_item_types
             
-            .item_types(i).id = i
+'             .item_types(i).id = i
             
-            .item_types(i).width = Cells(2 + i, 4).Value
-            .item_types(i).height = Cells(2 + i, 5).Value
-            .item_types(i).length = Cells(2 + i, 6).Value
+'             .item_types(i).width = Cells(2 + i, 4).Value
+'             .item_types(i).height = Cells(2 + i, 5).Value
+'             .item_types(i).length = Cells(2 + i, 6).Value
             
-            .item_types(i).volume = Cells(2 + i, 7).Value
+'             .item_types(i).volume = Cells(2 + i, 7).Value
             
-            If max_volume < .item_types(i).volume Then
-                max_volume = .item_types(i).volume
-            End If
+'             If max_volume < .item_types(i).volume Then
+'                 max_volume = .item_types(i).volume
+'             End If
             
-            If Cells(2 + i, 9).Value = "Yes" Then
-                .item_types(i).xy_rotatable = True
-            Else
-                .item_types(i).xy_rotatable = False
-            End If
+'             If Cells(2 + i, 9).Value = "Yes" Then
+'                 .item_types(i).xy_rotatable = True
+'             Else
+'                 .item_types(i).xy_rotatable = False
+'             End If
             
-            If Cells(2 + i, 10).Value = "Yes" Then
-                .item_types(i).yz_rotatable = True
-            Else
-                .item_types(i).yz_rotatable = False
-            End If
+'             If Cells(2 + i, 10).Value = "Yes" Then
+'                 .item_types(i).yz_rotatable = True
+'             Else
+'                 .item_types(i).yz_rotatable = False
+'             End If
             
-            If (Abs(.item_types(i).width - .item_types(i).height) < epsilon) And (Abs(.item_types(i).width - .item_types(i).length) < epsilon) Then
-                .item_types(i).xy_rotatable = False
-                .item_types(i).yz_rotatable = False
-            End If
+'             If (Abs(.item_types(i).width - .item_types(i).height) < epsilon) And (Abs(.item_types(i).width - .item_types(i).length) < epsilon) Then
+'                 .item_types(i).xy_rotatable = False
+'                 .item_types(i).yz_rotatable = False
+'             End If
             
-            .item_types(i).weight = Cells(2 + i, 11).Value
+'             .item_types(i).weight = Cells(2 + i, 11).Value
             
-            If max_weight < .item_types(i).weight Then
-                max_weight = .item_types(i).weight
-            End If
+'             If max_weight < .item_types(i).weight Then
+'                 max_weight = .item_types(i).weight
+'             End If
             
-            If Cells(2 + i, 12).Value = "Yes" Then
-                .item_types(i).heavy = True
-            Else
-                .item_types(i).heavy = False
-            End If
+'             If Cells(2 + i, 12).Value = "Yes" Then
+'                 .item_types(i).heavy = True
+'             Else
+'                 .item_types(i).heavy = False
+'             End If
             
-            If Cells(2 + i, 13).Value = "Yes" Then
-                .item_types(i).fragile = True
-            Else
-                .item_types(i).fragile = False
-            End If
+'             If Cells(2 + i, 13).Value = "Yes" Then
+'                 .item_types(i).fragile = True
+'             Else
+'                 .item_types(i).fragile = False
+'             End If
             
-            If Cells(2 + i, 14).Value = "Must be packed" Then
-                .item_types(i).mandatory = 1
-            ElseIf Cells(2 + i, 14).Value = "May be packed" Then
-                .item_types(i).mandatory = 0
-            ElseIf Cells(2 + i, 14).Value = "Don't pack" Then
-                .item_types(i).mandatory = -1
-            End If
+'             If Cells(2 + i, 14).Value = "Must be packed" Then
+'                 .item_types(i).mandatory = 1
+'             ElseIf Cells(2 + i, 14).Value = "May be packed" Then
+'                 .item_types(i).mandatory = 0
+'             ElseIf Cells(2 + i, 14).Value = "Don't pack" Then
+'                 .item_types(i).mandatory = -1
+'             End If
             
-            .item_types(i).profit = Cells(2 + i, 15).Value
+'             .item_types(i).profit = Cells(2 + i, 15).Value
             
-            .item_types(i).number_requested = Cells(2 + i, 16).Value
+'             .item_types(i).number_requested = Cells(2 + i, 16).Value
             
-            item_list.total_number_of_items = item_list.total_number_of_items + .item_types(i).number_requested
+'             item_list.total_number_of_items = item_list.total_number_of_items + .item_types(i).number_requested
         
-        Next i
+'         Next i
         
-        For i = 1 To .num_item_types
+'         For i = 1 To .num_item_types
         
-            If solver_options.item_sort_criterion = 1 Then
-                .item_types(i).sort_criterion = .item_types(i).volume * (max_weight + 1) + .item_types(i).weight
-            ElseIf solver_options.item_sort_criterion = 2 Then
-                .item_types(i).sort_criterion = .item_types(i).weight * (max_volume + 1) + .item_types(i).volume
-            Else
-                .item_types(i).sort_criterion = .item_types(i).width
-                If .item_types(i).sort_criterion < .item_types(i).height Then
-                    .item_types(i).sort_criterion = .item_types(i).height
-                End If
-                If .item_types(i).sort_criterion < .item_types(i).length Then
-                    .item_types(i).sort_criterion = .item_types(i).length
-                End If
+'             If solver_options.item_sort_criterion = 1 Then
+'                 .item_types(i).sort_criterion = .item_types(i).volume * (max_weight + 1) + .item_types(i).weight
+'             ElseIf solver_options.item_sort_criterion = 2 Then
+'                 .item_types(i).sort_criterion = .item_types(i).weight * (max_volume + 1) + .item_types(i).volume
+'             Else
+'                 .item_types(i).sort_criterion = .item_types(i).width
+'                 If .item_types(i).sort_criterion < .item_types(i).height Then
+'                     .item_types(i).sort_criterion = .item_types(i).height
+'                 End If
+'                 If .item_types(i).sort_criterion < .item_types(i).length Then
+'                     .item_types(i).sort_criterion = .item_types(i).length
+'                 End If
                 
-                .item_types(i).sort_criterion = .item_types(i).sort_criterion * (max_volume + 1) + .item_types(i).volume
-            End If
-        Next i
+'                 .item_types(i).sort_criterion = .item_types(i).sort_criterion * (max_volume + 1) + .item_types(i).volume
+'             End If
+'         Next i
     
-    End With
+'     End With
     
-End Sub
+' End Sub
 
 Private Sub GetContainerData()
     

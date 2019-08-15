@@ -2884,3 +2884,316 @@ function GetSolverOptions(solver_option_data $solver_options, string $item_sort_
      * End With
      */
 }
+
+/**
+ * This stores all the item data into the $item_list.
+ * Aside from passing in the number of item types, we'll need
+ * to also pass in additional information for all the items.
+ *
+ * A proper array of items would contain items of type item_type_data.
+ *
+ * Anyway, this whole func seems redundant, since we're just copying
+ * everything from $items to $item_list.
+ *
+ *
+ * @param item_list_data $item_list
+ * @param int $num_item_types
+ * @param item_type_data[] $items
+ * @param solver_option_data $solver_options
+ */
+function GetItemData(item_list_data $item_list, int $num_item_types, array $items, solver_option_data $solver_options) {
+    /**
+     * item_list.num_item_types = ThisWorkbook.Worksheets("CLP Solver Console").Cells(2, 3).Value
+     *
+     * We're going to transform the ThisWorkbook... thing into a param. We'll call it $num_item_types, for convenience.
+     */
+    $item_list->num_item_types = $num_item_types;
+
+    /**
+     * item_list.total_number_of_items = 0
+     */
+    $item_list->total_number_of_items = 0;
+
+    /**
+     * ReDim item_list.item_types(1 To item_list.num_item_types)
+     *
+     * I'm guessing ReDim is just redeclaring the variable to a new val.
+     * In this case, it creates a range from 1 to $item_list->num_item_types
+     */
+    $item_list->item_types = range(1, $item_list->num_item_types);
+
+    /**
+     * ThisWorkbook.Worksheets("1.Items").Activate
+     * This should bring the "1.Items" worksheet into focus.
+     */
+
+    /**
+     * Dim i As Long
+     * @var integer
+     */
+    $i = 0;
+
+    /**
+     * Dim max_volume As Double
+     * @var float
+     */
+    $max_volume = 0.0;
+
+    /**
+     * Dim max_weight As Double
+     * @var float
+     */
+    $max_weight = 0.0;
+
+    /**
+     * max_volume = 0
+     * Already declared an initial value, no need to do it again.
+     */
+
+    /**
+     * max_weight = 0
+     * Already declared an initial value, no need to do it again.
+     */
+
+    /**
+     * With item_list
+     * Let's just call item_list as iL, in case we get really long lines again.
+     */
+    $iL = $item_list;
+
+    /**
+     * For i = 1 To .num_item_types
+     */
+    for ($i = 1; $i <= $iL->num_item_types; ++$i) {
+        /**
+         * .item_types(i).id = i
+         */
+        $iL->item_types[$i]->id = $i;
+
+        /**
+         * .item_types(i).width = Cells(2 + i, 4).Value
+         * well, this gets specific widths from the table on the worksheet.
+         * we'll need to pass in our dimensions for all the items.
+         */
+        $iL->item_types[$i]->width = $items[$i]->width;
+
+        /**
+         * .item_types(i).height = Cells(2 + i, 5).Value
+         */
+        $iL->item_types[$i]->height = $items[$i]->height;
+
+        /**
+         * .item_types(i).length = Cells(2 + i, 6).Value
+         */
+        $iL->item_types[$i]->length = $items[$i]->length;
+
+        /**
+         * .item_types(i).volume = Cells(2 + i, 7).Value
+         *
+         * This is calculated within the worksheet, so we'll move the calculation here.
+         */
+        $iL->item_types[$i]->volume = $items[$i]->width * $items[$i]->height * $items[$i]->length;
+
+        /**
+         * If max_volume < .item_types(i).volume Then
+         */
+        if ($max_volume < $iL->item_types[$i]->volume) {
+            /**
+             * max_volume = .item_types(i).volume
+             */
+            $max_volume = $iL->item_types[$i]->volume;
+        }
+
+        /**
+         * If Cells(2 + i, 9).Value = "Yes" Then
+         *      .item_types(i).xy_rotatable = True
+         * Else
+         *      .item_types(i).xy_rotatable = False
+         * End If
+         *
+         * This is gotten from the cells, but we already have this data in the $items param.
+         */
+        if ($items[$i]->xy_rotatable == true) {
+            $iL->item_types[$i]->xy_rotatable = true;
+        } else {
+            $iL->item_types[$i]->xy_rotatable = false;
+        }
+
+        /**
+         * If Cells(2 + i, 10).Value = "Yes" Then
+         *      .item_types(i).yz_rotatable = True
+         * Else
+         *      .item_types(i).yz_rotatable = False
+         * End If
+         *
+         * This handles getting the request for yz_rotatable.
+         * It gets overwritten if a certain condition (cubic?) happens.
+         * There's no point in rotating a cube for a better fit :)
+         */
+        if ($items[$i]->yz_rotatable == true) {
+            $iL->item_types[$i]->yz_rotatable = true;
+        } else {
+            $iL->item_types[$i]->yz_rotatable = false;
+        }
+
+        /**
+         * If (Abs(.item_types(i).width - .item_types(i).height) < epsilon) And (Abs(.item_types(i).width - .item_types(i).length) < epsilon) Then
+         *
+         */
+        if (abs($iL->item_types[$i]->width - $iL->item_types[$i]->height < epsilon) && abs($iL->item_types[$i]->width - $iL->item_types[$i]->length) < epsilon) {
+            /**
+             * .item_types(i).xy_rotatable = False
+             */
+            $iL->item_types[$i]->xy_rotatable = false;
+
+            /**
+             * .item_types(i).yz_rotatable = False
+             */
+            $iL->item_types[$i]->yz_rotatable = false;
+        }
+
+        /**
+         * .item_types(i).weight = Cells(2 + i, 11).Value
+         */
+        $iL->item_types[$i]->weight = $items[$i]->weight;
+
+        /**
+         * If max_weight < .item_types(i).weight Then
+         */
+        if ($max_weight < $iL->item_types[$i]->weight) {
+            /**
+             * max_weight = .item_types(i).weight
+             */
+            $max_weight = $iL->item_types[$i]->weight;
+        }
+
+        /**
+         * If Cells(2 + i, 12).Value = "Yes" Then
+         *      .item_types(i).heavy = True
+         * Else
+         *      .item_types(i).heavy = False
+         * End If
+         *
+         * We already carry this data in the $items array.
+         * Of course, this entire if can be rewritten as:
+         * * $il->item_types[$i]->heavy = $items[$i]->heavy
+         * since both data types are the same -> boolean
+         */
+        if ($items[$i]->heavy == true) {
+            $iL->item_types[$i]->heavy = true;
+        } else {
+            $iL->item_types[$i]->heavy = true;
+        }
+
+        /**
+         * If Cells(2 + i, 13).Value = "Yes" Then
+         *      .item_types(i).fragile = True
+         * Else
+         *      .item_types(i).fragile = False
+         * End If
+         *
+         * We already have this data in the $items array.
+         * Of course, this entire if can be rewritten as:
+         * * $il->item_types[$i]->fragile = $items[$i]->fragile
+         * since both data types are the same -> boolean
+         */
+        if ($items[$i]->fragile == true) {
+            $iL->item_types[$i]->fragile = true;
+        } else {
+            $iL->item_types[$i]->fragile = false;
+        }
+
+        /**
+         * If Cells(2 + i, 14).Value = "Must be packed" Then
+         *      .item_types(i).mandatory = 1
+         * ElseIf Cells(2 + i, 14).Value = "May be packed" Then
+         *      .item_types(i).mandatory = 0
+         * ElseIf Cells(2 + i, 14).Value = "Don't pack" Then
+         *      .item_types(i).mandatory = -1
+         * End If
+         *
+         * This will be a very redundant statement.
+         */
+        if ($items[$i]->mandatory == 1) {
+            $iL->item_types[$i]->mandatory = 1;
+        } else if ($items[$i]->mandatory == 0) {
+            $iL->item_types[$i]->mandatory = 0;
+        } else if ($items[$i]->mandatory == -1) {
+            $iL->item_types[$i]->mandatory = -1;
+        }
+        /*
+         * TODO: remember to encode ["Must be packed", "May be packed", "Don't pack"] to [1, 0, -1]
+         * */
+
+        /**
+         * .item_types(i).profit = Cells(2 + i, 15).Value
+         */
+        $iL->item_types[$i]->profit = $items[$i]->profit;
+
+        /**
+         * .item_types(i).number_requested = Cells(2 + i, 16).Value
+         */
+        $iL->item_types[$i]->number_requested = $items[$i]->number_requested;
+
+        /**
+         * item_list.total_number_of_items = item_list.total_number_of_items + .item_types(i).number_requested
+         */
+        $item_list->total_number_of_items = $item_list->total_number_of_items + $iL->item_types[$i]->number_requested;
+    }
+
+    /**
+     * For i = 1 To .num_item_types
+     */
+    for ($i = 1; $i <= $iL->num_item_types; ++$i) {
+        /**
+         * If solver_options.item_sort_criterion = 1 Then
+         */
+        if ($solver_options->item_sort_criterion == 1) {
+            /**
+             * .item_types(i).sort_criterion = .item_types(i).volume * (max_weight + 1) + .item_types(i).weight
+             */
+            $iL->item_types[$i]->sort_criterion = $iL->item_types[$i]->volume * ($max_weight + 1) + $iL->item_types[$i]->weight;
+        /**
+         * ElseIf solver_options.item_sort_criterion = 2 Then
+         */
+        } else if ($solver_options->item_sort_criterion == 2) {
+            /**
+             * .item_types(i).sort_criterion = .item_types(i).weight * (max_volume + 1) + .item_types(i).volume
+             */
+            $iL->item_types[$i]->sort_criterion = $iL->item_types[$i]->weight * ($max_volume + 1) + $iL->item_types[$i]->volume;
+        /**
+         * Else
+         */
+        } else {
+            /**
+             * .item_types(i).sort_criterion = .item_types(i).width
+             */
+            $iL->item_types[$i]->sort_criterion = $iL->item_types[$i]->width;
+
+            /**
+             * If .item_types(i).sort_criterion < .item_types(i).height Then
+             */
+            if ($iL->item_types[$i]->sort_criterion < $iL->item_types[$i]->height) {
+                /**
+                 * .item_types(i).sort_criterion = .item_types(i).height
+                 */
+                $iL->item_types[$i]->sort_criterion = $iL->item_types[$i]->weight;
+            }
+
+            /**
+             * If .item_types(i).sort_criterion < .item_types(i).length Then
+             */
+            if ($iL->item_types[$i]->sort_criterion < $iL->item_types[$i]->length) {
+                /**
+                 * .item_types(i).sort_criterion = .item_types(i).length
+                 */
+                $iL->item_types[$i]->sort_criterion = $iL->item_types[$i]->length;
+            }
+
+            /**
+             * .item_types(i).sort_criterion = .item_types(i).sort_criterion * (max_volume + 1) + .item_types(i).volume
+             */
+            $iL->item_types[$i]->sort_criterion = $iL->item_types[$i]->sort_criterion * ($max_volume + 1) + $iL->item_types[$i]->volume;
+        }
+    }
+}
