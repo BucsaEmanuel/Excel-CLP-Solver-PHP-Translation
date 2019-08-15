@@ -2886,6 +2886,7 @@ function GetSolverOptions(solver_option_data $solver_options, string $item_sort_
 }
 
 /**
+ * Private Sub GetItemData()
  * This stores all the item data into the $item_list.
  * Aside from passing in the number of item types, we'll need
  * to also pass in additional information for all the items.
@@ -3195,5 +3196,127 @@ function GetItemData(item_list_data $item_list, int $num_item_types, array $item
              */
             $iL->item_types[$i]->sort_criterion = $iL->item_types[$i]->sort_criterion * ($max_volume + 1) + $iL->item_types[$i]->volume;
         }
+    }
+}
+
+/**
+ * Private Sub GetContainerData()
+ *
+ * Same as above function, just gets the data from
+ * the worksheet and stores it. Redundant in our case.
+ *
+ * @param container_list_data $container_list
+ * @param int $num_container_types
+ * @param container_type_data[] $containers
+ */
+
+function GetContainerData(container_list_data $container_list, int $num_container_types, array $containers)
+{
+    /**
+     * container_list.num_container_types = ThisWorkbook.Worksheets("CLP Solver Console").Cells(4, 3).Value
+     *
+     * this gets the actual number of containers from the setup sheet.
+     * we'll just pass it in as a param in our case.
+     */
+    $container_list->num_container_types = $num_container_types;
+
+    /**
+     * ReDim container_list.container_types(1 To container_list.num_container_types)
+     *
+     * I'm guessing ReDim is just redeclaring the variable to a new val.
+     * In this case, it creates a range from 1 to $container_list->num_container_types
+     */
+    $container_list->container_types = range(1, $container_list->num_container_types);
+
+    /**
+     * ThisWorkbook.Worksheets("2.Containers").Activate
+     *
+     * This just focuses the "2.Containers" worksheet, i guess.
+     */
+
+    /**
+     * Dim i As Long
+     * @var integer
+     */
+    $i = 0;
+
+    /**
+     * With container_list
+     *
+     * We'll just short the $container_list to $cL
+     */
+    $cL = $container_list;
+
+    /**
+     * For i = 1 To .num_container_types
+     */
+    for ($i = 1; $i <= $cL->num_container_types; ++$i) {
+        /**
+         * .container_types(i).type_id = i
+         */
+        $cL->container_types[$i]->type_id = $i;
+
+        /**
+         * .container_types(i).width = Cells(1 + i, 3).Value
+         *
+         * Since we're passing in an array of $containers,
+         * we don't have to bother with worksheets or other
+         * exotics.
+         */
+        $cL->container_types[$i]->width = $containers[$i]->width;
+
+        /**
+         * .container_types(i).height = Cells(1 + i, 4).Value
+         *
+         * Same as above
+         */
+        $cL->container_types[$i]->height = $containers[$i]->height;
+
+        /**
+         * .container_types(i).length = Cells(1 + i, 5).Value
+         *
+         * Same as above
+         */
+        $cL->container_types[$i]->length = $containers[$i]->length;
+
+        /**
+         * .container_types(i).volume_capacity = Cells(1 + i, 6).Value
+         */
+        $cL->container_types[$i]->volume_capacity = $containers[$i]->volume_capacity;
+
+        /**
+         * .container_types(i).weight_capacity = Cells(1 + i, 7).Value
+         */
+        $cL->container_types[$i]->weight_capacity = $containers[$i]->weight_capacity;
+
+        /**
+         * If Cells(1 + i, 8).Value = "Must be used" Then
+         *      .container_types(i).mandatory = 1
+         * ElseIf Cells(1 + i, 8).Value = "May be used" Then
+         *      .container_types(i).mandatory = 0
+         * ElseIf Cells(1 + i, 8).Value = "Do not use" Then
+         *      .container_types(i).mandatory = -1
+         * End If
+         */
+        /*
+         * TODO: remember to encode ["Must be used", "May be used", "Do not use"] to [1, 0, -1]
+         * */
+        if ($containers[$i]->mandatory == 1) {
+            $cL->container_types[$i]->mandatory = 1;
+        } else if ($containers[$i]->mandatory == 0) {
+            $cL->container_types[$i]->mandatory = 0;
+        } else if ($containers[$i]->mandatory == -1) {
+            $cL->container_types[$i]->mandatory = -1;
+        }
+
+        /**
+         * .container_types(i).cost = Cells(1 + i, 9).Value
+         */
+        $cL->container_types[$i]->cost = $containers[$i]->cost;
+
+        /**
+         * .container_types(i).number_available = Cells(1 + i, 10).Value
+         */
+        $cL->container_types[$i]->number_available = $containers[$i]->number_available;
     }
 }

@@ -972,46 +972,46 @@
     
 ' End Sub
 
-Private Sub GetContainerData()
+' Private Sub GetContainerData()
     
-    container_list.num_container_types = ThisWorkbook.Worksheets("CLP Solver Console").Cells(4, 3).Value
+'     container_list.num_container_types = ThisWorkbook.Worksheets("CLP Solver Console").Cells(4, 3).Value
     
-    ReDim container_list.container_types(1 To container_list.num_container_types)
+'     ReDim container_list.container_types(1 To container_list.num_container_types)
     
-    ThisWorkbook.Worksheets("2.Containers").Activate
+'     ThisWorkbook.Worksheets("2.Containers").Activate
     
-    Dim i As Long
+'     Dim i As Long
     
-    With container_list
+'     With container_list
         
-        For i = 1 To .num_container_types
+'         For i = 1 To .num_container_types
             
-            .container_types(i).type_id = i
+'             .container_types(i).type_id = i
             
-            .container_types(i).width = Cells(1 + i, 3).Value
-            .container_types(i).height = Cells(1 + i, 4).Value
-            .container_types(i).length = Cells(1 + i, 5).Value
+'             .container_types(i).width = Cells(1 + i, 3).Value
+'             .container_types(i).height = Cells(1 + i, 4).Value
+'             .container_types(i).length = Cells(1 + i, 5).Value
             
-            .container_types(i).volume_capacity = Cells(1 + i, 6).Value
-            .container_types(i).weight_capacity = Cells(1 + i, 7).Value
+'             .container_types(i).volume_capacity = Cells(1 + i, 6).Value
+'             .container_types(i).weight_capacity = Cells(1 + i, 7).Value
             
-            If Cells(1 + i, 8).Value = "Must be used" Then
-                .container_types(i).mandatory = 1
-            ElseIf Cells(1 + i, 8).Value = "May be used" Then
-                .container_types(i).mandatory = 0
-            ElseIf Cells(1 + i, 8).Value = "Do not use" Then
-                .container_types(i).mandatory = -1
-            End If
+'             If Cells(1 + i, 8).Value = "Must be used" Then
+'                 .container_types(i).mandatory = 1
+'             ElseIf Cells(1 + i, 8).Value = "May be used" Then
+'                 .container_types(i).mandatory = 0
+'             ElseIf Cells(1 + i, 8).Value = "Do not use" Then
+'                 .container_types(i).mandatory = -1
+'             End If
             
-            .container_types(i).cost = Cells(1 + i, 9).Value
+'             .container_types(i).cost = Cells(1 + i, 9).Value
             
-            .container_types(i).number_available = Cells(1 + i, 10).Value
+'             .container_types(i).number_available = Cells(1 + i, 10).Value
         
-        Next i
+'         Next i
     
-    End With
+'     End With
     
-End Sub
+' End Sub
 
 Private Sub GetCompatibilityData()
     
