@@ -676,168 +676,171 @@
                 
                 'no conflicts at this point
                 
-                If (item_cohesion = True) And (next_to_item_type <> item_type_index) And (.addition_points(i).next_to_item_type = item_type_index) Then
-                   min_x = origin_x
-                   min_y = origin_y
-                   min_z = origin_z
-                   candidate_position = i
-                   candidate_rotation = current_rotation
-                   next_to_item_type = .addition_points(i).next_to_item_type
-                Else
-                    If solver_options.wall_building = True Then
+'                 If (item_cohesion = True) And (next_to_item_type <> item_type_index) And (.addition_points(i).next_to_item_type = item_type_index) Then
+'                    min_x = origin_x
+'                    min_y = origin_y
+'                    min_z = origin_z
+'                    candidate_position = i
+'                    candidate_rotation = current_rotation
+'                    next_to_item_type = .addition_points(i).next_to_item_type
+'                 Else
+'                     If solver_options.wall_building = True Then
                     
-                        If (origin_z < min_z) Or _
-                          ((origin_z <= min_z + epsilon) And (origin_y < min_y)) Or _
-                          ((origin_z <= min_z + epsilon) And (origin_y <= min_y + epsilon) And (origin_x < min_x)) Then 'Or _
-                          ((origin_z <= min_z + epsilon) And (origin_y <= min_y + epsilon) And (origin_x <= min_x + epsilon) And ((opposite_x > .width + epsilon) Or (opposite_y > .height + epsilon))) Then
-                           min_x = origin_x
-                           min_y = origin_y
-                           min_z = origin_z
-                           candidate_position = i
-                           candidate_rotation = current_rotation
-                           next_to_item_type = .addition_points(i).next_to_item_type
-                        End If
-                    Else
-                        If (origin_y < min_y) Or _
-                          ((origin_y <= min_y + epsilon) And (origin_z < min_z)) Or _
-                          ((origin_y <= min_y + epsilon) And (origin_z <= min_z + epsilon) And (origin_x < min_x)) Then 'Or _
-                          ((origin_y <= min_y + epsilon) And (origin_x <= min_x + epsilon) And (origin_z <= min_z + epsilon) And ((opposite_x > .width + epsilon) Or (opposite_y > .height + epsilon))) Then
-                           min_x = origin_x
-                           min_y = origin_y
-                           min_z = origin_z
-                           candidate_position = i
-                           candidate_rotation = current_rotation
-                           next_to_item_type = .addition_points(i).next_to_item_type
-                        End If
+'                         If (origin_z < min_z) Or _
+'                           ((origin_z <= min_z + epsilon) And (origin_y < min_y)) Or _
+'                           ((origin_z <= min_z + epsilon) And (origin_y <= min_y + epsilon) And (origin_x < min_x)) Then 'Or _
+'                           ((origin_z <= min_z + epsilon) And (origin_y <= min_y + epsilon) And (origin_x <= min_x + epsilon) And ((opposite_x > .width + epsilon) Or (opposite_y > .height + epsilon))) Then
+'                            min_x = origin_x
+'                            min_y = origin_y
+'                            min_z = origin_z
+'                            candidate_position = i
+'                            candidate_rotation = current_rotation
+'                            next_to_item_type = .addition_points(i).next_to_item_type
+'                         End If
+'                     Else
+'                         If (origin_y < min_y) Or _
+'                           ((origin_y <= min_y + epsilon) And (origin_z < min_z)) Or _
+'                           ((origin_y <= min_y + epsilon) And (origin_z <= min_z + epsilon) And (origin_x < min_x)) Then 'Or _
+'                           ((origin_y <= min_y + epsilon) And (origin_x <= min_x + epsilon) And (origin_z <= min_z + epsilon) And ((opposite_x > .width + epsilon) Or (opposite_y > .height + epsilon))) Then
+'                            min_x = origin_x
+'                            min_y = origin_y
+'                            min_z = origin_z
+'                            candidate_position = i
+'                            candidate_rotation = current_rotation
+'                            next_to_item_type = .addition_points(i).next_to_item_type
+'                         End If
 
-                    End If
-                End If
+'                     End If
+'                 End If
 
-next_iteration:
-            Next i
+' next_iteration:
+'             Next i
 
-next_rotation_iteration:
-        Next rotation_index
+' next_rotation_iteration:
+'         Next rotation_index
         
-    End With
+'     End With
     
-AddItemToContainer_Finish:
+' AddItemToContainer_Finish:
 
-    If candidate_position = 0 Then
-        AddItemToContainer = False
-    Else
-        With solution.container(container_index)
-            .item_cnt = .item_cnt + 1
-            .items(.item_cnt).item_type = item_type_index
-            .items(.item_cnt).origin_x = .addition_points(candidate_position).origin_x
-            .items(.item_cnt).origin_y = .addition_points(candidate_position).origin_y
-            .items(.item_cnt).origin_z = .addition_points(candidate_position).origin_z
-            .items(.item_cnt).rotation = candidate_rotation
-            .items(.item_cnt).mandatory = item_list.item_types(item_type_index).mandatory
-            
-            If candidate_rotation = 1 Then
-                .items(.item_cnt).opposite_x = .items(.item_cnt).origin_x + item_list.item_types(item_type_index).width
-                .items(.item_cnt).opposite_y = .items(.item_cnt).origin_y + item_list.item_types(item_type_index).height
-                .items(.item_cnt).opposite_z = .items(.item_cnt).origin_z + item_list.item_types(item_type_index).length
-            ElseIf candidate_rotation = 2 Then
-                .items(.item_cnt).opposite_x = .items(.item_cnt).origin_x + item_list.item_types(item_type_index).length
-                .items(.item_cnt).opposite_y = .items(.item_cnt).origin_y + item_list.item_types(item_type_index).height
-                .items(.item_cnt).opposite_z = .items(.item_cnt).origin_z + item_list.item_types(item_type_index).width
-            ElseIf candidate_rotation = 3 Then
-                .items(.item_cnt).opposite_x = .items(.item_cnt).origin_x + item_list.item_types(item_type_index).width
-                .items(.item_cnt).opposite_y = .items(.item_cnt).origin_y + item_list.item_types(item_type_index).length
-                .items(.item_cnt).opposite_z = .items(.item_cnt).origin_z + item_list.item_types(item_type_index).height
-            ElseIf candidate_rotation = 4 Then
-                .items(.item_cnt).opposite_x = .items(.item_cnt).origin_x + item_list.item_types(item_type_index).height
-                .items(.item_cnt).opposite_y = .items(.item_cnt).origin_y + item_list.item_types(item_type_index).length
-                .items(.item_cnt).opposite_z = .items(.item_cnt).origin_z + item_list.item_types(item_type_index).width
-            ElseIf candidate_rotation = 5 Then
-                .items(.item_cnt).opposite_x = .items(.item_cnt).origin_x + item_list.item_types(item_type_index).height
-                .items(.item_cnt).opposite_y = .items(.item_cnt).origin_y + item_list.item_types(item_type_index).width
-                .items(.item_cnt).opposite_z = .items(.item_cnt).origin_z + item_list.item_types(item_type_index).length
-            ElseIf candidate_rotation = 6 Then
-                .items(.item_cnt).opposite_x = .items(.item_cnt).origin_x + item_list.item_types(item_type_index).length
-                .items(.item_cnt).opposite_y = .items(.item_cnt).origin_y + item_list.item_types(item_type_index).width
-                .items(.item_cnt).opposite_z = .items(.item_cnt).origin_z + item_list.item_types(item_type_index).height
-            End If
-            
-            .volume_packed = .volume_packed + item_list.item_types(item_type_index).volume
-            .weight_packed = .weight_packed + item_list.item_types(item_type_index).weight
+'     If candidate_position = 0 Then
+'         AddItemToContainer = False
+'     Else
+'         With solution.container(container_index)
+            ' .item_cnt = .item_cnt + 1
+            ' .items(.item_cnt).item_type = item_type_index
 
-            If add_type = 2 Then
-                .repack_item_count(item_type_index) = .repack_item_count(item_type_index) - 1
-            End If
+            ' .items(.item_cnt).origin_x = .addition_points(candidate_position).origin_x
+            ' .items(.item_cnt).origin_y = .addition_points(candidate_position).origin_y
+            ' .items(.item_cnt).origin_z = .addition_points(candidate_position).origin_z
+
             
-            'update the addition points
+            ' .items(.item_cnt).rotation = candidate_rotation
+            ' .items(.item_cnt).mandatory = item_list.item_types(item_type_index).mandatory
             
-            For i = candidate_position To .addition_point_count - 1
-                .addition_points(i) = .addition_points(i + 1)
-            Next i
+            ' If candidate_rotation = 1 Then
+            '     .items(.item_cnt).opposite_x = .items(.item_cnt).origin_x + item_list.item_types(item_type_index).width
+            '     .items(.item_cnt).opposite_y = .items(.item_cnt).origin_y + item_list.item_types(item_type_index).height
+            '     .items(.item_cnt).opposite_z = .items(.item_cnt).origin_z + item_list.item_types(item_type_index).length
+            ' ElseIf candidate_rotation = 2 Then
+            '     .items(.item_cnt).opposite_x = .items(.item_cnt).origin_x + item_list.item_types(item_type_index).length
+            '     .items(.item_cnt).opposite_y = .items(.item_cnt).origin_y + item_list.item_types(item_type_index).height
+            '     .items(.item_cnt).opposite_z = .items(.item_cnt).origin_z + item_list.item_types(item_type_index).width
+            ' ElseIf candidate_rotation = 3 Then
+            '     .items(.item_cnt).opposite_x = .items(.item_cnt).origin_x + item_list.item_types(item_type_index).width
+            '     .items(.item_cnt).opposite_y = .items(.item_cnt).origin_y + item_list.item_types(item_type_index).length
+            '     .items(.item_cnt).opposite_z = .items(.item_cnt).origin_z + item_list.item_types(item_type_index).height
+            ' ElseIf candidate_rotation = 4 Then
+            '     .items(.item_cnt).opposite_x = .items(.item_cnt).origin_x + item_list.item_types(item_type_index).height
+            '     .items(.item_cnt).opposite_y = .items(.item_cnt).origin_y + item_list.item_types(item_type_index).length
+            '     .items(.item_cnt).opposite_z = .items(.item_cnt).origin_z + item_list.item_types(item_type_index).width
+            ' ElseIf candidate_rotation = 5 Then
+            '     .items(.item_cnt).opposite_x = .items(.item_cnt).origin_x + item_list.item_types(item_type_index).height
+            '     .items(.item_cnt).opposite_y = .items(.item_cnt).origin_y + item_list.item_types(item_type_index).width
+            '     .items(.item_cnt).opposite_z = .items(.item_cnt).origin_z + item_list.item_types(item_type_index).length
+            ' ElseIf candidate_rotation = 6 Then
+            '     .items(.item_cnt).opposite_x = .items(.item_cnt).origin_x + item_list.item_types(item_type_index).length
+            '     .items(.item_cnt).opposite_y = .items(.item_cnt).origin_y + item_list.item_types(item_type_index).width
+            '     .items(.item_cnt).opposite_z = .items(.item_cnt).origin_z + item_list.item_types(item_type_index).height
+            ' End If
             
-            .addition_point_count = .addition_point_count - 1
+            ' .volume_packed = .volume_packed + item_list.item_types(item_type_index).volume
+            ' .weight_packed = .weight_packed + item_list.item_types(item_type_index).weight
+
+            ' If add_type = 2 Then
+            '     .repack_item_count(item_type_index) = .repack_item_count(item_type_index) - 1
+            ' End If
             
-            If (.items(.item_cnt).opposite_x < .width - epsilon) And (.items(.item_cnt).origin_y < .height - epsilon) And (.items(.item_cnt).origin_z < .length - epsilon) Then
+            ' 'update the addition points
             
-                .addition_point_count = .addition_point_count + 1
-                .addition_points(.addition_point_count).origin_x = .items(.item_cnt).opposite_x
-                .addition_points(.addition_point_count).origin_y = .items(.item_cnt).origin_y
-                .addition_points(.addition_point_count).origin_z = .items(.item_cnt).origin_z
-                .addition_points(.addition_point_count).next_to_item_type = item_type_index
+            ' For i = candidate_position To .addition_point_count - 1
+            '     .addition_points(i) = .addition_points(i + 1)
+            ' Next i
+            
+            ' .addition_point_count = .addition_point_count - 1
+            
+            ' If (.items(.item_cnt).opposite_x < .width - epsilon) And (.items(.item_cnt).origin_y < .height - epsilon) And (.items(.item_cnt).origin_z < .length - epsilon) Then
+            
+            '     .addition_point_count = .addition_point_count + 1
+            '     .addition_points(.addition_point_count).origin_x = .items(.item_cnt).opposite_x
+            '     .addition_points(.addition_point_count).origin_y = .items(.item_cnt).origin_y
+            '     .addition_points(.addition_point_count).origin_z = .items(.item_cnt).origin_z
+            '     .addition_points(.addition_point_count).next_to_item_type = item_type_index
                 
-            End If
+            ' End If
             
-            If item_list.item_types(item_type_index).fragile = False Then ' no addition point on top of fragile items
+            ' If item_list.item_types(item_type_index).fragile = False Then ' no addition point on top of fragile items
             
-                If (.items(.item_cnt).origin_x < .width - epsilon) And (.items(.item_cnt).opposite_y < .height - epsilon) And (.items(.item_cnt).origin_z < .length - epsilon) Then
+            '     If (.items(.item_cnt).origin_x < .width - epsilon) And (.items(.item_cnt).opposite_y < .height - epsilon) And (.items(.item_cnt).origin_z < .length - epsilon) Then
                     
-                    .addition_point_count = .addition_point_count + 1
-                    .addition_points(.addition_point_count).origin_x = .items(.item_cnt).origin_x
-                    .addition_points(.addition_point_count).origin_y = .items(.item_cnt).opposite_y
-                    .addition_points(.addition_point_count).origin_z = .items(.item_cnt).origin_z
-                    .addition_points(.addition_point_count).next_to_item_type = item_type_index
+            '         .addition_point_count = .addition_point_count + 1
+            '         .addition_points(.addition_point_count).origin_x = .items(.item_cnt).origin_x
+            '         .addition_points(.addition_point_count).origin_y = .items(.item_cnt).opposite_y
+            '         .addition_points(.addition_point_count).origin_z = .items(.item_cnt).origin_z
+            '         .addition_points(.addition_point_count).next_to_item_type = item_type_index
                     
-                End If
+            '     End If
             
-            End If
+            ' End If
             
-            If (.items(.item_cnt).origin_x < .width - epsilon) And (.items(.item_cnt).origin_y < .height - epsilon) And (.items(.item_cnt).opposite_z < .length - epsilon) Then
+            ' If (.items(.item_cnt).origin_x < .width - epsilon) And (.items(.item_cnt).origin_y < .height - epsilon) And (.items(.item_cnt).opposite_z < .length - epsilon) Then
             
-                .addition_point_count = .addition_point_count + 1
-                .addition_points(.addition_point_count).origin_x = .items(.item_cnt).origin_x
-                .addition_points(.addition_point_count).origin_y = .items(.item_cnt).origin_y
-                .addition_points(.addition_point_count).origin_z = .items(.item_cnt).opposite_z
-                .addition_points(.addition_point_count).next_to_item_type = item_type_index
+            '     .addition_point_count = .addition_point_count + 1
+            '     .addition_points(.addition_point_count).origin_x = .items(.item_cnt).origin_x
+            '     .addition_points(.addition_point_count).origin_y = .items(.item_cnt).origin_y
+            '     .addition_points(.addition_point_count).origin_z = .items(.item_cnt).opposite_z
+            '     .addition_points(.addition_point_count).next_to_item_type = item_type_index
                         
-            End If
+            ' End If
             
-        End With
+        ' End With
         
-        With solution
-            'update the profit
+        ' With solution
+        '     'update the profit
             
-            If .container(container_index).item_cnt = 1 Then
-                .net_profit = .net_profit + item_list.item_types(item_type_index).profit - .container(container_index).cost
-            Else
-                .net_profit = .net_profit + item_list.item_types(item_type_index).profit
-            End If
+        '     ' If .container(container_index).item_cnt = 1 Then
+        '     '     .net_profit = .net_profit + item_list.item_types(item_type_index).profit - .container(container_index).cost
+        '     ' Else
+        '     '     .net_profit = .net_profit + item_list.item_types(item_type_index).profit
+        '     ' End If
             
-            'update the volume per container and the total volume
+        '     'update the volume per container and the total volume
             
-            .total_volume = .total_volume + item_list.item_types(item_type_index).volume
-            .total_weight = .total_weight + item_list.item_types(item_type_index).weight
+        '     .total_volume = .total_volume + item_list.item_types(item_type_index).volume
+        '     .total_weight = .total_weight + item_list.item_types(item_type_index).weight
             
-            'update the unpacked items
+        '     'update the unpacked items
             
-            If add_type = 1 Then
-                .unpacked_item_count(item_type_index) = .unpacked_item_count(item_type_index) - 1
-            End If
+        '     If add_type = 1 Then
+        '         .unpacked_item_count(item_type_index) = .unpacked_item_count(item_type_index) - 1
+        '     End If
             
-        End With
+        ' End With
         
-        AddItemToContainer = True
-    End If
+'         AddItemToContainer = True
+'     End If
     
-End Function
+' End Function
 
 Private Sub GetSolverOptions()
     ThisWorkbook.Worksheets("CLP Solver Console").Activate

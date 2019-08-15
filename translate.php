@@ -2276,16 +2276,542 @@ function AddItemToContainer(solution_data $solution, int $container_index, int $
                     if (
                         $origin_z < $min_z ||
                         ($origin_z <= $min_z + epsilon && $origin_y < $min_y) ||
-                        ($origin_z <= $min_z + epsilon && $origin_y <= $min_y + epsilon && $origin_x && $origin_x < $min_x)
-                        //
+                        ($origin_z <= $min_z + epsilon && $origin_y <= $min_y + epsilon && $origin_x && $origin_x < $min_x) ||
+                        /*
+                         * This is the breaking point where clarification is needed.
+                         * */
+                        ($origin_z <= $min_z + epsilon && $origin_y <= $min_y + epsilon && $origin_x <= $min_x + epsilon && ($opposite_x > $currentContainer->width + epsilon || $opposite_y > $currentContainer->height + epsilon))
                     ) {
+                        /**
+                         * min_x = origin_x
+                         */
+                        $min_x = $origin_x;
 
+                        /**
+                         * min_y = origin_y
+                         */
+                        $min_y = $origin_y;
+
+                        /**
+                         * min_z = origin_z
+                         */
+                        $min_z = $origin_z;
+
+                        /**
+                         * candidate_position = i
+                         */
+                        $candidate_position = $i;
+
+                        /**
+                         * candidate_rotation = current_rotation
+                         */
+                        $candidate_rotation = $current_rotation;
+
+                        /**
+                         * next_to_item_type = .addition_points(i).next_to_item_type
+                         */
+                        $next_to_item_type = $currentContainer->addition_points[$i]->next_to_item_type;
+                    }
+                /**
+                 * Else
+                 */
+                } else {
+                    /**
+                     * If (origin_y < min_y) Or _
+                     *      ((origin_y <= min_y + epsilon) And (origin_z < min_z)) Or _
+                     *      ((origin_y <= min_y + epsilon) And (origin_z <= min_z + epsilon) And (origin_x < min_x)) Then 'Or _
+                     *      ((origin_y <= min_y + epsilon) And (origin_x <= min_x + epsilon) And (origin_z <= min_z + epsilon) And ((opposite_x > .width + epsilon) Or (opposite_y > .height + epsilon))) Then
+                     */
+                    /*
+                     * TODO: clarify the 'Or _ on the third line.
+                     * */
+                    if (
+                        $origin_y < $min_y ||
+                        ($origin_y <= $min_y + epsilon && $origin_z < $min_z) ||
+                        ($origin_y <= $min_y + epsilon && $origin_z <= $min_z + epsilon && $origin_x < $min_x) ||
+                        /*
+                         * Clarification needed here.
+                         * */
+                        (
+                            $origin_y <= $min_y + epsilon && $origin_x <= $min_x + epsilon && $origin_z <= $min_z + epsilon &&
+                            (
+                                $opposite_x > $currentContainer->width + epsilon || $opposite_y > $currentContainer->height + epsilon
+                            )
+                        )
+                    ) {
+                        /**
+                         * min_x = origin_x
+                         */
+                        $min_x = $origin_x;
+
+                        /**
+                         * min_y = origin_y
+                         */
+                        $min_y = $origin_y;
+
+                        /**
+                         * min_z = origin_z
+                         */
+                        $min_z = $origin_z;
+
+                        /**
+                         * candidate_position = i
+                         */
+                        $candidate_position = $i;
+
+                        /**
+                         * candidate_rotation = current_rotation
+                         */
+                        $candidate_rotation = $current_rotation;
+
+                        /**
+                         * next_to_item_type = .addition_points(i).next_to_item_type
+                         */
+                        $next_to_item_type = $currentContainer->addition_points[$i]->next_to_item_type;
                     }
                 }
-
             }
-
         }
-
     }
 }
+
+/**
+ * next_iteration:
+ *              Next i
+ */
+
+/*
+ *
+ * This looks just like a simple continue.
+ *
+ * */
+
+/**
+ * next_rotation_iteration:
+ *          Next rotation_index
+ *
+ *      End With
+ */
+
+/*
+ * This looks like a simple continue, but the End With kinda throws me off.
+ * TODO: clarify which With the statement above ends.
+ * */
+
+/*
+ * this just looks like the label where the GoTo sends. I'll refactor this to a simple function.
+ * */
+
+
+/**
+ * AddItemToContainer_Finish:
+ * @param float $candidate_position
+ * @param solution_data $solution
+ * @param int $container_index
+ * @param int $item_type_index
+ * @param float $candidate_rotation
+ * @param item_list_data $item_list
+ * @param int $add_type
+ */
+function AddItemToContainer_Finish(float $candidate_position, solution_data $solution, int $container_index, int $item_type_index, float $candidate_rotation, item_list_data $item_list, int $add_type)
+{
+    /**
+     * If candidate_position = 0 Then
+     */
+    if ($candidate_position == 0) {
+        /**
+         * AddItemToContainer = False
+         */
+        $AddItemToContainer = false;
+        /*
+         * TODO: clarify how this variable is defined.
+         * It's in an if, so outside it, it doesn't make any sense.
+         * We'll see if the original code uses it elsewhere.
+         * */
+    /**
+     * Else
+     */
+    } else {
+        /**
+         * With solution.container(container_index)
+         */
+        $currentContainer = $solution->container[$container_index];
+
+        /**
+         * .item_cnt = .item_cnt + 1
+         */
+        $currentContainer->item_cnt = $currentContainer->item_cnt + 1;
+
+        /**
+         * .items(.item_cnt).item_type = item_type_index
+         */
+        $currentContainer->items[$currentContainer->item_cnt]->item_type = $item_type_index;
+
+        /**
+         * .items(.item_cnt).origin_x = .addition_points(candidate_position).origin_x
+         */
+        $currentContainer->items[$currentContainer->item_cnt]->origin_x = $currentContainer->addition_points[$candidate_position]->origin_x;
+        /*
+         * TODO: inconsistency found in declaration: $candidate_position is supposed to be a float. Illegal array key type: float
+         * Clarify this.
+         * */
+
+        /**
+         * .items(.item_cnt).origin_y = .addition_points(candidate_position).origin_y
+         */
+        $currentContainer->items[$currentContainer->item_cnt]->origin_y = $currentContainer->addition_points[$candidate_position]->origin_y;
+        /*
+         * TODO: inconsistency found in declaration: $candidate_position is supposed to be a float. Illegal array key type: float
+         * Clarify this.
+         * */
+
+        /**
+         * .items(.item_cnt).origin_z = .addition_points(candidate_position).origin_z
+         */
+        $currentContainer->items[$currentContainer->item_cnt]->origin_z = $currentContainer->addition_points[$candidate_position]->origin_z;
+        /*
+         * TODO: inconsistency found in declaration: $candidate_position is supposed to be a float. Illegal array key type: float
+         * Clarify this.
+         * */
+
+        /**
+         * .items(.item_cnt).rotation = candidate_rotation
+         */
+        $currentContainer->items[$currentContainer->item_cnt]->rotation = $candidate_rotation;
+
+        /**
+         * .items(.item_cnt).mandatory = item_list.item_types(item_type_index).mandatory
+         */
+        $currentContainer->items[$currentContainer->item_cnt]->mandatory = $item_list->item_types[$item_type_index]->mandatory;
+
+        /**
+         * If candidate_rotation = 1 Then
+         */
+        if ($candidate_rotation == 1) {
+
+            /**
+             * .items(.item_cnt).opposite_x = .items(.item_cnt).origin_x + item_list.item_types(item_type_index).width
+             */
+            $currentContainer->items[$currentContainer->item_cnt]->opposite_x = $currentContainer->items[$currentContainer->item_cnt]->origin_x + $item_list->item_types[$item_type_index]->width;
+
+            /**
+             * .items(.item_cnt).opposite_y = .items(.item_cnt).origin_y + item_list.item_types(item_type_index).height
+             */
+            $currentContainer->items[$currentContainer->item_cnt]->opposite_y = $currentContainer->items[$currentContainer->item_cnt]->origin_y + $item_list->item_types[$item_type_index]->height;
+
+            /**
+             * .items(.item_cnt).opposite_z = .items(.item_cnt).origin_z + item_list.item_types(item_type_index).length
+             */
+            $currentContainer->items[$currentContainer->item_cnt]->opposite_z = $currentContainer->items[$currentContainer->item_cnt]->origin_z + $item_list->item_types[$item_type_index]->length;
+
+        /**
+         * ElseIf candidate_rotation = 2 Then
+         */
+        } else if ($candidate_rotation == 2) {
+            /**
+             * .items(.item_cnt).opposite_x = .items(.item_cnt).origin_x + item_list.item_types(item_type_index).length
+             */
+            $currentContainer->items[$currentContainer->item_cnt]->opposite_x = $currentContainer->items[$currentContainer->item_cnt]->origin_x + $item_list->item_types[$item_type_index]->length;
+
+            /**
+             * .items(.item_cnt).opposite_y = .items(.item_cnt).origin_y + item_list.item_types(item_type_index).height
+             */
+            $currentContainer->items[$currentContainer->item_cnt]->opposite_y = $currentContainer->items[$currentContainer->item_cnt]->origin_y + $item_list->item_types[$item_type_index]->height;
+
+            /**
+             * items(.item_cnt).opposite_z = .items(.item_cnt).origin_z + item_list.item_types(item_type_index).width
+             */
+            $currentContainer->items[$currentContainer->item_cnt]->opposite_z = $currentContainer->items[$currentContainer->item_cnt]->origin_z + $item_list->item_types[$item_type_index]->width;
+        /**
+         * ElseIf candidate_rotation = 3 Then
+         */
+        } else if ($candidate_rotation == 3) {
+            /**
+             * .items(.item_cnt).opposite_x = .items(.item_cnt).origin_x + item_list.item_types(item_type_index).width
+             */
+            $currentContainer->items[$currentContainer->item_cnt]->opposite_x = $currentContainer->items[$currentContainer->item_cnt]->origin_x + $item_list->item_types[$item_type_index]->width;
+            /**
+             * .items(.item_cnt).opposite_y = .items(.item_cnt).origin_y + item_list.item_types(item_type_index).length
+             */
+            $currentContainer->items[$currentContainer->item_cnt]->opposite_y = $currentContainer->items[$currentContainer->item_cnt]->origin_y + $item_list->item_types[$item_type_index]->length;
+            /**
+             * .items(.item_cnt).opposite_z = .items(.item_cnt).origin_z + item_list.item_types(item_type_index).height
+             */
+            $currentContainer->items[$currentContainer->item_cnt]->opposite_z = $currentContainer->items[$currentContainer->item_cnt]->origin_z + $item_list->item_types[$item_type_index]->height;
+        /**
+         * ElseIf candidate_rotation = 4 Then
+         */
+        } else if ($candidate_rotation == 4) {
+            /**
+             * .items(.item_cnt).opposite_x = .items(.item_cnt).origin_x + item_list.item_types(item_type_index).height
+             */
+            $currentContainer->items[$currentContainer->item_cnt]->opposite_x = $currentContainer->items[$currentContainer->item_cnt]->origin_x + $item_list->item_types[$item_type_index]->height;
+
+            /**
+             * .items(.item_cnt).opposite_y = .items(.item_cnt).origin_y + item_list.item_types(item_type_index).length
+             */
+            $currentContainer->items[$currentContainer->item_cnt]->opposite_y = $currentContainer->items[$currentContainer->item_cnt]->origin_y + $item_list->item_types[$item_type_index]->length;
+
+            /**
+             * .items(.item_cnt).opposite_z = .items(.item_cnt).origin_z + item_list.item_types(item_type_index).width
+             */
+            $currentContainer->items[$currentContainer->item_cnt]->opposite_z = $currentContainer->items[$currentContainer->item_cnt]->origin_z + $item_list->item_types[$item_type_index]->width;
+
+        /**
+         * ElseIf candidate_rotation = 5 Then
+         */
+        } else if ($candidate_rotation == 5) {
+            /**
+             * .items(.item_cnt).opposite_x = .items(.item_cnt).origin_x + item_list.item_types(item_type_index).height
+             */
+            $currentContainer->items[$currentContainer->item_cnt]->opposite_x = $currentContainer->items[$currentContainer->item_cnt]->origin_x + $item_list->item_types[$item_type_index]->height;
+
+            /**
+             * .items(.item_cnt).opposite_y = .items(.item_cnt).origin_y + item_list.item_types(item_type_index).width
+             */
+            $currentContainer->items[$currentContainer->item_cnt]->opposite_y = $currentContainer->items[$currentContainer->item_cnt]->origin_y + $item_list->item_types[$item_type_index]->width;
+
+            /**
+             * .items(.item_cnt).opposite_z = .items(.item_cnt).origin_z + item_list.item_types(item_type_index).length
+             */
+            $currentContainer->items[$currentContainer->item_cnt]->opposite_z = $currentContainer->items[$currentContainer->item_cnt]->origin_z + $item_list->item_types[$item_type_index]->length;
+        /**
+         * ElseIf candidate_rotation = 6 Then
+         */
+        } else if ($candidate_rotation == 6) {
+            /**
+             * .items(.item_cnt).opposite_x = .items(.item_cnt).origin_x + item_list.item_types(item_type_index).length
+             */
+            $currentContainer->items[$currentContainer->item_cnt]->opposite_x = $currentContainer->items[$currentContainer->item_cnt]->origin_x + $item_list->item_types[$item_type_index]->length;
+
+            /**
+             * .items(.item_cnt).opposite_y = .items(.item_cnt).origin_y + item_list.item_types(item_type_index).width
+             */
+            $currentContainer->items[$currentContainer->item_cnt]->opposite_y = $currentContainer->items[$currentContainer->item_cnt]->origin_y + $item_list->item_types[$item_type_index]->width;
+
+            /**
+             * .items(.item_cnt).opposite_z = .items(.item_cnt).origin_z + item_list.item_types(item_type_index).height
+             */
+            $currentContainer->items[$currentContainer->item_cnt]->opposite_z = $currentContainer->items[$currentContainer->item_cnt]->origin_z + $item_list->item_types[$item_type_index]->height;
+        }
+
+        /**
+         * .volume_packed = .volume_packed + item_list.item_types(item_type_index).volume
+         */
+        $currentContainer->volume_packed = $currentContainer->volume_packed + $item_list->item_types[$item_type_index]->volume;
+
+        /**
+         * .weight_packed = .weight_packed + item_list.item_types(item_type_index).weight
+         */
+        $currentContainer->weight_packed = $currentContainer->weight_packed + $item_list->item_types[$item_type_index]->weight;
+
+        /**
+         * If add_type = 2 Then
+         */
+        if ($add_type == 2) {
+            /**
+             * .repack_item_count(item_type_index) = .repack_item_count(item_type_index) - 1
+             */
+            $currentContainer->repack_item_count[$item_type_index] = $currentContainer->repack_item_count[$item_type_index] - 1;
+        }
+
+        /*
+         * 'update the addition points
+         * */
+
+        /**
+         * For i = candidate_position To .addition_point_count - 1
+         */
+        for ($i = $candidate_position; $i <= $currentContainer->addition_point_count - 1; ++$i) {
+            /**
+             * .addition_points(i) = .addition_points(i + 1)
+             */
+            $currentContainer->addition_points[$i] = $currentContainer->addition_points[$i + 1];
+            /*
+             * TODO: still need to figure out if $candidate_position is a float, since $i would also be floaty :)
+             * */
+        }
+
+        /**
+         * .addition_point_count = .addition_point_count - 1
+         */
+        $currentContainer->addition_point_count = $currentContainer->addition_point_count - 1;
+
+        /**
+         * If (.items(.item_cnt).opposite_x < .width - epsilon) And (.items(.item_cnt).origin_y < .height - epsilon) And (.items(.item_cnt).origin_z < .length - epsilon) Then
+         */
+        if (
+            $currentContainer->items[$currentContainer->item_cnt]->opposite_x < $currentContainer->width - epsilon &&
+            $currentContainer->items[$currentContainer->item_cnt]->origin_y < $currentContainer->height - epsilon &&
+            $currentContainer->items[$currentContainer->item_cnt]->origin_z < $currentContainer->length - epsilon
+        ) {
+            /**
+             * .addition_point_count = .addition_point_count + 1
+             */
+            $currentContainer->addition_point_count = $currentContainer->addition_point_count + 1;
+
+            /**
+             * .addition_points(.addition_point_count).origin_x = .items(.item_cnt).opposite_x
+             */
+            $currentContainer->addition_points[$currentContainer->addition_point_count]->origin_x = $currentContainer->items[$currentContainer->item_cnt]->opposite_x;
+
+            /**
+             * .addition_points(.addition_point_count).origin_y = .items(.item_cnt).origin_y
+             */
+            $currentContainer->addition_points[$currentContainer->addition_point_count]->origin_y = $currentContainer->items[$currentContainer->item_cnt]->origin_y;
+
+            /**
+             * .addition_points(.addition_point_count).origin_z = .items(.item_cnt).origin_z
+             */
+            $currentContainer->addition_points[$currentContainer->addition_point_count]->origin_z = $currentContainer->items[$currentContainer->item_cnt]->origin_z;
+
+            /**
+             * .addition_points(.addition_point_count).next_to_item_type = item_type_index
+             */
+            $currentContainer->addition_points[$currentContainer->addition_point_count]->next_to_item_type = $item_type_index;
+        }
+
+        /**
+         * If item_list.item_types(item_type_index).fragile = False Then ' no addition point on top of fragile items
+         */
+        if ($item_list->item_types[$item_type_index]->fragile == false) {
+            /**
+             * If (.items(.item_cnt).origin_x < .width - epsilon) And (.items(.item_cnt).opposite_y < .height - epsilon) And (.items(.item_cnt).origin_z < .length - epsilon) Then
+             */
+            if (
+                $currentContainer->items[$currentContainer->item_cnt]->origin_x < $currentContainer->width - epsilon &&
+                $currentContainer->items[$currentContainer->item_cnt]->opposite_y < $currentContainer->height - epsilon &&
+                $currentContainer->items[$currentContainer->item_cnt]->origin_z < $currentContainer->length - epsilon
+            ) {
+                /**
+                 *.addition_point_count = .addition_point_count + 1
+                 */
+                $currentContainer->addition_point_count = $currentContainer->addition_point_count + 1;
+
+                /**
+                 * .addition_points(.addition_point_count).origin_x = .items(.item_cnt).origin_x
+                 */
+                $currentContainer->addition_points[$currentContainer->addition_point_count]->origin_x = $currentContainer->items[$currentContainer->item_cnt]->origin_x;
+
+                /**
+                 * .addition_points(.addition_point_count).origin_y = .items(.item_cnt).opposite_y
+                 */
+                $currentContainer->addition_points[$currentContainer->addition_point_count]->origin_y = $currentContainer->items[$currentContainer->item_cnt]->opposite_y;
+
+                /**
+                 * .addition_points(.addition_point_count).origin_z = .items(.item_cnt).origin_z
+                 */
+                $currentContainer->addition_points[$currentContainer->addition_point_count]->origin_z = $currentContainer->items[$currentContainer->item_cnt]->origin_z;
+
+                /**
+                 * .addition_points(.addition_point_count).next_to_item_type = item_type_index
+                 */
+                $currentContainer->addition_points[$currentContainer->addition_point_count]->next_to_item_type = $item_type_index;
+            }
+        }
+
+        /**
+         * If (.items(.item_cnt).origin_x < .width - epsilon) And (.items(.item_cnt).origin_y < .height - epsilon) And (.items(.item_cnt).opposite_z < .length - epsilon) Then
+         */
+        if (
+            $currentContainer->items[$currentContainer->item_cnt]->origin_x < $currentContainer->width - epsilon &&
+            $currentContainer->items[$currentContainer->item_cnt]->origin_y < $currentContainer->height - epsilon &&
+            $currentContainer->items[$currentContainer->item_cnt]->opposite_z < $currentContainer->length - epsilon
+        ) {
+            /**
+             * .addition_point_count = .addition_point_count + 1
+             */
+            $currentContainer->addition_point_count = $currentContainer->addition_point_count + 1;
+
+            /**
+             * .addition_points(.addition_point_count).origin_x = .items(.item_cnt).origin_x
+             */
+            $currentContainer->addition_points[$currentContainer->addition_point_count]->origin_x = $currentContainer->items[$currentContainer->item_cnt]->origin_x;
+
+            /**
+             * .addition_points(.addition_point_count).origin_y = .items(.item_cnt).origin_y
+             */
+            $currentContainer->addition_points[$currentContainer->addition_point_count]->origin_y = $currentContainer->items[$currentContainer->item_cnt]->origin_y;
+
+            /**
+             * .addition_points(.addition_point_count).origin_z = .items(.item_cnt).opposite_z
+             */
+            $currentContainer->addition_points[$currentContainer->addition_point_count]->origin_z = $currentContainer->items[$currentContainer->item_cnt]->opposite_z;
+
+            /**
+             * .addition_points(.addition_point_count).next_to_item_type = item_type_index
+             */
+            $currentContainer->addition_points[$currentContainer->addition_point_count]->next_to_item_type = $item_type_index;
+        }
+        /**
+         * End With
+         */
+
+        /**
+         * With solution
+         */
+        $s = $solution;
+        /*
+         * 'update the profit
+         * */
+
+        /**
+         * If .container(container_index).item_cnt = 1 Then
+         */
+        if ($s->container[$container_index]->item_cnt == 1) {
+            /**
+             * .net_profit = .net_profit + item_list.item_types(item_type_index).profit - .container(container_index).cost
+             */
+            $s->net_profit = $s->net_profit + $item_list->item_types[$item_type_index]->profit - $s->container[$container_index]->cost;
+        /**
+         * Else
+         */
+        } else {
+            $s->net_profit = $s->net_profit + $item_list->item_types[$item_type_index]->profit;
+        }
+
+        /*
+         * 'update the volume per container and the total volume
+         * */
+
+        /**
+         * .total_volume = .total_volume + item_list.item_types(item_type_index).volume
+         */
+        $s->total_volume = $s->total_volume + $item_list->item_types[$item_type_index]->volume;
+
+        /**
+         * .total_weight = .total_weight + item_list.item_types(item_type_index).weight
+         */
+        $s->total_weight = $s->total_weight + $item_list->item_types[$item_type_index]->weight;
+
+        /*
+         * 'update the unpacked items
+         * */
+
+        /**
+         * If add_type = 1 Then
+         */
+        if ($add_type == 1) {
+            /**
+             * .unpacked_item_count(item_type_index) = .unpacked_item_count(item_type_index) - 1
+             */
+            $s->unpacked_item_count[$item_type_index] = $s->unpacked_item_count[$item_type_index] - 1;
+        }
+
+        /**
+         * End With
+         */
+
+        /**
+         * AddItemToContainer = True
+         */
+        $AddItemToContainer = true;
+        /*
+         * TODO: clarify what this variable actually does.
+         * We've set it at the top of the function as false.
+         * Now it's true. Will it ever be used?
+         * */
+    }
+}
+
+
