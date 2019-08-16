@@ -3841,7 +3841,9 @@ function GetInstanceData(instance_data $instance, bool $front_side_support, bool
 /**
  * Private Sub WriteSolution(solution As solution_data)
  *
- *
+ * @param solution_data $solution
+ * @param container_list_data $container_list
+ * @param item_list_data $item_list
  */
 function WriteSolution(solution_data $solution, container_list_data $container_list, item_list_data $item_list)
 {
@@ -4124,3 +4126,109 @@ function WriteSolution(solution_data $solution, container_list_data $container_l
      * Application.Calculation = xlCalculationAutomatic
      */
 }
+
+/**
+ * Sub ReadSolution(solution As solution_data)
+ *
+ *
+ */
+function ReadSolution(solution_data $solution, container_list_data $container_list, item_list_data $item_list)
+{
+    /**
+     * Application.ScreenUpdating = False
+     * Application.Calculation = xlCalculationManual
+     *
+     * Excel stuff
+     */
+
+    /**
+     * Dim i As Long
+     * @var integer
+     */
+    $i = 0;
+
+    /**
+     * Dim j As Long
+     * @var integer
+     */
+    $j = 0;
+
+    /**
+     * Dim k As Long
+     * @var integer
+     */
+    $k = 0;
+
+    /**
+     * Dim l As Long
+     * @var integer
+     */
+    $l = 0;
+
+    /**
+     * Dim container_index As Long
+     * @var integer
+     */
+    $container_index = 0;
+
+    /**
+     * Dim item_type_index As Long
+     * @var integer
+     */
+    $item_type_index = 0;
+
+    /**
+     * Dim offset As Long
+     * @var integer
+     */
+    $offset = 0;
+
+    /**
+     * offset = 0
+     *
+     * already defined
+     */
+
+    /**
+     * container_index = 1
+     */
+    $container_index = 1;
+
+    /**
+     * With solution
+     * $s for $solution
+     */
+    $s = $solution;
+
+    /**
+     * For i = 1 To container_list.num_container_types
+     */
+    for ($i = 1; $i <= $container_list->num_container_types; ++$i) {
+        /**
+         * For j = 1 To container_list.container_types(i).number_available
+         */
+        for ($j = 1; $j <= $container_list->container_types[$i]->number_available; ++$j) {
+            /**
+             * If container_list.container_types(i).mandatory >= 0 Then
+             */
+            if ($container_list->container_types[$i]->mandatory >= 0) {
+                /**
+                 * With .container(container_index)
+                 *
+                 * we'll call this $cC, short for $currentContainer;
+                 */
+                $cC = $s->container[$container_index];
+
+                /**
+                 * l = Cells(4, offset + 7).Value
+                 *
+                 * Umm...context please?
+                 * I guess it reads from the Solution worksheet. At row 4, column 0 + 7.
+                 * I just need to know when this happens.
+                 */
+
+            }
+        }
+    }
+}
+
