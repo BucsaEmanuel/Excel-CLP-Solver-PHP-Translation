@@ -1790,9 +1790,9 @@ function AddItemToContainer(solution_data $solution, int $container_index, int $
                  * opposite_z = origin_z + item_list.item_types(item_type_index).length
                  */
                 $opposite_z = $origin_z + $item_list->item_types[$item_type_index]->length;
-            /**
-             * ElseIf current_rotation = 2 Then
-             */
+                /**
+                 * ElseIf current_rotation = 2 Then
+                 */
             } else if ($current_rotation == 2) {
                 /**
                  * opposite_x = origin_x + item_list.item_types(item_type_index).length
@@ -1808,9 +1808,9 @@ function AddItemToContainer(solution_data $solution, int $container_index, int $
                  * opposite_z = origin_z + item_list.item_types(item_type_index).width
                  */
                 $opposite_z = $origin_z + $item_list->item_types[$item_type_index]->width;
-            /**
-             * ElseIf current_rotation = 3 Then
-             */
+                /**
+                 * ElseIf current_rotation = 3 Then
+                 */
             } else if ($current_rotation == 3) {
                 /**
                  * opposite_x = origin_x + item_list.item_types(item_type_index).width
@@ -1826,9 +1826,9 @@ function AddItemToContainer(solution_data $solution, int $container_index, int $
                  * opposite_z = origin_z + item_list.item_types(item_type_index).height
                  */
                 $opposite_z = $origin_z + $item_list->item_types[$item_type_index]->height;
-            /**
-             * ElseIf current_rotation = 4 Then
-             */
+                /**
+                 * ElseIf current_rotation = 4 Then
+                 */
             } else if ($current_rotation == 4) {
                 /**
                  * opposite_x = origin_x + item_list.item_types(item_type_index).height
@@ -1845,9 +1845,9 @@ function AddItemToContainer(solution_data $solution, int $container_index, int $
                  */
                 $opposite_z = $origin_z + $item_list->item_types[$item_type_index]->width;
 
-            /**
-             * ElseIf current_rotation = 5 Then
-             */
+                /**
+                 * ElseIf current_rotation = 5 Then
+                 */
             } else if ($current_rotation == 5) {
                 /**
                  * opposite_x = origin_x + item_list.item_types(item_type_index).height
@@ -1864,9 +1864,9 @@ function AddItemToContainer(solution_data $solution, int $container_index, int $
                  */
                 $opposite_z = $origin_z + $item_list->item_types[$item_type_index]->length;
 
-            /**
-             * ElseIf current_rotation = 6 Then
-             */
+                /**
+                 * ElseIf current_rotation = 6 Then
+                 */
             } else if ($current_rotation == 6) {
                 /**
                  * opposite_x = origin_x + item_list.item_types(item_type_index).length
@@ -1949,9 +1949,9 @@ function AddItemToContainer(solution_data $solution, int $container_index, int $
                  * support_flag = True
                  */
                 $support_flag = true;
-            /**
-             * Else
-             */
+                /**
+                 * Else
+                 */
             } else {
 
                 /**
@@ -2256,9 +2256,9 @@ function AddItemToContainer(solution_data $solution, int $container_index, int $
                  * next_to_item_type = .addition_points(i).next_to_item_type
                  */
                 $next_to_item_type = $currentContainer->addition_points[$i]->next_to_item_type;
-            /**
-             * Else
-             */
+                /**
+                 * Else
+                 */
             } else {
                 /**
                  * If solver_options.wall_building = True Then
@@ -2312,9 +2312,9 @@ function AddItemToContainer(solution_data $solution, int $container_index, int $
                          */
                         $next_to_item_type = $currentContainer->addition_points[$i]->next_to_item_type;
                     }
-                /**
-                 * Else
-                 */
+                    /**
+                     * Else
+                     */
                 } else {
                     /**
                      * If (origin_y < min_y) Or _
@@ -2428,9 +2428,9 @@ function AddItemToContainer_Finish(float $candidate_position, solution_data $sol
          * It's in an if, so outside it, it doesn't make any sense.
          * We'll see if the original code uses it elsewhere.
          * */
-    /**
-     * Else
-     */
+        /**
+         * Else
+         */
     } else {
         /**
          * With solution.container(container_index)
@@ -2504,9 +2504,9 @@ function AddItemToContainer_Finish(float $candidate_position, solution_data $sol
              */
             $currentContainer->items[$currentContainer->item_cnt]->opposite_z = $currentContainer->items[$currentContainer->item_cnt]->origin_z + $item_list->item_types[$item_type_index]->length;
 
-        /**
-         * ElseIf candidate_rotation = 2 Then
-         */
+            /**
+             * ElseIf candidate_rotation = 2 Then
+             */
         } else if ($candidate_rotation == 2) {
             /**
              * .items(.item_cnt).opposite_x = .items(.item_cnt).origin_x + item_list.item_types(item_type_index).length
@@ -2522,9 +2522,9 @@ function AddItemToContainer_Finish(float $candidate_position, solution_data $sol
              * items(.item_cnt).opposite_z = .items(.item_cnt).origin_z + item_list.item_types(item_type_index).width
              */
             $currentContainer->items[$currentContainer->item_cnt]->opposite_z = $currentContainer->items[$currentContainer->item_cnt]->origin_z + $item_list->item_types[$item_type_index]->width;
-        /**
-         * ElseIf candidate_rotation = 3 Then
-         */
+            /**
+             * ElseIf candidate_rotation = 3 Then
+             */
         } else if ($candidate_rotation == 3) {
             /**
              * .items(.item_cnt).opposite_x = .items(.item_cnt).origin_x + item_list.item_types(item_type_index).width
@@ -2538,9 +2538,9 @@ function AddItemToContainer_Finish(float $candidate_position, solution_data $sol
              * .items(.item_cnt).opposite_z = .items(.item_cnt).origin_z + item_list.item_types(item_type_index).height
              */
             $currentContainer->items[$currentContainer->item_cnt]->opposite_z = $currentContainer->items[$currentContainer->item_cnt]->origin_z + $item_list->item_types[$item_type_index]->height;
-        /**
-         * ElseIf candidate_rotation = 4 Then
-         */
+            /**
+             * ElseIf candidate_rotation = 4 Then
+             */
         } else if ($candidate_rotation == 4) {
             /**
              * .items(.item_cnt).opposite_x = .items(.item_cnt).origin_x + item_list.item_types(item_type_index).height
@@ -2557,9 +2557,9 @@ function AddItemToContainer_Finish(float $candidate_position, solution_data $sol
              */
             $currentContainer->items[$currentContainer->item_cnt]->opposite_z = $currentContainer->items[$currentContainer->item_cnt]->origin_z + $item_list->item_types[$item_type_index]->width;
 
-        /**
-         * ElseIf candidate_rotation = 5 Then
-         */
+            /**
+             * ElseIf candidate_rotation = 5 Then
+             */
         } else if ($candidate_rotation == 5) {
             /**
              * .items(.item_cnt).opposite_x = .items(.item_cnt).origin_x + item_list.item_types(item_type_index).height
@@ -2575,9 +2575,9 @@ function AddItemToContainer_Finish(float $candidate_position, solution_data $sol
              * .items(.item_cnt).opposite_z = .items(.item_cnt).origin_z + item_list.item_types(item_type_index).length
              */
             $currentContainer->items[$currentContainer->item_cnt]->opposite_z = $currentContainer->items[$currentContainer->item_cnt]->origin_z + $item_list->item_types[$item_type_index]->length;
-        /**
-         * ElseIf candidate_rotation = 6 Then
-         */
+            /**
+             * ElseIf candidate_rotation = 6 Then
+             */
         } else if ($candidate_rotation == 6) {
             /**
              * .items(.item_cnt).opposite_x = .items(.item_cnt).origin_x + item_list.item_types(item_type_index).length
@@ -2763,9 +2763,9 @@ function AddItemToContainer_Finish(float $candidate_position, solution_data $sol
              * .net_profit = .net_profit + item_list.item_types(item_type_index).profit - .container(container_index).cost
              */
             $s->net_profit = $s->net_profit + $item_list->item_types[$item_type_index]->profit - $s->container[$container_index]->cost;
-        /**
-         * Else
-         */
+            /**
+             * Else
+             */
         } else {
             $s->net_profit = $s->net_profit + $item_list->item_types[$item_type_index]->profit;
         }
@@ -2902,7 +2902,8 @@ function GetSolverOptions(solver_option_data $solver_options, string $item_sort_
  * @param item_type_data[] $items
  * @param solver_option_data $solver_options
  */
-function GetItemData(item_list_data $item_list, int $num_item_types, array $items, solver_option_data $solver_options) {
+function GetItemData(item_list_data $item_list, int $num_item_types, array $items, solver_option_data $solver_options)
+{
     /**
      * item_list.num_item_types = ThisWorkbook.Worksheets("CLP Solver Console").Cells(2, 3).Value
      *
@@ -3154,17 +3155,17 @@ function GetItemData(item_list_data $item_list, int $num_item_types, array $item
              * .item_types(i).sort_criterion = .item_types(i).volume * (max_weight + 1) + .item_types(i).weight
              */
             $iL->item_types[$i]->sort_criterion = $iL->item_types[$i]->volume * ($max_weight + 1) + $iL->item_types[$i]->weight;
-        /**
-         * ElseIf solver_options.item_sort_criterion = 2 Then
-         */
+            /**
+             * ElseIf solver_options.item_sort_criterion = 2 Then
+             */
         } else if ($solver_options->item_sort_criterion == 2) {
             /**
              * .item_types(i).sort_criterion = .item_types(i).weight * (max_volume + 1) + .item_types(i).volume
              */
             $iL->item_types[$i]->sort_criterion = $iL->item_types[$i]->weight * ($max_volume + 1) + $iL->item_types[$i]->volume;
-        /**
-         * Else
-         */
+            /**
+             * Else
+             */
         } else {
             /**
              * .item_types(i).sort_criterion = .item_types(i).width
@@ -3486,5 +3487,286 @@ function GetCompatibilityData(compatibility_data $compatibility_list, instance_d
                  * */
             }
         }
+    }
+}
+
+/**
+ * Private Sub InitializeSolution(solution As solution_data)
+ */
+function InitializeSolution(solution_data $solution, container_list_data $container_list, item_list_data $item_list)
+{
+    /**
+     * Dim i As Long
+     * @var integer
+     */
+    $i = 0;
+
+    /**
+     * Dim j As Long
+     * @var integer
+     */
+    $j = 0;
+
+    /**
+     * Dim k As Long
+     * @var integer
+     */
+    $k = 0;
+
+    /**
+     * Dim l As Long
+     * @var integer
+     */
+    $l = 0;
+
+    /**
+     * With solution
+     */
+    $s = $solution;
+
+    /**
+     * .feasible = False
+     */
+    $s->feasible = false;
+
+    /**
+     * .net_profit = 0
+     */
+    $s->net_profit = 0;
+
+    /**
+     * .total_volume = 0
+     */
+    $s->total_volume = 0;
+
+    /**
+     * .total_weight = 0
+     */
+    $s->total_weight = 0;
+
+    /**
+     * .total_dispersion = 0
+     */
+    $s->total_dispersion = 0;
+
+    /**
+     * .total_distance = 0
+     */
+    $s->total_distance = 0;
+
+    /**
+     * .total_x_moment = 0
+     */
+    $s->total_x_moment = 0;
+
+    /**
+     * .total_yz_moment = 0
+     */
+    $s->total_yz_moment = 0;
+
+    /**
+     * .num_containers = 0
+     */
+    $s->num_containers = 0;
+
+    /**
+     * For i = 1 To container_list.num_container_types
+     */
+    for ($i = 1; $i <= $container_list->num_container_types; ++$i) {
+        /**
+         * If container_list.container_types(i).mandatory >= 0 Then
+         */
+        if ($container_list->container_types[$i]->mandatory >= 0) {
+            /**
+             * .num_containers = .num_containers + container_list.container_types(i).number_available
+             */
+            $s->num_containers = $s->num_containers + $container_list->container_types[$i]->number_available;
+        }
+    }
+
+    /**
+     * ReDim .rotation_order(1 To item_list.num_item_types, 1 To 6)
+     *
+     * I'm guessing this is just a resize. The data fill will soon follow.
+     */
+
+    /**
+     * For i = 1 To item_list.num_item_types
+     */
+    for ($i = 1; $i <= $item_list->num_item_types; ++$i) {
+        /**
+         * For j = 1 To 6
+         */
+        for ($j = 1; $j <= 6; ++$j) {
+            /**
+             * .rotation_order(i, j) = j
+             */
+            $s->rotation_order[$i][$j] = $j;
+        }
+    }
+
+    /**
+     * ReDim .item_type_order(1 To item_list.num_item_types)
+     *
+     * another resize
+     */
+
+    /**
+     * For i = 1 To item_list.num_item_types
+     */
+    for ($i = 1; $i <= $item_list->num_item_types; ++$i) {
+        /**
+         * .item_type_order(i) = i
+         */
+        $s->item_type_order[$i] = $i;
+    }
+
+    /**
+     * ReDim .container(1 To .num_containers)
+     *
+     * For i = 1 To .num_containers
+     *      ReDim .container(i).items(1 To item_list.total_number_of_items)
+     *      ReDim .container(i).addition_points(1 To 3 * item_list.total_number_of_items)
+     *      ReDim .container(i).repack_item_count(1 To item_list.total_number_of_items)
+     * Next i
+     *
+     * ReDim .unpacked_item_count(1 To item_list.num_item_types)
+     *
+     * Just a bunch of different resizes.
+     */
+
+    /**
+     * l = 1
+     */
+    $l = 1;
+
+    /**
+     * For i = 1 To container_list.num_container_types
+     */
+    for ($i = 1; $i <= $container_list->num_container_types; ++$i) {
+        /**
+         * If container_list.container_types(i).mandatory >= 0 Then
+         */
+        if ($container_list->container_types[$i]->mandatory >= 0) {
+            /**
+             * For j = 1 To container_list.container_types(i).number_available
+             */
+            for ($j = 1; $j <= $container_list->container_types[$i]->number_available; ++$j) {
+                /**
+                 * .container(l).width = container_list.container_types(i).width
+                 */
+                $s->container[$l]->width = $container_list->container_types[$i]->width;
+
+                /**
+                 * .container(l).height = container_list.container_types(i).height
+                 */
+                $s->container[$l]->height = $container_list->container_types[$i]->height;
+
+                /**
+                 * .container(l).length = container_list.container_types(i).length
+                 */
+                $s->container[$l]->length = $container_list->container_types[$i]->length;
+
+                /**
+                 * .container(l).volume_capacity = container_list.container_types(i).volume_capacity
+                 */
+                $s->container[$l]->volume_capacity = $container_list->container_types[$i]->volume_capacity;
+
+                /**
+                 * .container(l).weight_capacity = container_list.container_types(i).weight_capacity
+                 */
+                $s->container[$l]->weight_capacity = $container_list->container_types[$i]->weight_capacity;
+
+                /**
+                 * .container(l).cost = container_list.container_types(i).cost
+                 */
+                $s->container[$l]->cost = $container_list->container_types[$i]->cost;
+
+                /**
+                 * .container(l).mandatory = container_list.container_types(i).mandatory
+                 */
+                $s->container[$l]->mandatory = $container_list->container_types[$i]->mandatory;
+
+                /**
+                 * .container(l).type_id = i
+                 */
+                $s->container[$l]->type_id = $i;
+
+                /**
+                 * .container(l).volume_packed = 0
+                 */
+                $s->container[$l]->volume_packed = 0;
+
+                /**
+                 * .container(l).weight_packed = 0
+                 */
+                $s->container[$l]->weight_packed = 0;
+
+                /**
+                 * .container(l).item_cnt = 0
+                 */
+                $s->container[$l]->item_cnt = 0;
+
+                /**
+                 * .container(l).addition_point_count = 1
+                 */
+                $s->container[$l]->addition_point_count = 1;
+
+                /**
+                 * For k = 1 To item_list.total_number_of_items
+                 */
+                for ($k = 1; $k <= $item_list->total_number_of_items; ++$k) {
+                    /**
+                     * .container(l).items(k).item_type = 0
+                     */
+                    $s->container[$l]->items[$k]->item_type = 0;
+
+                    /**
+                     * .container(l).addition_points(k).origin_x = 0
+                     */
+                    $s->container[$l]->addition_points[$k]->origin_x = 0;
+
+                    /**
+                     * .container(l).addition_points(k).origin_y = 0
+                     */
+                    $s->container[$l]->addition_points[$k]->origin_y = 0;
+
+                    /**
+                     * .container(l).addition_points(k).origin_z = 0
+                     */
+                    $s->container[$l]->addition_points[$k]->origin_z = 0;
+
+                    /**
+                     * .container(l).addition_points(k).next_to_item_type = 0
+                     */
+                    $s->container[$l]->addition_points[$k]->next_to_item_type = 0;
+                }
+
+                /**
+                 * For k = 1 To item_list.total_number_of_items
+                 */
+                for ($k = 1; $k <= $item_list->total_number_of_items; ++$k) {
+                    /**
+                     * .container(l).repack_item_count(k) = 0
+                     */
+                    $s->container[$l]->repack_item_count[$k] = 0;
+                }
+
+                /**
+                 * l = l + 1
+                 */
+                $l = $l + 1;
+            }
+        }
+    }
+
+    /**
+     * For i = 1 To item_list.num_item_types
+     */
+    for ($i = 1; $i <= $item_list->num_item_types; ++$i) {
+        /**
+         * .unpacked_item_count(i) = item_list.item_types(i).number_requested
+         */
+        $s->unpacked_item_count[$i] = $item_list->item_types[$i]->number_requested;
     }
 }

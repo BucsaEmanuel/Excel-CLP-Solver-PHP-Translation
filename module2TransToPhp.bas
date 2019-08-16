@@ -1078,94 +1078,94 @@
     
 ' End Sub
 
-Private Sub InitializeSolution(solution As solution_data)
+' Private Sub InitializeSolution(solution As solution_data)
     
-    Dim i As Long
-    Dim j As Long
-    Dim k As Long
-    Dim l As Long
+'     Dim i As Long
+'     Dim j As Long
+'     Dim k As Long
+'     Dim l As Long
     
-    With solution
-        .feasible = False
-        .net_profit = 0
-        .total_volume = 0
-        .total_weight = 0
-        .total_dispersion = 0
-        .total_distance = 0
-        .total_x_moment = 0
-        .total_yz_moment = 0
+'     With solution
+'         .feasible = False
+'         .net_profit = 0
+'         .total_volume = 0
+'         .total_weight = 0
+'         .total_dispersion = 0
+'         .total_distance = 0
+'         .total_x_moment = 0
+'         .total_yz_moment = 0
         
-        .num_containers = 0
-        For i = 1 To container_list.num_container_types
-            If container_list.container_types(i).mandatory >= 0 Then
-                .num_containers = .num_containers + container_list.container_types(i).number_available
-            End If
-        Next i
+'         .num_containers = 0
+'         For i = 1 To container_list.num_container_types
+'             If container_list.container_types(i).mandatory >= 0 Then
+'                 .num_containers = .num_containers + container_list.container_types(i).number_available
+'             End If
+'         Next i
         
-        ReDim .rotation_order(1 To item_list.num_item_types, 1 To 6)
-        For i = 1 To item_list.num_item_types
-            For j = 1 To 6
-                .rotation_order(i, j) = j
-            Next j
-        Next i
+'         ReDim .rotation_order(1 To item_list.num_item_types, 1 To 6)
+'         For i = 1 To item_list.num_item_types
+'             For j = 1 To 6
+'                 .rotation_order(i, j) = j
+'             Next j
+'         Next i
         
-        ReDim .item_type_order(1 To item_list.num_item_types)
-        For i = 1 To item_list.num_item_types
-            .item_type_order(i) = i
-        Next i
+'         ReDim .item_type_order(1 To item_list.num_item_types)
+'         For i = 1 To item_list.num_item_types
+'             .item_type_order(i) = i
+'         Next i
         
-        ReDim .container(1 To .num_containers)
-        For i = 1 To .num_containers
-            ReDim .container(i).items(1 To item_list.total_number_of_items)
-            ReDim .container(i).addition_points(1 To 3 * item_list.total_number_of_items)
-            ReDim .container(i).repack_item_count(1 To item_list.total_number_of_items)
-        Next i
+'         ReDim .container(1 To .num_containers)
+'         For i = 1 To .num_containers
+'             ReDim .container(i).items(1 To item_list.total_number_of_items)
+'             ReDim .container(i).addition_points(1 To 3 * item_list.total_number_of_items)
+'             ReDim .container(i).repack_item_count(1 To item_list.total_number_of_items)
+'         Next i
         
-        ReDim .unpacked_item_count(1 To item_list.num_item_types)
+'         ReDim .unpacked_item_count(1 To item_list.num_item_types)
         
-        l = 1
-        For i = 1 To container_list.num_container_types
-            If container_list.container_types(i).mandatory >= 0 Then
-                For j = 1 To container_list.container_types(i).number_available
+'         l = 1
+'         For i = 1 To container_list.num_container_types
+'             If container_list.container_types(i).mandatory >= 0 Then
+'                 For j = 1 To container_list.container_types(i).number_available
                     
-                    .container(l).width = container_list.container_types(i).width
-                    .container(l).height = container_list.container_types(i).height
-                    .container(l).length = container_list.container_types(i).length
-                    .container(l).volume_capacity = container_list.container_types(i).volume_capacity
-                    .container(l).weight_capacity = container_list.container_types(i).weight_capacity
-                    .container(l).cost = container_list.container_types(i).cost
-                    .container(l).mandatory = container_list.container_types(i).mandatory
-                    .container(l).type_id = i
-                    .container(l).volume_packed = 0
-                    .container(l).weight_packed = 0
-                    .container(l).item_cnt = 0
+'                     .container(l).width = container_list.container_types(i).width
+'                     .container(l).height = container_list.container_types(i).height
+'                     .container(l).length = container_list.container_types(i).length
+'                     .container(l).volume_capacity = container_list.container_types(i).volume_capacity
+'                     .container(l).weight_capacity = container_list.container_types(i).weight_capacity
+'                     .container(l).cost = container_list.container_types(i).cost
+'                     .container(l).mandatory = container_list.container_types(i).mandatory
+'                     .container(l).type_id = i
+'                     .container(l).volume_packed = 0
+'                     .container(l).weight_packed = 0
+'                     .container(l).item_cnt = 0
                     
-                    .container(l).addition_point_count = 1
+'                     .container(l).addition_point_count = 1
                     
-                    For k = 1 To item_list.total_number_of_items
-                        .container(l).items(k).item_type = 0
-                        .container(l).addition_points(k).origin_x = 0
-                        .container(l).addition_points(k).origin_y = 0
-                        .container(l).addition_points(k).origin_z = 0
-                        .container(l).addition_points(k).next_to_item_type = 0
-                    Next k
+'                     For k = 1 To item_list.total_number_of_items
+'                         .container(l).items(k).item_type = 0
+'                         .container(l).addition_points(k).origin_x = 0
+'                         .container(l).addition_points(k).origin_y = 0
+'                         .container(l).addition_points(k).origin_z = 0
+'                         .container(l).addition_points(k).next_to_item_type = 0
+'                     Next k
                     
-                    For k = 1 To item_list.total_number_of_items
-                        .container(l).repack_item_count(k) = 0
-                    Next k
+'                     For k = 1 To item_list.total_number_of_items
+'                         .container(l).repack_item_count(k) = 0
+'                     Next k
                     
-                    l = l + 1
-                Next j
-            End If
-        Next i
+'                     l = l + 1
+'                 Next j
+'             End If
+'         Next i
         
-        For i = 1 To item_list.num_item_types
-            .unpacked_item_count(i) = item_list.item_types(i).number_requested
-        Next i
+'         For i = 1 To item_list.num_item_types
+'             .unpacked_item_count(i) = item_list.item_types(i).number_requested
+'         Next i
         
-    End With
+'     End With
     
-End Sub
+' End Sub
 
 Private Sub GetInstanceData()
     
