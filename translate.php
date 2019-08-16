@@ -1582,7 +1582,7 @@ function AddItemToContainer(solution_data $solution, int $container_index, int $
             /**
              * GoTo AddItemToContainer_Finish
              */
-            AddItemToContainer_Finish();
+            $AddItemToContainer = AddItemToContainer_Finish($candidate_position, $solution, $container_index, $item_type_index, $candidate_rotation, $item_list, $add_type);
         }
     }
 
@@ -1596,7 +1596,7 @@ function AddItemToContainer(solution_data $solution, int $container_index, int $
         /**
          * GoTo AddItemToContainer_Finish
          */
-        AddItemToContainer_Finish();
+        $AddItemToContainer = AddItemToContainer_Finish($candidate_position, $solution, $container_index, $item_type_index, $candidate_rotation, $item_list, $add_type);
     }
 
     /*
@@ -1609,7 +1609,7 @@ function AddItemToContainer(solution_data $solution, int $container_index, int $
         /**
          * GoTo AddItemToContainer_Finish
          */
-        AddItemToContainer_Finish();
+        $AddItemToContainer = AddItemToContainer_Finish($candidate_position, $solution, $container_index, $item_type_index, $candidate_rotation, $item_list, $add_type);
     }
 
     /*
@@ -1630,7 +1630,7 @@ function AddItemToContainer(solution_data $solution, int $container_index, int $
                 /**
                  * GoTo AddItemToContainer_Finish
                  */
-                AddItemToContainer_Finish();
+                $AddItemToContainer = AddItemToContainer_Finish($candidate_position, $solution, $container_index, $item_type_index, $candidate_rotation, $item_list, $add_type);
             }
         }
     }
@@ -2373,6 +2373,7 @@ function AddItemToContainer(solution_data $solution, int $container_index, int $
             }
         }
     }
+    return $AddItemToContainer;
 }
 
 /**
@@ -2423,6 +2424,7 @@ function AddItemToContainer_Finish(float $candidate_position, solution_data $sol
          * AddItemToContainer = False
          */
         $AddItemToContainer = false;
+        return $AddItemToContainer;
         /*
          * TODO: clarify how this variable is defined.
          * It's in an if, so outside it, it doesn't make any sense.
@@ -2811,6 +2813,7 @@ function AddItemToContainer_Finish(float $candidate_position, solution_data $sol
          * We've set it at the top of the function as false.
          * Now it's true. Will it ever be used?
          * */
+        return $AddItemToContainer;
     }
 }
 
@@ -4315,3 +4318,435 @@ function ReadSolution(solution_data $solution, container_list_data $container_li
      */
 }
 
+/**
+ * Sub CLP_Solver()
+ *
+ */
+function CLP_Solver()
+{
+    /**
+     * Application.ScreenUpdating = False
+     * Application.Calculation = xlCalculationManual
+     *
+     * Excel stuff.
+     */
+
+    /**
+     * Dim WorksheetExists As Boolean
+     * @var bool
+     */
+    $WorksheetExists = false;
+    /*
+     * This isn't really necessary, since we're dealing with worksheets.
+     * */
+
+    /**
+     * Dim reply As Integer
+     * @var integer
+     */
+    $reply = 0;
+
+    /**
+     * WorksheetExists = CheckWorksheetExistence("1.Items") And CheckWorksheetExistence("2.Containers") And CheckWorksheetExistence("3.Solution")
+     */
+    $WorksheetExists = CheckWorksheetExistence("1.Items") && CheckWorksheetExistence("2.Containers") && CheckWorksheetExistence("3.Solution");
+
+    /**
+     * If WorksheetExists = False Then
+     */
+    if ($WorksheetExists == false) {
+        /**
+         * MsgBox "Worksheets 1.Items, 2.Containers, and 3.Solution must exist for the CLP Spreadsheet Solver to function."
+         * Application.ScreenUpdating = True
+         * Application.Calculation = xlCalculationAutomatic
+         * Exit Sub
+         */
+        return null;
+    } else {
+        /**
+         * reply = MsgBox("This will take " & ThisWorkbook.Worksheets("CLP Solver Console").Cells(14, 3).Value & " seconds. Do you want to continue?", vbYesNo, "CLP Spreadsheet Solver")
+         * If reply = vbNo Then
+         *      Application.ScreenUpdating = True
+         *      Application.Calculation = xlCalculationAutomatic
+         *      Exit Sub
+         * End If
+         */
+    }
+
+    /**
+     * Application.EnableCancelKey = xlErrorHandler
+     * On Error GoTo CLP_Solver_Finish
+     *
+     * Hmm, should try to at least understand this. Maybe later...
+     */
+
+    /*
+     * 'Allocate memory and get the data
+     * */
+    /**
+     * Call GetSolverOptions
+     *
+     * We'll need to pass in some params for our translated functions.
+     */
+    $solver_options = new solver_option_data();
+    $item_sort_criterion = "";
+    $wall_building = true;
+    $CPU_time_limit = 60;
+    GetSolverOptions($solver_options, $item_sort_criterion, $wall_building, $CPU_time_limit);
+
+    /**
+     * Call GetItemData
+     */
+    $item_list = new item_list_data();
+    $num_item_types = 1;
+    $items = array();
+    $solver_options = new solver_option_data();
+    GetItemData($item_list, $num_item_types, $items, $solver_options);
+
+    /**
+     * Call GetContainerData
+     *
+     */
+    $container_list = new container_list_data();
+    $num_container_types = 1;
+    $containers = array();
+    GetContainerData($container_list, $num_container_types, $containers);
+
+    /**
+     * Call GetInstanceData
+     */
+    $instance = new instance_data();
+    $front_side_support = false;
+    $item_item_compatibility_worksheet = false;
+    $container_item_compatibility_worksheet = false;
+    GetInstanceData($instance, $front_side_support, $item_item_compatibility_worksheet, $container_item_compatibility_worksheet);
+
+    /**
+     * Call GetCompatibilityData
+     */
+    $compatibility_list = new compatibility_data();
+    $instance = new instance_data();
+    $item_list = new item_list_data();
+    $container_list = new container_list_data();
+    $item_item_compatibilities = array();
+    $container_item_compatibilities = array();
+    GetCompatibilityData($compatibility_list, $instance, $item_list, $container_list, $item_item_compatibilities, $container_item_compatibilities);
+
+    /**
+     * Call SortItems
+     */
+    SortItems();
+
+    /**
+     * Dim incumbent As solution_data
+     * @var solution_data
+     */
+    $incumbent = new solution_data();
+
+    /**
+     * Call InitializeSolution(incumbent)
+     */
+    $container_list = new container_list_data();
+    $item_list = new item_list_data();
+    InitializeSolution($incumbent, $container_list, $item_list);
+
+    /**
+     * Dim best_known As solution_data
+     * @var solution_data
+     */
+    $best_known = new solution_data();
+
+    /**
+     * Call InitializeSolution(best_known)
+     */
+    $container_list = new container_list_data();
+    $item_list = new item_list_data();
+    InitializeSolution($best_known, $container_list, $item_list);
+
+    /**
+     * best_known = incumbent
+     */
+    $best_known = $incumbent;
+
+    /**
+     * Dim iteration As Long
+     * @var integer
+     */
+    $iteration = 0;
+
+    /**
+     * Dim i As Long
+     * @var integer
+     */
+    $i = 0;
+
+    /**
+     * Dim j As Long
+     * @var integer
+     */
+    $j = 0;
+
+    /**
+     * Dim k As Long
+     * @var integer
+     */
+    $k = 0;
+
+    /**
+     * Dim l As Long
+     * @var integer
+     */
+    $l = 0;
+
+    /**
+     * Dim nonempty_container_cnt As Long
+     * @var integer
+     */
+    $nonempty_container_cnt = 0;
+
+    /**
+     * Dim container_id As Long
+     * @var integer
+     */
+    $container_id = 0;
+
+    /**
+     * Dim start_time As Double
+     * @var float
+     */
+    $start_time = 0.0;
+
+    /**
+     * Dim end_time As Double
+     * @var float
+     */
+    $end_time = 0.0;
+
+    /**
+     * Dim continue_flag As Boolean
+     * @var boolean
+     */
+    $continue_flag = true;
+
+    /**
+     * Dim sort_criterion As Double
+     * @var float
+     */
+    $sort_criterion = 0.0;
+
+    /**
+     * Dim selected_rotation As Double
+     * @var float
+     */
+    $selected_rotation = 0.0;
+
+    /*
+     * 'infeasibility check
+     * */
+
+    /**
+     * Dim infeasibility_count As Long
+     * @var integer
+     */
+    $infeasibility_count = 0;
+
+    /**
+     * Dim infeasibility_string As Long
+     * @var string
+     */
+    $infeasibility_string = 0;
+
+    /**
+     * Call FeasibilityCheckData(infeasibility_count, infeasibility_string)
+     */
+    FeasibilityCheckData($infeasibility_count, $infeasibility_string);
+
+    /**
+     * If infeasibility_count > 0 Then
+     */
+    if ($infeasibility_count > 0) {
+        /**
+         * reply = MsgBox("Infeasibilities detected." & Chr(13) & infeasibility_string & "Do you want to continue?", vbYesNo, "CLP Spreadsheet Solver")
+         * If reply = vbNo Then
+         *      Application.ScreenUpdating = True
+         *      Application.Calculation = xlCalculationAutomatic
+         *      Exit Sub
+         * End If
+         */
+    }
+
+    /**
+     * start_time = Timer
+     * end_time = Timer
+     *
+     * We don't really need these
+     */
+
+    /*
+     * 'constructive phase
+     * */
+
+    /**
+     * Application.ScreenUpdating = True
+     * Application.StatusBar = "Constructive phase..."
+     * Application.ScreenUpdating = False
+     */
+
+    /**
+     * Call SortContainers(incumbent, 0)
+     */
+    SortContainers($incumbent, 0);
+
+    /**
+     * For i = 1 To incumbent.num_containers
+     */
+    for ($i = 1; $i <= $incumbent->num_containers; ++$i) {
+        /*
+         * 'sort the rotation order for this container
+         * */
+        /**
+         * For j = 1 To item_list.num_item_types
+         */
+        for ($j = 1; $j <= $item_list->num_item_types; ++$j) {
+            /**
+             * sort_criterion = 0
+             */
+            $sort_criterion = 0;
+
+            /**
+             * selected_rotation = 0
+             */
+            $selected_rotation = 0;
+
+            /**
+             * If sort_criterion < (Int(incumbent.container(i).width / item_list.item_types(j).width) * item_list.item_types(j).width) * (Int(incumbent.container(i).height / item_list.item_types(j).height) * item_list.item_types(j).height) Then
+             *      sort_criterion = (Int(incumbent.container(i).width / item_list.item_types(j).width) * item_list.item_types(j).width) * (Int(incumbent.container(i).height / item_list.item_types(j).height) * item_list.item_types(j).height)
+             *      selected_rotation = 1
+             * End If
+             */
+            if (
+                $sort_criterion < (intval($incumbent->container[$i]->width / $item_list->item_types[$j]->width) * $item_list->item_types[$j]->width) * (intval($incumbent->container[$i]->height / $item_list->item_types[$j]->height) * $item_list->item_types[$j]->height)
+            ) {
+                $sort_criterion = (intval($incumbent->container[$i]->width / $item_list->item_types[$j]->width) * $item_list->item_types[$j]->width) * (intval($incumbent->container[$i]->height / $item_list->item_types[$j]->height) * $item_list->item_types[$j]->height);
+                $selected_rotation = 1;
+            }
+
+            /**
+             * If sort_criterion < (Int(incumbent.container(i).width / item_list.item_types(j).length) * item_list.item_types(j).length) * (Int(incumbent.container(i).height / item_list.item_types(j).height) * item_list.item_types(j).height) Then
+             *      sort_criterion = (Int(incumbent.container(i).width / item_list.item_types(j).length) * item_list.item_types(j).length) * (Int(incumbent.container(i).height / item_list.item_types(j).height) * item_list.item_types(j).height)
+             *      selected_rotation = 2
+             * End If
+             */
+            if (
+                $sort_criterion < (intval($incumbent->container[$i]->width / $item_list->item_types[$j]->length) * $item_list->item_types[$j]->length) * (intval($incumbent->container[$i]->height / $item_list->item_types[$j]->height) * $item_list->item_types[$j]->height)
+            ) {
+                $sort_criterion = (intval($incumbent->container[$i]->width / $item_list->item_types[$j]->length) * $item_list->item_types[$j]->length) * (intval($incumbent->container[$i]->height / $item_list->item_types[$j]->height) * $item_list->item_types[$j]->height);
+                $selected_rotation = 2;
+            }
+
+            /**
+             * If (item_list.item_types(j).xy_rotatable = True) And (sort_criterion < (Int(incumbent.container(i).width / item_list.item_types(j).width) * item_list.item_types(j).width) * (Int(incumbent.container(i).height / item_list.item_types(j).length) * item_list.item_types(j).length)) Then
+             *      sort_criterion = (Int(incumbent.container(i).width / item_list.item_types(j).width) * item_list.item_types(j).width) * (Int(incumbent.container(i).height / item_list.item_types(j).length) * item_list.item_types(j).length)
+             *      selected_rotation = 3
+             * End If
+             */
+            if (
+                $item_list->item_types[$j]->xy_rotatable == true &&
+                $sort_criterion < (intval($incumbent->container[$i]->width / $item_list->item_types[$j]->width) * $item_list->item_types[$j]->width) * (intval($incumbent->container[$i]->height / $item_list->item_types[$j]->length) * $item_list->item_types[$j]->length)
+            ) {
+                $sort_criterion = (intval($incumbent->container[$i]->width / $item_list->item_types[$j]->width) * $item_list->item_types[$j]->width) * (intval($incumbent->container[$i]->height / $item_list->item_types[$j]->length) * $item_list->item_types[$j]->length);
+                $selected_rotation = 3;
+            }
+
+            /**
+             * If (item_list.item_types(j).xy_rotatable = True) And (sort_criterion < (Int(incumbent.container(i).width / item_list.item_types(j).height) * item_list.item_types(j).height) * (Int(incumbent.container(i).height / item_list.item_types(j).length) * item_list.item_types(j).length)) Then
+             *      sort_criterion = sort_criterion < (Int(incumbent.container(i).width / item_list.item_types(j).height) * item_list.item_types(j).height) * (Int(incumbent.container(i).height / item_list.item_types(j).length) * item_list.item_types(j).length)
+             *      selected_rotation = 4
+             * End If
+             */
+            if (
+                $item_list->item_types[$j]->xy_rotatable == true &&
+                $sort_criterion < (intval($incumbent->container[$i]->width / $item_list->item_types[$j]->height) * $item_list->item_types[$j]->height) * (intval($incumbent->container[$i]->height / $item_list->item_types[$j]->length) * $item_list->item_types[$j]->length)
+            ) {
+                $sort_criterion = (intval($incumbent->container[$i]->width / $item_list->item_types[$j]->height) * $item_list->item_types[$j]->height) * (intval($incumbent->container[$i]->height / $item_list->item_types[$j]->length) * $item_list->item_types[$j]->length);
+                $selected_rotation = 4;
+            }
+
+            /**
+             * If (item_list.item_types(j).yz_rotatable = True) And (sort_criterion < (Int(incumbent.container(i).width / item_list.item_types(j).height) * item_list.item_types(j).height) * (Int(incumbent.container(i).height / item_list.item_types(j).width) * item_list.item_types(j).width)) Then
+             *      sort_criterion = (Int(incumbent.container(i).width / item_list.item_types(j).height) * item_list.item_types(j).height) * (Int(incumbent.container(i).height / item_list.item_types(j).width) * item_list.item_types(j).width)
+             *      selected_rotation = 5
+             * End If
+             */
+            if (
+                $item_list->item_types[$j]->yz_rotatable == true &&
+                $sort_criterion < (intval($incumbent->container[$i]->width / $item_list->item_types[$j]->height) * $item_list->item_types[$j]->height) * (intval($incumbent->container[$i]->height / $item_list->item_types[$j]->width) * $item_list->item_types[$j]->width)
+            ) {
+                $sort_criterion = (intval($incumbent->container[$i]->width / $item_list->item_types[$j]->height) * $item_list->item_types[$j]->height) * (intval($incumbent->container[$i]->height / $item_list->item_types[$j]->width) * $item_list->item_types[$j]->width);
+                $selected_rotation = 5;
+            }
+
+            /**
+             * If (item_list.item_types(j).yz_rotatable = True) And (sort_criterion < (Int(incumbent.container(i).width / item_list.item_types(j).length) * item_list.item_types(j).length) * (Int(incumbent.container(i).height / item_list.item_types(j).width) * item_list.item_types(j).width)) Then
+             *      sort_criterion = (Int(incumbent.container(i).width / item_list.item_types(j).length) * item_list.item_types(j).length) * (Int(incumbent.container(i).height / item_list.item_types(j).width) * item_list.item_types(j).width)
+             *      selected_rotation = 6
+             * End If
+             */
+            if (
+                $item_list->item_types[$j]->yz_rotatable == true &&
+                $sort_criterion < (intval($incumbent->container[$i]->width / $item_list->item_types[$j]->length) * $item_list->item_types[$j]->length) * (intval($incumbent->container[$i]->height / $item_list->item_types[$j]->width) * $item_list->item_types[$j]->width)
+            ) {
+                $sort_criterion = (intval($incumbent->container[$i]->width / $item_list->item_types[$j]->length) * $item_list->item_types[$j]->length) * (intval($incumbent->container[$i]->height / $item_list->item_types[$j]->width) * $item_list->item_types[$j]->width);
+                $selected_rotation = 6;
+            }
+
+            /**
+             * TODO: double and triple check this. really long lines.
+             */
+
+            /**
+             * If selected_rotation = 0 Then
+             *      selected_rotation = 1
+             * End If
+             */
+            if ($selected_rotation == 0) {
+                $selected_rotation = 1;
+            }
+
+            /**
+             * incumbent.rotation_order(j, 1) = selected_rotation
+             */
+            $incumbent->rotation_order[$j][1] = $selected_rotation;
+
+            /**
+             * incumbent.rotation_order(j, selected_rotation) = 1
+             */
+            $incumbent->rotation_order[$j][$selected_rotation] = 1;
+        }
+
+        /**
+         * For j = 1 To item_list.num_item_types
+         */
+        for ($j = 1; $j <= $item_list->num_item_types; ++$j) {
+            /**
+             * continue_flag = True
+             */
+            $continue_flag = true;
+            /**
+             * Do While (incumbent.unpacked_item_count(incumbent.item_type_order(j)) > 0) And (continue_flag = True)
+             *      continue_flag = AddItemToContainer(incumbent, i, incumbent.item_type_order(j), 1, False)
+             * Loop
+             */
+            do {
+                $continue_flag = AddItemToContainer($incumbent, $i, $incumbent->item_type_order[$j], 1, false, $instance, $compatibility_list, $item_list, $solver_options);
+            } while ($incumbent->unpacked_item_count[$incumbent->item_type_order[$j]] > 0 && $continue_flag == true);
+        }
+
+        /**
+         * incumbent.feasible = True
+         */
+        $incumbent->feasible = true;
+        ###BOOKMARK
+
+    }
+}
