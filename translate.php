@@ -4225,10 +4225,93 @@ function ReadSolution(solution_data $solution, container_list_data $container_li
                  * Umm...context please?
                  * I guess it reads from the Solution worksheet. At row 4, column 0 + 7.
                  * I just need to know when this happens.
+                 * The formula for these cells is a COUNT, which determines how many items
+                 * are in the container.
                  */
 
+                /**
+                 * Since this reads from a spreadsheet and we currently have no alternative,
+                 * we'll just let this and the following code commented.
+                 *
+                 *  For k = 1 To l
+                 *      If IsNumeric(Cells(5 + k, offset + 7).Value) = True Then
+                 *          .item_cnt = .item_cnt + 1
+                 *          item_type_index = Cells(5 + k, offset + 7).Value
+                 *
+                 *          solution.unpacked_item_count(item_type_index) = solution.unpacked_item_count(item_type_index) - 1
+                 *
+                 *          .items(.item_cnt).item_type = item_type_index
+                 *          .items(.item_cnt).origin_x = Cells(5 + k, offset + 3).Value
+                 *          .items(.item_cnt).origin_y = Cells(5 + k, offset + 4).Value
+                 *          .items(.item_cnt).origin_z = Cells(5 + k, offset + 5).Value
+                 *
+                 *          If ThisWorkbook.Worksheets("3.Solution").Cells(5 + k, offset + 6).Value = "xyz" Then
+                 *              .items(.item_cnt).rotation = 1
+                 *              .items(.item_cnt).opposite_x = .items(.item_cnt).origin_x + item_list.item_types(item_type_index).width
+                 *              .items(.item_cnt).opposite_y = .items(.item_cnt).origin_y + item_list.item_types(item_type_index).height
+                 *              .items(.item_cnt).opposite_z = .items(.item_cnt).origin_z + item_list.item_types(item_type_index).length
+                 *          ElseIf ThisWorkbook.Worksheets("3.Solution").Cells(5 + k, offset + 6).Value = "zyx" Then
+                 *              .items(.item_cnt).rotation = 2
+                 *              .items(.item_cnt).opposite_x = .items(.item_cnt).origin_x + item_list.item_types(item_type_index).length
+                 *              .items(.item_cnt).opposite_y = .items(.item_cnt).origin_y + item_list.item_types(item_type_index).height
+                 *              .items(.item_cnt).opposite_z = .items(.item_cnt).origin_z + item_list.item_types(item_type_index).width
+                 *          ElseIf ThisWorkbook.Worksheets("3.Solution").Cells(5 + k, offset + 6).Value = "xzy" Then
+                 *              .items(.item_cnt).rotation = 3
+                 *              .items(.item_cnt).opposite_x = .items(.item_cnt).origin_x + item_list.item_types(item_type_index).width
+                 *              .items(.item_cnt).opposite_y = .items(.item_cnt).origin_y + item_list.item_types(item_type_index).length
+                 *              .items(.item_cnt).opposite_z = .items(.item_cnt).origin_z + item_list.item_types(item_type_index).height
+                 *          ElseIf ThisWorkbook.Worksheets("3.Solution").Cells(5 + k, offset + 6).Value = "yzx" Then
+                 *              .items(.item_cnt).rotation = 4
+                 *              .items(.item_cnt).opposite_x = .items(.item_cnt).origin_x + item_list.item_types(item_type_index).height
+                 *              .items(.item_cnt).opposite_y = .items(.item_cnt).origin_y + item_list.item_types(item_type_index).length
+                 *              .items(.item_cnt).opposite_z = .items(.item_cnt).origin_z + item_list.item_types(item_type_index).width
+                 *          ElseIf ThisWorkbook.Worksheets("3.Solution").Cells(5 + k, offset + 6).Value = "yxz" Then
+                 *              .items(.item_cnt).rotation = 5
+                 *              .items(.item_cnt).opposite_x = .items(.item_cnt).origin_x + item_list.item_types(item_type_index).height
+                 *              .items(.item_cnt).opposite_y = .items(.item_cnt).origin_y + item_list.item_types(item_type_index).width
+                 *              .items(.item_cnt).opposite_z = .items(.item_cnt).origin_z + item_list.item_types(item_type_index).length
+                 *          ElseIf ThisWorkbook.Worksheets("3.Solution").Cells(5 + k, offset + 6).Value = "zxy" Then
+                 *              .items(.item_cnt).rotation = 6
+                 *              .items(.item_cnt).opposite_x = .items(.item_cnt).origin_x + item_list.item_types(item_type_index).length
+                 *              .items(.item_cnt).opposite_y = .items(.item_cnt).origin_y + item_list.item_types(item_type_index).width
+                 *              .items(.item_cnt).opposite_z = .items(.item_cnt).origin_z + item_list.item_types(item_type_index).height
+                 *          End If
+                 *
+                 *          .volume_packed = .volume_packed + item_list.item_types(item_type_index).volume
+                 *          .weight_packed = .weight_packed + item_list.item_types(item_type_index).weight
+                 *
+                 *          If .item_cnt = 1 Then
+                 *              solution.net_profit = solution.net_profit + item_list.item_types(item_type_index).profit - .cost
+                 *          Else
+                 *              solution.net_profit = solution.net_profit + item_list.item_types(item_type_index).profit
+                 *          End If
+                 *
+                 *      End If
+                 * Next k
+                 */
+
+                /*
+                 * TODO: remember to find a solution for this. This looks like two-way binding (reading to and from the spreadsheet), a modern idea in web dev.
+                 * */
+
+                /**
+                 * End With
+                 */
+
+                /**
+                 * container_index = container_index + 1
+                 */
+                $container_index = $container_index + 1;
             }
+            $offset = $offset + column_offset;
         }
     }
+    /**
+     * End With
+     */
+    /**
+     * Application.ScreenUpdating = True
+     * Application.Calculation = xlCalculationAutomatic
+     */
 }
 

@@ -1290,108 +1290,108 @@
     
 ' End Sub
 
-Sub ReadSolution(solution As solution_data)
+' Sub ReadSolution(solution As solution_data)
        
-    Application.ScreenUpdating = False
-    Application.Calculation = xlCalculationManual
+'     Application.ScreenUpdating = False
+'     Application.Calculation = xlCalculationManual
             
-    Dim i As Long
-    Dim j As Long
-    Dim k As Long
-    Dim l As Long
+'     Dim i As Long
+'     Dim j As Long
+'     Dim k As Long
+'     Dim l As Long
     
-    Dim container_index As Long
-    Dim item_type_index As Long
+'     Dim container_index As Long
+'     Dim item_type_index As Long
     
-    Dim offset As Long
+'     Dim offset As Long
     
-    offset = 0
-    container_index = 1
+'     offset = 0
+'     container_index = 1
     
-    With solution
+'     With solution
     
-        For i = 1 To container_list.num_container_types
+'         For i = 1 To container_list.num_container_types
         
-            For j = 1 To container_list.container_types(i).number_available
+'             For j = 1 To container_list.container_types(i).number_available
                     
-                If container_list.container_types(i).mandatory >= 0 Then
+'                 If container_list.container_types(i).mandatory >= 0 Then
                     
-                    With .container(container_index)
+'                     With .container(container_index)
                         
-                        l = Cells(4, offset + 7).Value
+'                         l = Cells(4, offset + 7).Value
                         
-                        For k = 1 To l
-                            If IsNumeric(Cells(5 + k, offset + 7).Value) = True Then
+'                         For k = 1 To l
+'                             If IsNumeric(Cells(5 + k, offset + 7).Value) = True Then
                             
-                                .item_cnt = .item_cnt + 1
+'                                 .item_cnt = .item_cnt + 1
                                 
-                                item_type_index = Cells(5 + k, offset + 7).Value
+'                                 item_type_index = Cells(5 + k, offset + 7).Value
                                 
-                                solution.unpacked_item_count(item_type_index) = solution.unpacked_item_count(item_type_index) - 1
+'                                 solution.unpacked_item_count(item_type_index) = solution.unpacked_item_count(item_type_index) - 1
                                 
-                                .items(.item_cnt).item_type = item_type_index
-                                .items(.item_cnt).origin_x = Cells(5 + k, offset + 3).Value
-                                .items(.item_cnt).origin_y = Cells(5 + k, offset + 4).Value
-                                .items(.item_cnt).origin_z = Cells(5 + k, offset + 5).Value
+'                                 .items(.item_cnt).item_type = item_type_index
+'                                 .items(.item_cnt).origin_x = Cells(5 + k, offset + 3).Value
+'                                 .items(.item_cnt).origin_y = Cells(5 + k, offset + 4).Value
+'                                 .items(.item_cnt).origin_z = Cells(5 + k, offset + 5).Value
                                 
-                                If ThisWorkbook.Worksheets("3.Solution").Cells(5 + k, offset + 6).Value = "xyz" Then
-                                    .items(.item_cnt).rotation = 1
-                                    .items(.item_cnt).opposite_x = .items(.item_cnt).origin_x + item_list.item_types(item_type_index).width
-                                    .items(.item_cnt).opposite_y = .items(.item_cnt).origin_y + item_list.item_types(item_type_index).height
-                                    .items(.item_cnt).opposite_z = .items(.item_cnt).origin_z + item_list.item_types(item_type_index).length
-                                ElseIf ThisWorkbook.Worksheets("3.Solution").Cells(5 + k, offset + 6).Value = "zyx" Then
-                                    .items(.item_cnt).rotation = 2
-                                    .items(.item_cnt).opposite_x = .items(.item_cnt).origin_x + item_list.item_types(item_type_index).length
-                                    .items(.item_cnt).opposite_y = .items(.item_cnt).origin_y + item_list.item_types(item_type_index).height
-                                    .items(.item_cnt).opposite_z = .items(.item_cnt).origin_z + item_list.item_types(item_type_index).width
-                                ElseIf ThisWorkbook.Worksheets("3.Solution").Cells(5 + k, offset + 6).Value = "xzy" Then
-                                    .items(.item_cnt).rotation = 3
-                                    .items(.item_cnt).opposite_x = .items(.item_cnt).origin_x + item_list.item_types(item_type_index).width
-                                    .items(.item_cnt).opposite_y = .items(.item_cnt).origin_y + item_list.item_types(item_type_index).length
-                                    .items(.item_cnt).opposite_z = .items(.item_cnt).origin_z + item_list.item_types(item_type_index).height
-                                ElseIf ThisWorkbook.Worksheets("3.Solution").Cells(5 + k, offset + 6).Value = "yzx" Then
-                                    .items(.item_cnt).rotation = 4
-                                    .items(.item_cnt).opposite_x = .items(.item_cnt).origin_x + item_list.item_types(item_type_index).height
-                                    .items(.item_cnt).opposite_y = .items(.item_cnt).origin_y + item_list.item_types(item_type_index).length
-                                    .items(.item_cnt).opposite_z = .items(.item_cnt).origin_z + item_list.item_types(item_type_index).width
-                                ElseIf ThisWorkbook.Worksheets("3.Solution").Cells(5 + k, offset + 6).Value = "yxz" Then
-                                    .items(.item_cnt).rotation = 5
-                                    .items(.item_cnt).opposite_x = .items(.item_cnt).origin_x + item_list.item_types(item_type_index).height
-                                    .items(.item_cnt).opposite_y = .items(.item_cnt).origin_y + item_list.item_types(item_type_index).width
-                                    .items(.item_cnt).opposite_z = .items(.item_cnt).origin_z + item_list.item_types(item_type_index).length
-                                ElseIf ThisWorkbook.Worksheets("3.Solution").Cells(5 + k, offset + 6).Value = "zxy" Then
-                                    .items(.item_cnt).rotation = 6
-                                    .items(.item_cnt).opposite_x = .items(.item_cnt).origin_x + item_list.item_types(item_type_index).length
-                                    .items(.item_cnt).opposite_y = .items(.item_cnt).origin_y + item_list.item_types(item_type_index).width
-                                    .items(.item_cnt).opposite_z = .items(.item_cnt).origin_z + item_list.item_types(item_type_index).height
-                                End If
+'                                 If ThisWorkbook.Worksheets("3.Solution").Cells(5 + k, offset + 6).Value = "xyz" Then
+'                                     .items(.item_cnt).rotation = 1
+'                                     .items(.item_cnt).opposite_x = .items(.item_cnt).origin_x + item_list.item_types(item_type_index).width
+'                                     .items(.item_cnt).opposite_y = .items(.item_cnt).origin_y + item_list.item_types(item_type_index).height
+'                                     .items(.item_cnt).opposite_z = .items(.item_cnt).origin_z + item_list.item_types(item_type_index).length
+'                                 ElseIf ThisWorkbook.Worksheets("3.Solution").Cells(5 + k, offset + 6).Value = "zyx" Then
+'                                     .items(.item_cnt).rotation = 2
+'                                     .items(.item_cnt).opposite_x = .items(.item_cnt).origin_x + item_list.item_types(item_type_index).length
+'                                     .items(.item_cnt).opposite_y = .items(.item_cnt).origin_y + item_list.item_types(item_type_index).height
+'                                     .items(.item_cnt).opposite_z = .items(.item_cnt).origin_z + item_list.item_types(item_type_index).width
+'                                 ElseIf ThisWorkbook.Worksheets("3.Solution").Cells(5 + k, offset + 6).Value = "xzy" Then
+'                                     .items(.item_cnt).rotation = 3
+'                                     .items(.item_cnt).opposite_x = .items(.item_cnt).origin_x + item_list.item_types(item_type_index).width
+'                                     .items(.item_cnt).opposite_y = .items(.item_cnt).origin_y + item_list.item_types(item_type_index).length
+'                                     .items(.item_cnt).opposite_z = .items(.item_cnt).origin_z + item_list.item_types(item_type_index).height
+'                                 ElseIf ThisWorkbook.Worksheets("3.Solution").Cells(5 + k, offset + 6).Value = "yzx" Then
+'                                     .items(.item_cnt).rotation = 4
+'                                     .items(.item_cnt).opposite_x = .items(.item_cnt).origin_x + item_list.item_types(item_type_index).height
+'                                     .items(.item_cnt).opposite_y = .items(.item_cnt).origin_y + item_list.item_types(item_type_index).length
+'                                     .items(.item_cnt).opposite_z = .items(.item_cnt).origin_z + item_list.item_types(item_type_index).width
+'                                 ElseIf ThisWorkbook.Worksheets("3.Solution").Cells(5 + k, offset + 6).Value = "yxz" Then
+'                                     .items(.item_cnt).rotation = 5
+'                                     .items(.item_cnt).opposite_x = .items(.item_cnt).origin_x + item_list.item_types(item_type_index).height
+'                                     .items(.item_cnt).opposite_y = .items(.item_cnt).origin_y + item_list.item_types(item_type_index).width
+'                                     .items(.item_cnt).opposite_z = .items(.item_cnt).origin_z + item_list.item_types(item_type_index).length
+'                                 ElseIf ThisWorkbook.Worksheets("3.Solution").Cells(5 + k, offset + 6).Value = "zxy" Then
+'                                     .items(.item_cnt).rotation = 6
+'                                     .items(.item_cnt).opposite_x = .items(.item_cnt).origin_x + item_list.item_types(item_type_index).length
+'                                     .items(.item_cnt).opposite_y = .items(.item_cnt).origin_y + item_list.item_types(item_type_index).width
+'                                     .items(.item_cnt).opposite_z = .items(.item_cnt).origin_z + item_list.item_types(item_type_index).height
+'                                 End If
                         
-                                .volume_packed = .volume_packed + item_list.item_types(item_type_index).volume
-                                .weight_packed = .weight_packed + item_list.item_types(item_type_index).weight
+'                                 .volume_packed = .volume_packed + item_list.item_types(item_type_index).volume
+'                                 .weight_packed = .weight_packed + item_list.item_types(item_type_index).weight
                                 
-                                If .item_cnt = 1 Then
-                                    solution.net_profit = solution.net_profit + item_list.item_types(item_type_index).profit - .cost
-                                Else
-                                    solution.net_profit = solution.net_profit + item_list.item_types(item_type_index).profit
-                                End If
+'                                 If .item_cnt = 1 Then
+'                                     solution.net_profit = solution.net_profit + item_list.item_types(item_type_index).profit - .cost
+'                                 Else
+'                                     solution.net_profit = solution.net_profit + item_list.item_types(item_type_index).profit
+'                                 End If
                                 
-                            End If
-                        Next k
+'                             End If
+'                         Next k
                         
-                    End With
+'                     End With
                     
-                    container_index = container_index + 1
-                End If
+'                     container_index = container_index + 1
+'                 End If
                 
-                offset = offset + column_offset
-            Next j
-        Next i
-    End With
+'                 offset = offset + column_offset
+'             Next j
+'         Next i
+'     End With
     
-    Application.ScreenUpdating = True
-    Application.Calculation = xlCalculationAutomatic
+'     Application.ScreenUpdating = True
+'     Application.Calculation = xlCalculationAutomatic
     
-End Sub
+' End Sub
 
 Sub CLP_Solver()
     
