@@ -1167,27 +1167,27 @@
     
 ' End Sub
 
-Private Sub GetInstanceData()
+' Private Sub GetInstanceData()
     
-    If ThisWorkbook.Worksheets("CLP SOlver Console").Cells(6, 3).Value = "Yes" Then
-        instance.front_side_support = True
-    Else
-        instance.front_side_support = False
-    End If
+'     If ThisWorkbook.Worksheets("CLP SOlver Console").Cells(6, 3).Value = "Yes" Then
+'         instance.front_side_support = True
+'     Else
+'         instance.front_side_support = False
+'     End If
     
-    If CheckWorksheetExistence("1.3.Item-Item Compatibility") = True Then
-        instance.item_item_compatibility_worksheet = True
-    Else
-        instance.item_item_compatibility_worksheet = False
-    End If
+'     If CheckWorksheetExistence("1.3.Item-Item Compatibility") = True Then
+'         instance.item_item_compatibility_worksheet = True
+'     Else
+'         instance.item_item_compatibility_worksheet = False
+'     End If
         
-    If CheckWorksheetExistence("2.3.Container-ItemCompatibility") = True Then
-        instance.container_item_compatibility_worksheet = True
-    Else
-        instance.container_item_compatibility_worksheet = False
-    End If
+'     If CheckWorksheetExistence("2.3.Container-ItemCompatibility") = True Then
+'         instance.container_item_compatibility_worksheet = True
+'     Else
+'         instance.container_item_compatibility_worksheet = False
+'     End If
     
-End Sub
+' End Sub
 Private Sub WriteSolution(solution As solution_data)
    
     Application.ScreenUpdating = False

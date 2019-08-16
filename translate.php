@@ -3492,6 +3492,10 @@ function GetCompatibilityData(compatibility_data $compatibility_list, instance_d
 
 /**
  * Private Sub InitializeSolution(solution As solution_data)
+ *
+ * @param solution_data $solution
+ * @param container_list_data $container_list
+ * @param item_list_data $item_list
  */
 function InitializeSolution(solution_data $solution, container_list_data $container_list, item_list_data $item_list)
 {
@@ -3768,5 +3772,68 @@ function InitializeSolution(solution_data $solution, container_list_data $contai
          * .unpacked_item_count(i) = item_list.item_types(i).number_requested
          */
         $s->unpacked_item_count[$i] = $item_list->item_types[$i]->number_requested;
+    }
+}
+
+/**
+ * Private Sub GetInstanceData()
+ *
+ * @param instance_data $instance
+ * @param bool $front_side_support
+ * @param bool $item_item_compatibility_worksheet
+ * @param bool $container_item_compatibility_worksheet
+ */
+function GetInstanceData(instance_data $instance, bool $front_side_support, bool $item_item_compatibility_worksheet, bool $container_item_compatibility_worksheet)
+{
+    /**
+     * If ThisWorkbook.Worksheets("CLP SOlver Console").Cells(6, 3).Value = "Yes" Then
+     *      instance.front_side_support = True
+     * Else
+     *      instance.front_side_support = False
+     * End If
+     *
+     * Just get the value of the $front_side_support (from the probable Request)
+     * then set it on the $instance.
+     * Just have patience with the sheer amount of redundancy...
+     */
+    if ($front_side_support == true) {
+        $instance->front_side_support = true;
+    } else {
+        $instance->front_side_support = false;
+    }
+
+    /**
+     * If CheckWorksheetExistence("1.3.Item-Item Compatibility") = True Then
+     *      instance.item_item_compatibility_worksheet = True
+     * Else
+     *      instance.item_item_compatibility_worksheet = False
+     * End If
+     *
+     * This checks if the optional "1.3.Item-Item Compatibility" exists and sets the corresponding
+     * prop on the instance.
+     * In our case, we're passing in the boolean $item_item_compatibility_worksheet
+     */
+    if ($item_item_compatibility_worksheet == true) {
+        $instance->item_item_compatibility_worksheet = true;
+    } else {
+        $instance->item_item_compatibility_worksheet = false;
+    }
+
+    /**
+     * If CheckWorksheetExistence("2.3.Container-ItemCompatibility") = True Then
+     *      instance.container_item_compatibility_worksheet = True
+     * Else
+     *      instance.container_item_compatibility_worksheet = False
+     * End If
+     *
+     * Also checks for the existence of the "2.3.Container-ItemCompatibility" worksheet, then
+     * sets the appropriate flag on the instance.
+     *
+     * We'll just receive a boolean $container_item_compatibility_worksheet to handle this translation.
+     */
+    if ($container_item_compatibility_worksheet == true) {
+        $instance->container_item_compatibility_worksheet = true;
+    } else {
+        $instance->container_item_compatibility_worksheet = false;
     }
 }
