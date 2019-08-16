@@ -1013,70 +1013,70 @@
     
 ' End Sub
 
-Private Sub GetCompatibilityData()
+' Private Sub GetCompatibilityData()
     
-    With compatibility_list
+'     With compatibility_list
         
-        Dim i As Long
-        Dim j As Long
-        Dim k As Long
+'         Dim i As Long
+'         Dim j As Long
+'         Dim k As Long
 
-        If instance.item_item_compatibility_worksheet = True Then
+'         If instance.item_item_compatibility_worksheet = True Then
         
-            ReDim .item_to_item(1 To item_list.num_item_types, 1 To item_list.num_item_types)
+'             ReDim .item_to_item(1 To item_list.num_item_types, 1 To item_list.num_item_types)
             
-            For i = 1 To item_list.num_item_types
-                For j = 1 To item_list.num_item_types
+'             For i = 1 To item_list.num_item_types
+'                 For j = 1 To item_list.num_item_types
                 
-                    .item_to_item(i, j) = True
+'                     .item_to_item(i, j) = True
                     
-                Next j
-            Next i
+'                 Next j
+'             Next i
             
-            k = 3
-            For i = 1 To item_list.num_item_types
-                For j = i + 1 To item_list.num_item_types
+'             k = 3
+'             For i = 1 To item_list.num_item_types
+'                 For j = i + 1 To item_list.num_item_types
                 
-                    If ThisWorkbook.Worksheets("1.3.Item-Item Compatibility").Cells(k, 3) = "No" Then
-                        .item_to_item(i, j) = False
-                        .item_to_item(j, i) = False
-                    End If
+'                     If ThisWorkbook.Worksheets("1.3.Item-Item Compatibility").Cells(k, 3) = "No" Then
+'                         .item_to_item(i, j) = False
+'                         .item_to_item(j, i) = False
+'                     End If
                         
-                    k = k + 1
-                Next j
-            Next i
+'                     k = k + 1
+'                 Next j
+'             Next i
             
-        End If
+'         End If
         
-        If instance.container_item_compatibility_worksheet = True Then
+'         If instance.container_item_compatibility_worksheet = True Then
         
-            ReDim .container_to_item(1 To container_list.num_container_types, 1 To item_list.num_item_types)
+'             ReDim .container_to_item(1 To container_list.num_container_types, 1 To item_list.num_item_types)
             
-            For i = 1 To container_list.num_container_types
-                For j = 1 To item_list.num_item_types
+'             For i = 1 To container_list.num_container_types
+'                 For j = 1 To item_list.num_item_types
                 
-                    .container_to_item(i, j) = True
+'                     .container_to_item(i, j) = True
                     
-                Next j
-            Next i
+'                 Next j
+'             Next i
             
-            k = 3
-            For i = 1 To container_list.num_container_types
-                For j = 1 To item_list.num_item_types
+'             k = 3
+'             For i = 1 To container_list.num_container_types
+'                 For j = 1 To item_list.num_item_types
                 
-                    If ThisWorkbook.Worksheets("2.3.Container-ItemCompatibility").Cells(k, 3) = "No" Then
-                        .container_to_item(i, j) = False
-                    End If
+'                     If ThisWorkbook.Worksheets("2.3.Container-ItemCompatibility").Cells(k, 3) = "No" Then
+'                         .container_to_item(i, j) = False
+'                     End If
                         
-                    k = k + 1
-                Next j
-            Next i
+'                     k = k + 1
+'                 Next j
+'             Next i
             
-        End If
+'         End If
 
-    End With
+'     End With
     
-End Sub
+' End Sub
 
 Private Sub InitializeSolution(solution As solution_data)
     

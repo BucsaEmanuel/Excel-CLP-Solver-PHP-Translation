@@ -3320,3 +3320,171 @@ function GetContainerData(container_list_data $container_list, int $num_containe
         $cL->container_types[$i]->number_available = $containers[$i]->number_available;
     }
 }
+
+/**
+ * Private Sub GetCompatibilityData()
+ *
+ * @param compatibility_data $compatibility_list
+ * @param instance_data $instance
+ * @param item_list_data $item_list
+ * @param container_list_data $container_list
+ * @param array $item_item_compatibilities
+ * @param array $container_item_compatibilities
+ */
+function GetCompatibilityData(compatibility_data $compatibility_list, instance_data $instance, item_list_data $item_list, container_list_data $container_list, array $item_item_compatibilities, array $container_item_compatibilities)
+{
+    /**
+     * With compatibility_list
+     *
+     * We'll just shorten $compatibility_list to $cL
+     */
+    $cL = $compatibility_list;
+
+    /**
+     * Dim i As Long
+     * @var integer
+     */
+    $i = 0;
+
+    /**
+     * Dim j As Long
+     * @var integer
+     */
+    $j = 0;
+
+    /**
+     * Dim k As Long
+     * @var integer
+     */
+    $k = 0;
+
+    /**
+     * If instance.item_item_compatibility_worksheet = True Then
+     */
+    if ($instance->item_item_compatibility_worksheet == true) {
+        /**
+         * ReDim .item_to_item(1 To item_list.num_item_types, 1 To item_list.num_item_types)
+         *
+         * This means that we're redefining the $cL->item_to_item to two ranges -> two dimensional array.
+         * We'll start simple, with an array definition.
+         * I'm guessing that ReDim just specifies the dimensions in advance. We'll see how this gets filled.
+         */
+        $cL->item_to_item = array();
+
+        /**
+         * For i = 1 To item_list.num_item_types
+         */
+        for ($i = 1; $i <= $item_list->num_item_types; ++$i) {
+            /**
+             * For j = 1 To item_list.num_item_types
+             */
+            for ($j = 1; $j <= $item_list->num_item_types; ++$j) {
+                /**
+                 * .item_to_item(i, j) = True
+                 */
+                $cL->item_to_item[$i][$j] = true;
+                /**
+                 * I guess now we know the purpose of the ReDim above.
+                 * This just fills the two dimensional array with
+                 * data.
+                 */
+            }
+        }
+
+        /**
+         * k = 3
+         *
+         * I wonder what the purpose of the hardcoded 3 is...
+         */
+        $k = 3;
+
+        /**
+         * For i = 1 To item_list.num_item_types
+         */
+        for ($i = 1; $i <= $item_list->num_item_types; ++$i) {
+            /**
+             * For j = i + 1 To item_list.num_item_types
+             */
+            for ($j = $i + 1; $j <= $item_list->num_item_types; ++$j) {
+                /**
+                 * If ThisWorkbook.Worksheets("1.3.Item-Item Compatibility").Cells(k, 3) = "No" Then
+                 *      .item_to_item(i, j) = False
+                 *      .item_to_item(j, i) = False
+                 * End If
+                 * k = k + 1
+                 *
+                 * I see the reason for the hardcoded 3 now. The item compat worksheet starts at row 3.
+                 */
+                if ($item_item_compatibilities[$i][$j] == false) {
+                    $cL->item_to_item[$i][$j] = false;
+                }
+                if ($item_item_compatibilities[$j][$i] == false) {
+                    $cL->item_to_item[$j][$i] = false;
+                }
+
+                $k = $k + 1;
+                /*
+                 * TODO: make sure you get this right.
+                 * Right now you're assuming that it's a two dimensional associative array.
+                 * */
+            }
+        }
+    }
+
+    /**
+     * If instance.container_item_compatibility_worksheet = True Then
+     */
+    if ($instance->container_item_compatibility_worksheet == true) {
+        /**
+         * ReDim .container_to_item(1 To container_list.num_container_types, 1 To item_list.num_item_types)
+         *
+         * Just redimensions the $cL->container_to_item array to a two dimensional array.
+         */
+
+        /**
+         * For i = 1 To container_list.num_container_types
+         */
+        for ($i = 1; $i <= $container_list->num_container_types; ++$i) {
+            /**
+             * For j = 1 To item_list.num_item_types
+             */
+            for ($j = 1; $j <= $item_list->num_item_types; ++$j) {
+                /**
+                 * .container_to_item(i, j) = True
+                 */
+                $cL->container_to_item[$i][$j] = true;
+            }
+        }
+
+        /**
+         * k = 3
+         */
+        $k = 3;
+
+        /**
+         * For i = 1 To container_list.num_container_types
+         */
+        for ($i = 1; $i <= $container_list->num_container_types; ++$i) {
+            /**
+             * For j = 1 To item_list.num_item_types
+             */
+            for ($j = 1; $j <= $item_list->num_item_types; ++$j) {
+                /**
+                 * If ThisWorkbook.Worksheets("2.3.Container-ItemCompatibility").Cells(k, 3) = "No" Then
+                 *      .container_to_item(i, j) = False
+                 * End If
+                 *
+                 * k = k + 1
+                 */
+                if ($container_item_compatibilities[$i][$j] == false) {
+                    $cL->container_to_item[$i][$j] = false;
+                }
+
+                $k = $k + 1;
+                /*
+                 * TODO: find out if this interpretation is correct.
+                 * */
+            }
+        }
+    }
+}
