@@ -3837,3 +3837,290 @@ function GetInstanceData(instance_data $instance, bool $front_side_support, bool
         $instance->container_item_compatibility_worksheet = false;
     }
 }
+
+/**
+ * Private Sub WriteSolution(solution As solution_data)
+ *
+ *
+ */
+function WriteSolution(solution_data $solution, container_list_data $container_list, item_list_data $item_list)
+{
+    /**
+     * Application.ScreenUpdating = False
+     * Application.Calculation = xlCalculationManual
+     *
+     * I'm guessing this controls something in MS Excel.
+     */
+
+    /**
+     * Dim i As Long
+     * @var integer
+     */
+    $i = 0;
+
+    /**
+     * Dim j As Long
+     * @var integer
+     */
+    $j = 0;
+
+    /**
+     * Dim k As Long
+     * @var integer
+     */
+    $k = 0;
+
+    /**
+     * Dim container_index As Long
+     * @var integer
+     */
+    $container_index = 0;
+
+    /**
+     * Dim swap_container As container_data
+     * @var container_data
+     */
+    $swap_container = new container_data();
+
+    /*
+     * 'sort the containers
+     * */
+
+    /**
+     * For i = 1 To solution.num_containers
+     */
+    for ($i = 1; $i <= $solution->num_containers; ++$i) {
+        /**
+         * For j = solution.num_containers To 2 Step -1
+         */
+        for ($j = $solution->num_containers; $j >= 2; --$j) {
+            /**
+             * If (solution.container(j).type_id < solution.container(j - 1).type_id) Or _
+             *      ((solution.container(j).type_id = solution.container(j - 1).type_id) And (solution.container(j).volume_packed > solution.container(j - 1).volume_packed)) Then
+             */
+            if (
+                $solution->container[$j]->type_id < $solution->container[$j - 1]->type_id ||
+                (
+                    $solution->container[$j]->type_id == $solution->container[$j - 1]->type_id &&
+                    $solution->container[$j]->volume_packed > $solution->container[$j - 1]->volume_packed
+                )
+            ) {
+                /**
+                 * swap_container = solution.container(j)
+                 */
+                $swap_container = $solution->container[$j];
+
+                /**
+                 * solution.container(j) = solution.container(j - 1)
+                 */
+                $solution->container[$j] = $solution->container[$j - 1];
+
+                /**
+                 * solution.container(j - 1) = swap_container
+                 */
+                $solution->container[$j - 1] = $swap_container;
+            }
+        }
+    }
+
+    /**
+     * ThisWorkbook.Worksheets("3.Solution").Activate
+     *
+     * Bring the "3.Solution" worksheet into focus (?)
+     */
+
+    $warning = "";
+    /*
+     * The following code deals with some warning,
+     * so I set this little variable here. We'll
+     * see how it will work its way into a future
+     * app.
+     * */
+
+    /**
+     * If solution.feasible = False Then
+     */
+    if ($solution->feasible == false) {
+        /**
+         * Cells(2, 1) = "Warning: Last solution returned by the solver does not satisfy all constraints."
+         * Range(Cells(2, 1), Cells(2, 10)).Interior.ColorIndex = 45
+         *
+         * Umm, I guess this throws a warning... and changes some colors
+         */
+        /*
+         * TODO: incorporate this as a warning in a future app.
+         * */
+        $warning = "Warning: Last solution returned by the solver does not satisfy all constraints.";
+    } else {
+        /**
+         * Cells(2, 1) = vbNullString
+         * Range(Cells(2, 1), Cells(2, 10)).Interior.Pattern = xlNone
+         * Range(Cells(2, 1), Cells(2, 10)).Interior.TintAndShade = 0
+         * Range(Cells(2, 1), Cells(2, 10)).Interior.PatternTintAndShade = 0
+         *
+         * This would be some CSS changes on the frontend, in our case.
+         */
+        $warning = "";
+    }
+
+    /**
+     * Dim offset As Long
+     * @var integer
+     */
+    $offset = 0;
+
+    /**
+     * offset = 0
+     *
+     * variable already set
+     */
+
+    /**
+     * container_index = 1
+     */
+    $container_index = 1;
+
+    /**
+     * With solution
+     *
+     * We'll just shorten $solution to $s
+     */
+    $s = $solution;
+
+    /**
+     * For i = 1 To container_list.num_container_types
+     */
+    for ($i = 1; $i <= $container_list->num_container_types; ++$i) {
+        /**
+         * For j = 1 To container_list.container_types(i).number_available
+         */
+        for ($j = 1; $j <= $container_list->container_types[$i]->number_available; ++$j) {
+            /**
+             * Range(Cells(6, offset + 2), Cells(5 + 2 * item_list.total_number_of_items, offset + 2)).Value = vbNullString
+             * Range(Cells(6, offset + 3), Cells(5 + 2 * item_list.total_number_of_items, offset + 5)).ClearContents
+             * Range(Cells(6, offset + 6), Cells(5 + 2 * item_list.total_number_of_items, offset + 6)).Value = vbNullString
+             *
+             * I guess this clears some cells in the worksheet.
+             */
+
+            /**
+             * If container_list.container_types(i).mandatory >= 0 Then
+             */
+            if ($container_list->container_types[$i]->mandatory >= 0) {
+                /**
+                 * For k = 1 To .container(container_index).item_cnt
+                 */
+                for ($k = 1; $k <= $s->container[$container_index]->item_cnt; ++$k) {
+                    /**
+                     * Cells(5 + k, offset + 2).Value = ThisWorkbook.Worksheets("1.Items").Cells(2 + item_list.item_types(.container(container_index).items(k).item_type).id, 2).Value
+                     * Cells(5 + k, offset + 3).Value = .container(container_index).items(k).origin_x
+                     * Cells(5 + k, offset + 4).Value = .container(container_index).items(k).origin_y
+                     * Cells(5 + k, offset + 5).Value = .container(container_index).items(k).origin_z
+                     *
+                     * This sets some values on the worksheets.
+                     */
+
+                    /*
+                     * TODO: transpose the following orientation strings to something useful in an app.
+                     * */
+
+                    /**
+                     * If .container(container_index).items(k).rotation = 1 Then
+                     */
+                    if ($s->container[$container_index]->items[$k]->rotation == 1) {
+                        /**
+                         * Cells(5 + k, offset + 6).Value = "xyz"
+                         */
+                    /**
+                     * ElseIf .container(container_index).items(k).rotation = 2 Then
+                     */
+                    } else if ($s->container[$container_index]->items[$k]->rotation == 2) {
+                        /**
+                         * Cells(5 + k, offset + 6).Value = "zyx"
+                         */
+                    /**
+                     * ElseIf .container(container_index).items(k).rotation = 3 Then
+                     */
+                    } else if ($s->container[$container_index]->items[$k]->rotation == 3) {
+                        /**
+                         * Cells(5 + k, offset + 6).Value = "xzy"
+                         */
+                    /**
+                     * ElseIf .container(container_index).items(k).rotation = 4 Then
+                     */
+                    } else if ($s->container[$container_index]->items[$k]->rotation == 4) {
+                        /**
+                         * Cells(5 + k, offset + 6).Value = "yzx"
+                         */
+                    /**
+                     * ElseIf .container(container_index).items(k).rotation = 5 Then
+                     */
+                    } else if ($s->container[$container_index]->items[$k]->rotation == 5) {
+                        /**
+                         * Cells(5 + k, offset + 6).Value = "yxz"
+                         */
+                    /**
+                     * ElseIf .container(container_index).items(k).rotation = 6 Then
+                     */
+                    } else if ($s->container[$container_index]->items[$k]->rotation == 5) {
+                        /**
+                         * Cells(5 + k, offset + 6).Value = "zxy"
+                         */
+                    }
+                }
+
+                /**
+                 * container_index = container_index + 1
+                 */
+                $container_index = $container_index + 1;
+            }
+            /**
+             * Columns(2 + offset).AutoFit
+             *
+             * Ummm... maybe this resizes the columns so everything looks clean in the Excel worksheet.
+             */
+            /**
+             * offset = offset + column_offset
+             */
+            $offset = $offset + column_offset;
+        }
+    }
+
+    /**
+     * Range(Cells(6, offset + 2), Cells(5 + 2 * item_list.total_number_of_items, offset + 2)).Value = vbNullString
+     *
+     * Writes nothing to a bunch of cells
+     */
+
+    /**
+     * k = 1
+     */
+    $k = 1;
+
+    /**
+     * For i = 1 To item_list.num_item_types
+     */
+    for ($i = 1; $i <= $item_list->num_item_types; ++$i) {
+        /**
+         * For j = 1 To .unpacked_item_count(i)
+         */
+        for ($j = 1; $j <= $s->unpacked_item_count[$i]; ++$j) {
+            /**
+             * Cells(5 + k, offset + 2).Value = ThisWorkbook.Worksheets("1.Items").Cells(2 + item_list.item_types(i).id, 2).Value
+             *
+             * Moves some values from one place to another (?)
+             */
+            /**
+             * k = k + 1
+             */
+            $k = $k + 1;
+        }
+    }
+
+    /**
+     * End With
+     *
+     * Application.ScreenUpdating = True
+     * Application.Calculation = xlCalculationAutomatic
+     */
+}

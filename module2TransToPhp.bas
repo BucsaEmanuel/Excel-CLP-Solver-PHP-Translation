@@ -1188,107 +1188,107 @@
 '     End If
     
 ' End Sub
-Private Sub WriteSolution(solution As solution_data)
+' Private Sub WriteSolution(solution As solution_data)
    
-    Application.ScreenUpdating = False
-    Application.Calculation = xlCalculationManual
+'     Application.ScreenUpdating = False
+'     Application.Calculation = xlCalculationManual
             
-    Dim i As Long
-    Dim j As Long
-    Dim k As Long
+'     Dim i As Long
+'     Dim j As Long
+'     Dim k As Long
     
-    Dim container_index As Long
+'     Dim container_index As Long
     
-    Dim swap_container As container_data
+'     Dim swap_container As container_data
     
-    'sort the containers
+'     'sort the containers
     
-    For i = 1 To solution.num_containers
-        For j = solution.num_containers To 2 Step -1
-            If (solution.container(j).type_id < solution.container(j - 1).type_id) Or _
-                ((solution.container(j).type_id = solution.container(j - 1).type_id) And (solution.container(j).volume_packed > solution.container(j - 1).volume_packed)) Then
-                swap_container = solution.container(j)
-                solution.container(j) = solution.container(j - 1)
-                solution.container(j - 1) = swap_container
-            End If
-        Next j
-    Next i
+'     For i = 1 To solution.num_containers
+'         For j = solution.num_containers To 2 Step -1
+'             If (solution.container(j).type_id < solution.container(j - 1).type_id) Or _
+'                 ((solution.container(j).type_id = solution.container(j - 1).type_id) And (solution.container(j).volume_packed > solution.container(j - 1).volume_packed)) Then
+'                 swap_container = solution.container(j)
+'                 solution.container(j) = solution.container(j - 1)
+'                 solution.container(j - 1) = swap_container
+'             End If
+'         Next j
+'     Next i
     
-    ThisWorkbook.Worksheets("3.Solution").Activate
+'     ThisWorkbook.Worksheets("3.Solution").Activate
 
-    If solution.feasible = False Then
-        Cells(2, 1) = "Warning: Last solution returned by the solver does not satisfy all constraints."
-        Range(Cells(2, 1), Cells(2, 10)).Interior.ColorIndex = 45
-    Else
-        Cells(2, 1) = vbNullString
-        Range(Cells(2, 1), Cells(2, 10)).Interior.Pattern = xlNone
-        Range(Cells(2, 1), Cells(2, 10)).Interior.TintAndShade = 0
-        Range(Cells(2, 1), Cells(2, 10)).Interior.PatternTintAndShade = 0
-    End If
+'     If solution.feasible = False Then
+'         Cells(2, 1) = "Warning: Last solution returned by the solver does not satisfy all constraints."
+'         Range(Cells(2, 1), Cells(2, 10)).Interior.ColorIndex = 45
+'     Else
+'         Cells(2, 1) = vbNullString
+'         Range(Cells(2, 1), Cells(2, 10)).Interior.Pattern = xlNone
+'         Range(Cells(2, 1), Cells(2, 10)).Interior.TintAndShade = 0
+'         Range(Cells(2, 1), Cells(2, 10)).Interior.PatternTintAndShade = 0
+'     End If
     
-    Dim offset As Long
+'     Dim offset As Long
     
-    offset = 0
-    container_index = 1
+'     offset = 0
+'     container_index = 1
     
-    With solution
+'     With solution
     
-        For i = 1 To container_list.num_container_types
+'         For i = 1 To container_list.num_container_types
         
-            For j = 1 To container_list.container_types(i).number_available
+'             For j = 1 To container_list.container_types(i).number_available
     
-                Range(Cells(6, offset + 2), Cells(5 + 2 * item_list.total_number_of_items, offset + 2)).Value = vbNullString
-                Range(Cells(6, offset + 3), Cells(5 + 2 * item_list.total_number_of_items, offset + 5)).ClearContents
-                Range(Cells(6, offset + 6), Cells(5 + 2 * item_list.total_number_of_items, offset + 6)).Value = vbNullString
+'                 Range(Cells(6, offset + 2), Cells(5 + 2 * item_list.total_number_of_items, offset + 2)).Value = vbNullString
+'                 Range(Cells(6, offset + 3), Cells(5 + 2 * item_list.total_number_of_items, offset + 5)).ClearContents
+'                 Range(Cells(6, offset + 6), Cells(5 + 2 * item_list.total_number_of_items, offset + 6)).Value = vbNullString
                 
                 
-                If container_list.container_types(i).mandatory >= 0 Then
+'                 If container_list.container_types(i).mandatory >= 0 Then
                         
-                    For k = 1 To .container(container_index).item_cnt
-                        Cells(5 + k, offset + 2).Value = ThisWorkbook.Worksheets("1.Items").Cells(2 + item_list.item_types(.container(container_index).items(k).item_type).id, 2).Value
-                        Cells(5 + k, offset + 3).Value = .container(container_index).items(k).origin_x
-                        Cells(5 + k, offset + 4).Value = .container(container_index).items(k).origin_y
-                        Cells(5 + k, offset + 5).Value = .container(container_index).items(k).origin_z
-                        If .container(container_index).items(k).rotation = 1 Then
-                            Cells(5 + k, offset + 6).Value = "xyz"
-                        ElseIf .container(container_index).items(k).rotation = 2 Then
-                            Cells(5 + k, offset + 6).Value = "zyx"
-                        ElseIf .container(container_index).items(k).rotation = 3 Then
-                            Cells(5 + k, offset + 6).Value = "xzy"
-                        ElseIf .container(container_index).items(k).rotation = 4 Then
-                            Cells(5 + k, offset + 6).Value = "yzx"
-                        ElseIf .container(container_index).items(k).rotation = 5 Then
-                            Cells(5 + k, offset + 6).Value = "yxz"
-                        ElseIf .container(container_index).items(k).rotation = 6 Then
-                            Cells(5 + k, offset + 6).Value = "zxy"
-                        End If
-                    Next k
+'                     For k = 1 To .container(container_index).item_cnt
+'                         Cells(5 + k, offset + 2).Value = ThisWorkbook.Worksheets("1.Items").Cells(2 + item_list.item_types(.container(container_index).items(k).item_type).id, 2).Value
+'                         Cells(5 + k, offset + 3).Value = .container(container_index).items(k).origin_x
+'                         Cells(5 + k, offset + 4).Value = .container(container_index).items(k).origin_y
+'                         Cells(5 + k, offset + 5).Value = .container(container_index).items(k).origin_z
+'                         If .container(container_index).items(k).rotation = 1 Then
+'                             Cells(5 + k, offset + 6).Value = "xyz"
+'                         ElseIf .container(container_index).items(k).rotation = 2 Then
+'                             Cells(5 + k, offset + 6).Value = "zyx"
+'                         ElseIf .container(container_index).items(k).rotation = 3 Then
+'                             Cells(5 + k, offset + 6).Value = "xzy"
+'                         ElseIf .container(container_index).items(k).rotation = 4 Then
+'                             Cells(5 + k, offset + 6).Value = "yzx"
+'                         ElseIf .container(container_index).items(k).rotation = 5 Then
+'                             Cells(5 + k, offset + 6).Value = "yxz"
+'                         ElseIf .container(container_index).items(k).rotation = 6 Then
+'                             Cells(5 + k, offset + 6).Value = "zxy"
+'                         End If
+'                     Next k
                         
-                    container_index = container_index + 1
-                End If
+'                     container_index = container_index + 1
+'                 End If
                 
-                Columns(2 + offset).AutoFit
+'                 Columns(2 + offset).AutoFit
                 
-                offset = offset + column_offset
-            Next j
-        Next i
+'                 offset = offset + column_offset
+'             Next j
+'         Next i
         
-        Range(Cells(6, offset + 2), Cells(5 + 2 * item_list.total_number_of_items, offset + 2)).Value = vbNullString
+'         Range(Cells(6, offset + 2), Cells(5 + 2 * item_list.total_number_of_items, offset + 2)).Value = vbNullString
         
-        k = 1
-        For i = 1 To item_list.num_item_types
-            For j = 1 To .unpacked_item_count(i)
-                Cells(5 + k, offset + 2).Value = ThisWorkbook.Worksheets("1.Items").Cells(2 + item_list.item_types(i).id, 2).Value
-                k = k + 1
-            Next j
-        Next i
+'         k = 1
+'         For i = 1 To item_list.num_item_types
+'             For j = 1 To .unpacked_item_count(i)
+'                 Cells(5 + k, offset + 2).Value = ThisWorkbook.Worksheets("1.Items").Cells(2 + item_list.item_types(i).id, 2).Value
+'                 k = k + 1
+'             Next j
+'         Next i
                     
-    End With
+'     End With
     
-    Application.ScreenUpdating = True
-    Application.Calculation = xlCalculationAutomatic
+'     Application.ScreenUpdating = True
+'     Application.Calculation = xlCalculationAutomatic
     
-End Sub
+' End Sub
 
 Sub ReadSolution(solution As solution_data)
        
