@@ -4746,7 +4746,126 @@ function CLP_Solver()
          * incumbent.feasible = True
          */
         $incumbent->feasible = true;
-        ###BOOKMARK
 
+        /**
+         * For j = 1 To item_list.num_item_types
+         */
+        for ($j = 1; $j <= $item_list->num_item_types; ++$j) {
+            /**
+             * If (incumbent.unpacked_item_count(j) > 0) And (item_list.item_types(j).mandatory = 1) Then
+             */
+            if ($incumbent->unpacked_item_count[$j] > 0 && $item_list->item_types[$j]->mandatory == 1) {
+                /**
+                 * incumbent.feasible = False
+                 */
+                $incumbent->feasible = false;
+                /**
+                 * Exit For
+                 */
+                break;
+            }
+        }
+
+        /**
+         * Call CalculateDispersion(incumbent)
+         */
+        CalculateDispersion($incumbent);
+
+        /**
+         * If ((incumbent.feasible = True) And (best_known.feasible = False)) Or _
+         *      ((incumbent.feasible = False) And (best_known.feasible = False) And (incumbent.total_volume > best_known.total_volume + epsilon)) Or _
+         *      ((incumbent.feasible = True) And (best_known.feasible = True) And (incumbent.net_profit > best_known.net_profit + epsilon)) Or _
+         *      ((incumbent.feasible = True) And (best_known.feasible = True) And (incumbent.net_profit > best_known.net_profit - epsilon) And (incumbent.total_volume > best_known.total_volume + epsilon)) Then
+         */
+        if (
+            ($incumbent->feasible == true && $best_known->feasible == false) ||
+            ($incumbent->feasible == false && $best_known->feasible == false && $incumbent->total_volume > $best_known->total_volume + epsilon) ||
+            ($incumbent->feasible == true && $best_known->feasible == true && $incumbent->net_profit > $best_known->net_profit + epsilon) ||
+            ($incumbent->feasible == true && $best_known->feasible == true && $incumbent->net_profit > $best_known->net_profit - epsilon && $incumbent->total_volume > $best_known->total_volume + epsilon)
+        ) {
+            /**
+             * best_known = incumbent
+             */
+            $best_known = $incumbent;
+        }
     }
+
+    /*
+     * 'GoTo CLP_Solver_Finish
+     *
+     * 'end_time = Timer
+     * 'MsgBox "Constructive phase result: " & best_known.net_profit & " time: " & end_time - start_time
+     *
+     * 'improvement phase
+     * */
+    /**
+     * iteration = 0
+     */
+    $iteration = 0;
+
+    /**
+     * Do
+     *
+     * Well, this is different. There are while and do while loops in php, I wonder if
+     * I treated the problem correctly so far.
+     */
+    do {
+        /**
+         * If iteration Mod 100 = 0 Then
+         */
+        if ($iteration % 100 == 0) {
+            /**
+             * Application.ScreenUpdating = True
+             * I'll ignore this.
+             */
+            /**
+             * If best_known.feasible = True Then
+             */
+            if ($best_known->feasible == true) {
+                /**
+                 * Application.StatusBar = "Starting iteration " & iteration & ". Best net profit found so far: " & best_known.net_profit & " Dispersion: " & best_known.total_dispersion
+                 * oh, so this just writes to the excel statusbar something.
+                 * ignoring.
+                 */
+            /**
+             * Else
+             */
+            } else {
+                /**
+                 * Application.StatusBar = "Starting iteration " & iteration & ". Best net profit found so far: N/A" & " Dispersion: " & best_known.total_dispersion
+                 */
+            }
+            /**
+             * Application.ScreenUpdating = False
+             * DoEvents
+             */
+        }
+
+        /**
+         * If Rnd < 0.5 Then ' < ((end_time - start_time) / solver_options.CPU_time_limit) ^ 2 Then
+         */
+        if (random() < 0.5) {
+            /**
+             * incumbent = best_known
+             */
+            $incumbent = $best_known;
+        }
+
+        /**
+         * With incumbent
+         */
+        $inc = $incumbent;
+
+        /**
+         * For i = 1 To .num_containers
+         */
+        for ($i = 1; $i <= $inc->num_containers; ++$i) {
+            /**
+             * Call PerturbSolution(incumbent, i, 1 - ((end_time - start_time) / solver_options.CPU_time_limit))
+             */
+            ###BOOKMARK
+//            PerturbSolution($incumbent, $i, 1-(($end_time - $start_time) / $solver_options->CPU_time_limit));;
+        }
+
+    } while ();
 }
