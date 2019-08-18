@@ -1537,7 +1537,7 @@ Sub CLP_Solver()
         
         incumbent.feasible = True
 
-
+        
         For j = 1 To item_list.num_item_types
             If (incumbent.unpacked_item_count(j) > 0) And (item_list.item_types(j).mandatory = 1) Then
                 incumbent.feasible = False
@@ -1589,7 +1589,6 @@ Sub CLP_Solver()
         With incumbent
         
             For i = 1 To .num_containers
-                ###BOOKMARK
                 Call PerturbSolution(incumbent, i, 1 - ((end_time - start_time) / solver_options.CPU_time_limit))
             Next i
             Call PerturbRotationAndOrderOfItems(incumbent)

@@ -4863,9 +4863,391 @@ function CLP_Solver()
             /**
              * Call PerturbSolution(incumbent, i, 1 - ((end_time - start_time) / solver_options.CPU_time_limit))
              */
-            ###BOOKMARK
-//            PerturbSolution($incumbent, $i, 1-(($end_time - $start_time) / $solver_options->CPU_time_limit));;
+            PerturbSolution($incumbent, $i, 1-(($end_time - $start_time) / $solver_options->CPU_time_limit), $item_list);
+        }
+        /**
+         * Call PerturbRotationAndOrderOfItems(incumbent)
+         */
+        PerturbRotationAndOrderOfItems($incumbent, $item_list);
+
+        /**
+         * End With
+         */
+
+        /**
+         * Call SortContainers(incumbent, 0.2)
+         */
+        SortContainers($incumbent, 0.2);
+
+        /**
+         * With incumbent
+         */
+        $inc = $incumbent;
+
+        /**
+         * For i = 1 To .num_containers
+         */
+        for ($i = 1; $i <= $inc->num_containers; ++$i) {
+            /**
+             * For j = 1 To item_list.num_item_types
+             */
+            for ($j = 1; $j <= $item_list->num_item_types; ++$j) {
+                /**
+                 * continue_flag = True
+                 */
+                $continue_flag = true;
+
+                /**
+                 * Do While (.unpacked_item_count(.item_type_order(j)) > 0) And (continue_flag = True)
+                 *      continue_flag = AddItemToContainer(incumbent, i, .item_type_order(j), 1, False)
+                 *      'DoEvents
+                 * Loop
+                 */
+                do {
+                    $continue_flag = AddItemToContainer($incumbent, $i, $inc->item_type_order[$j], 1, false, $instance, $compatibility_list, $item_list, $solver_options);
+                } while ($inc->unpacked_item_count[$inc->item_type_order[$j]] > 0 && $continue_flag == true);
+            }
+            /**
+             * .feasible = True
+             */
+            $inc->feasible = true;
+
+            /**
+             * For j = 1 To item_list.num_item_types
+             */
+            for ($j = 1; $j <= $item_list->num_item_types; ++$j) {
+                /**
+                 * If (.unpacked_item_count(j) > 0) And (item_list.item_types(j).mandatory = 1) Then
+                 */
+                if ($inc->unpacked_item_count[$j] > 0 && $item_list->item_types[$j]->mandatory == 1) {
+                    /**
+                     * .feasible = False
+                     */
+                    $inc->feasible = false;
+
+                    /**
+                     * Exit For
+                     */
+                    break;
+                }
+            }
+
+            /**
+             * If .feasible = True Then
+             */
+            if ($inc->feasible == true) {
+                /**
+                 * Call CalculateDispersion(incumbent)
+                 */
+                CalculateDispersion($incumbent);
+            }
+
+            /**
+             * If ((.feasible = True) And (best_known.feasible = False)) Or _
+             *    ((.feasible = False) And (best_known.feasible = False) And (.total_volume > best_known.total_volume + epsilon)) Or _
+             *    ((.feasible = True) And (best_known.feasible = True) And (.net_profit > best_known.net_profit + epsilon)) Or _
+             *    ((.feasible = True) And (best_known.feasible = True) And (.net_profit > best_known.net_profit - epsilon) And (.total_volume > best_known.total_volume + epsilon)) Or _
+             *    ((.feasible = True) And (best_known.feasible = True) And (.net_profit > best_known.net_profit - epsilon) And (.total_volume > best_known.total_volume - epsilon) And (.total_dispersion < best_known.total_dispersion - epsilon)) Then
+             *
+             *     best_known = incumbent
+             *
+             * End If
+             */
+
+            /*
+             * TODO: triple check this -> really long lines of conditions
+             * */
+            if (
+                ($inc->feasible == true && $best_known->feasible == false) ||
+                ($inc->feasible == false && $best_known->feasible == false && $inc->total_volume > $best_known->total_volume + epsilon) ||
+                ($inc->feasible == true && $best_known->feasible == true && $inc->net_profit > $best_known->net_profit + epsilon) ||
+                ($inc->feasible == true && $best_known->feasible == true && $inc->net_profit > $best_known->net_profit - epsilon && $inc->total_volume > $best_known->total_volume + epsilon) ||
+                ($inc->feasible == true && $best_known->feasible == true && $inc->net_profit > $best_known->net_profit - epsilon && $inc->total_volume > $best_known->total_volume - epsilon && $inc->total_dispersion < $best_known->total_dispersion - epsilon)
+            ) {
+                $best_known = $incumbent;
+            }
+        }
+        /**
+         * End With
+         *
+         * I'm guessing that this is the original with,
+         * the other ones were nested, so the scope was much more localised.
+         * (This is just my uninformed opinion/guess, I don't know if it's actually true)
+         */
+
+        /**
+         * iteration = iteration + 1
+         */
+        $iteration = $iteration + 1;
+
+        /**
+         * end_time = Timer
+         *
+         * Ummm, I don't remember if I actually did anything with the timer.
+         * It's not needed in web apps, usually. We'll just have to figure
+         * out an exit strategy later on.
+         */
+
+        /**
+         * If end_time < start_time - 0.01 Then
+         *      solver_options.CPU_time_limit = solver_options.CPU_time_limit - (86400 - start_time)
+         *      start_time = end_time
+         * End If
+         *
+         * I'll just translate this for the sake of translation.
+         */
+        if ($end_time < $start_time - 0.01) {
+            $solver_options->CPU_time_limit = $solver_options->CPU_time_limit - (86400 - $start_time);
+            $start_time = $end_time;
         }
 
-    } while ();
+    /**
+     * Loop While end_time - start_time < solver_options.CPU_time_limit / 3
+     *
+     * Again, this condition needs to be tied into the exit strategy.
+     */
+    /*
+     * TODO: figure out an exit strategy that doesn't rely on time.
+     * Reasoning: if we're tied into time as an exit strategy, then
+     * we are bound by hardware: weaker computers/servers will run less iterations
+     * in the given amount of time than better computers/servers.
+     * One way we should devise this exit strategy is by tracking improvement somehow.
+     * When there's less improvement in the process than a given threshold -> exit.
+     * Also, we would need to somehow do a naive precheck if there's even a possibility
+     * for improvement. Work on this later.
+     * */
+    } while ($end_time - $start_time < $solver_options->CPU_time_limit / 3);
+
+    /*
+     * ' reorganize now
+     * */
+
+    /**
+     * nonempty_container_cnt = 0
+     */
+    $nonempty_container_cnt = 0;
+
+    /**
+     * With best_known
+     *
+     * We'll just call this $bk
+     */
+    $bk = $best_known;
+
+    /**
+     * For i = 1 To .num_containers
+     */
+    for ($i = 1; $i <= $bk->num_containers; ++$i) {
+        /**
+         * If .container(i).item_cnt > 0 Then
+         */
+        if ($bk->container[$i]->item_cnt > 0) {
+            /**
+             * nonempty_container_cnt = nonempty_container_cnt + 1
+             */
+            $nonempty_container_cnt = $nonempty_container_cnt + 1;
+        }
+    }
+    /**
+     * End With
+     */
+
+    /**
+     * For container_id = 1 To best_known.num_containers
+     */
+    for ($container_id = 1; $container_id <= $best_known->num_containers; ++$container_id) {
+        /**
+         * Call CalculateDistance(best_known, container_id)
+         */
+        CalculateDistance($best_known, $container_id);
+
+        /**
+         * Application.ScreenUpdating = True
+         * If best_known.feasible = True Then
+         *      Application.StatusBar = "Reorganizing container " & container_id & ". Best net profit found so far: " & best_known.net_profit & " Distance: " & best_known.total_distance
+         * Else
+         *      Application.StatusBar = "Reorganizing container " & container_id & ". Best net profit found so far: N/A" & " Distance: " & best_known.total_distance
+         * End If
+         * Application.ScreenUpdating = False
+         *
+         * This just writes stuff to the status bar in MS Excel.
+         */
+
+        /**
+         * If best_known.container(container_id).item_cnt > 0 Then
+         */
+        if ($best_known->container[$container_id]->item_cnt > 0) {
+            /**
+             * incumbent = best_known
+             */
+            $incumbent = $best_known;
+
+            /**
+             * start_time = Timer
+             * end_time = Timer
+             */
+
+            /**
+             * Do
+             */
+            do {
+                /**
+                 * If iteration Mod 100 = 0 Then
+                 *      Application.ScreenUpdating = True
+                 *      If best_known.feasible = True Then
+                 *           Application.StatusBar = "Reorganizing container " & container_id & ". Best net profit found so far: " & best_known.net_profit & " Distance: " & best_known.total_distance
+                 *      Else
+                 *           Application.StatusBar = "Reorganizing container " & container_id & ". Best net profit found so far: N/A" & " Distance: " & best_known.total_distance
+                 *      End If
+                 *      Application.ScreenUpdating = False
+                 *
+                 *      DoEvents
+                 * End If
+                 *
+                 *
+                 * * * Again, this is MS Excel stuff that does stuff on the "frontend".
+                 */
+
+                /**
+                 * Call PerturbSolution(incumbent, container_id, 0.1 + 0.2 * ((end_time - start_time) / ((solver_options.CPU_time_limit * 0.666) / nonempty_container_cnt)))
+                 */
+                PerturbSolution($incumbent, $container_id, 0.1 + 0.2 * (($end_time - $start_time) / (($solver_options->CPU_time_limit * 0.666) / $nonempty_container_cnt )), $item_list);
+
+                /**
+                 * Call PerturbRotationAndOrderOfItems(incumbent)
+                 */
+                PerturbRotationAndOrderOfItems($incumbent, $item_list);
+
+                /**
+                 * With incumbent
+                 */
+                $inc = $incumbent;
+
+                /**
+                 * For j = 1 To item_list.num_item_types
+                 */
+                for ($j = 1; $j <= $item_list->num_item_types; ++$j) {
+                    /**
+                     * continue_flag = True
+                     */
+                    $continue_flag = true;
+                    /**
+                     * Do While (.unpacked_item_count(.item_type_order(j)) > 0) And (continue_flag = True)
+                     *      continue_flag = AddItemToContainer(incumbent, container_id, .item_type_order(j), 1, True)
+                     *      'DoEvents
+                     * Loop
+                     */
+                    do {
+                        /**
+                         * continue_flag = AddItemToContainer(incumbent, container_id, .item_type_order(j), 1, True)
+                         */
+                        $continue_flag = AddItemToContainer($incumbent, $container_id, $inc->item_type_order[$j], 1, true, $instance, $compatibility_list, $item_list, $solver_options);
+                    } while ($inc->unpacked_item_count[$inc->item_type_order[$j]] > 0 && $continue_flag == true);
+                }
+
+                /**
+                 * .feasible = True
+                 */
+                $inc->feasible = true;
+
+                /**
+                 * For j = 1 To item_list.num_item_types
+                 */
+                for ($j = 1; $j <= $item_list->num_item_types; ++$j) {
+                    /**
+                     * If (.unpacked_item_count(j) > 0) And (item_list.item_types(j).mandatory = 1) Then
+                     */
+                    if ($inc->unpacked_item_count[$j] > 0 && $item_list->item_types[$j]->mandatory == 1) {
+                        /**
+                         * .feasible = False
+                         */
+                        $inc->feasible = false;
+
+                        /**
+                         * Exit For
+                         */
+                        break;
+                    }
+                }
+
+                /**
+                 * Call CalculateDistance(incumbent, container_id)
+                 */
+                CalculateDistance($incumbent, $container_id);
+
+                /**
+                 * If ((.feasible = True) And (best_known.feasible = False)) Or _
+                 *    ((.feasible = False) And (best_known.feasible = False) And (.total_volume > best_known.total_volume + epsilon)) Or _
+                 *    ((.feasible = True) And (best_known.feasible = True) And (.net_profit > best_known.net_profit + epsilon)) Or _
+                 *    ((.feasible = True) And (best_known.feasible = True) And (.net_profit > best_known.net_profit - epsilon) And (.total_volume < best_known.total_volume - epsilon)) Or _
+                 *    ((.feasible = True) And (best_known.feasible = True) And (.net_profit > best_known.net_profit - epsilon) And (.total_volume < best_known.total_volume + epsilon)) And (.total_distance < best_known.total_distance - epsilon) Or _
+                 *    ((.feasible = True) And (best_known.feasible = True) And (.net_profit > best_known.net_profit - epsilon) And (.total_volume < best_known.total_volume + epsilon)) And (.total_distance < best_known.total_distance + epsilon) And (.total_x_moment < best_known.total_x_moment - epsilon) Or _
+                 *    ((.feasible = True) And (best_known.feasible = True) And (.net_profit > best_known.net_profit - epsilon) And (.total_volume < best_known.total_volume + epsilon)) And (.total_distance < best_known.total_distance + epsilon) And (.total_x_moment < best_known.total_x_moment + epsilon) And (.total_yz_moment < best_known.total_yz_moment - epsilon) Then
+                 */
+
+                /*
+                 * TODO: triple check this -> really long lines of conditions
+                 * */
+                if ((($inc->feasible == true) && ($best_known->feasible == false)) ||
+                (($inc->feasible == false) && ($best_known->feasible == false) && ($inc->total_volume > $best_known->total_volume + epsilon)) ||
+                (($inc->feasible == true) && ($best_known->feasible == true) && ($inc->net_profit > $best_known->net_profit + epsilon)) ||
+                (($inc->feasible == true) && ($best_known->feasible == true) && ($inc->net_profit > $best_known->net_profit - epsilon) && ($inc->total_volume < $best_known->total_volume - epsilon)) ||
+                (($inc->feasible == true) && ($best_known->feasible == true) && ($inc->net_profit > $best_known->net_profit - epsilon) && ($inc->total_volume < $best_known->total_volume + epsilon)) && ($inc->total_distance < $best_known->total_distance - epsilon) ||
+                (($inc->feasible == true) && ($best_known->feasible == true) && ($inc->net_profit > $best_known->net_profit - epsilon) && ($inc->total_volume < $best_known->total_volume + epsilon)) && ($inc->total_distance < $best_known->total_distance + epsilon) && ($inc->total_x_moment < $best_known->total_x_moment - epsilon) ||
+                (($inc->feasible == true) && ($best_known->feasible == true) && ($inc->net_profit > $best_known->net_profit - epsilon) && ($inc->total_volume < $best_known->total_volume + epsilon)) && ($inc->total_distance < $best_known->total_distance + epsilon) && ($inc->total_x_moment < $best_known->total_x_moment + epsilon) && ($inc->total_yz_moment < $best_known->total_yz_moment - epsilon))
+                {
+                    /**
+                     * best_known = incumbent
+                     */
+                    $best_known = $incumbent;
+
+                    /*
+                     * ' If best_known.feasible = True Then
+                     * '     Application.StatusBar = "Reorganizing container " & container_id & ". Best net profit found so far: " & best_known.net_profit & " Distance: " & best_known.total_distance
+                     * ' Else
+                     * '     Application.StatusBar = "Reorganizing container " & container_id & ". Best net profit found so far: N/A" & " Distance: " & best_known.total_distance
+                     * ' End If
+                     * */
+                }
+
+                /**
+                 * End With
+                 */
+
+                /**
+                 * iteration = iteration + 1
+                 */
+                $iteration = $iteration + 1;
+
+                /**
+                 * end_time = Timer
+                 */
+
+                /**
+                 * If end_time < start_time - 0.01 Then
+                 *      solver_options.CPU_time_limit = solver_options.CPU_time_limit - (86400 - start_time)
+                 *      start_time = end_time
+                 * End If
+                 *
+                 * We'll translate this anyway.
+                 */
+                if ($end_time < $start_time - 0.01) {
+                    $solver_options->CPU_time_limit = $solver_options->CPU_time_limit - (86400 - $start_time);
+                    $start_time = $end_time;
+                }
+            /**
+             * Loop While end_time - start_time < (solver_options.CPU_time_limit * 0.666) / nonempty_container_cnt
+             */
+            } while ($end_time - $start_time < ($solver_options->CPU_time_limit * 0.666) / $nonempty_container_cnt);
+        }
+    }
+
+    /*
+     * 'MsgBox "Iterations performed: " & iteration
+     * */
+    /**
+     * CLP_Solver_Finish:
+     *
+     * This is defined inside the Sub, so we'll just define it afterwards.
+     */
 }
