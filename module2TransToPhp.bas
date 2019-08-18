@@ -1393,515 +1393,515 @@
     
 ' End Sub
 
-Sub CLP_Solver()
+' Sub CLP_Solver()
     
-    Application.ScreenUpdating = False
-    Application.Calculation = xlCalculationManual
+'     Application.ScreenUpdating = False
+'     Application.Calculation = xlCalculationManual
     
-    Dim WorksheetExists As Boolean
-    Dim reply As Integer
+'     Dim WorksheetExists As Boolean
+'     Dim reply As Integer
     
-    WorksheetExists = CheckWorksheetExistence("1.Items") And CheckWorksheetExistence("2.Containers") And CheckWorksheetExistence("3.Solution")
-    If WorksheetExists = False Then
-        MsgBox "Worksheets 1.Items, 2.Containers, and 3.Solution must exist for the CLP Spreadsheet Solver to function."
-        Application.ScreenUpdating = True
-        Application.Calculation = xlCalculationAutomatic
-        Exit Sub
-    Else
-        reply = MsgBox("This will take " & ThisWorkbook.Worksheets("CLP Solver Console").Cells(14, 3).Value & " seconds. Do you want to continue?", vbYesNo, "CLP Spreadsheet Solver")
-        If reply = vbNo Then
-            Application.ScreenUpdating = True
-            Application.Calculation = xlCalculationAutomatic
-            Exit Sub
-        End If
-    End If
+'     WorksheetExists = CheckWorksheetExistence("1.Items") And CheckWorksheetExistence("2.Containers") And CheckWorksheetExistence("3.Solution")
+'     If WorksheetExists = False Then
+'         MsgBox "Worksheets 1.Items, 2.Containers, and 3.Solution must exist for the CLP Spreadsheet Solver to function."
+'         Application.ScreenUpdating = True
+'         Application.Calculation = xlCalculationAutomatic
+'         Exit Sub
+'     Else
+'         reply = MsgBox("This will take " & ThisWorkbook.Worksheets("CLP Solver Console").Cells(14, 3).Value & " seconds. Do you want to continue?", vbYesNo, "CLP Spreadsheet Solver")
+'         If reply = vbNo Then
+'             Application.ScreenUpdating = True
+'             Application.Calculation = xlCalculationAutomatic
+'             Exit Sub
+'         End If
+'     End If
     
-    Application.EnableCancelKey = xlErrorHandler
-    On Error GoTo CLP_Solver_Finish
+'     Application.EnableCancelKey = xlErrorHandler
+'     On Error GoTo CLP_Solver_Finish
     
-    'Allocate memory and get the data
+'     'Allocate memory and get the data
     
-    Call GetSolverOptions
-    Call GetItemData
-    Call GetContainerData
-    Call GetInstanceData
-    Call GetCompatibilityData
+'     Call GetSolverOptions
+'     Call GetItemData
+'     Call GetContainerData
+'     Call GetInstanceData
+'     Call GetCompatibilityData
     
-    Call SortItems
+'     Call SortItems
     
-    Dim incumbent As solution_data
-    Call InitializeSolution(incumbent)
+'     Dim incumbent As solution_data
+'     Call InitializeSolution(incumbent)
         
-    Dim best_known As solution_data
-    Call InitializeSolution(best_known)
-    best_known = incumbent
+'     Dim best_known As solution_data
+'     Call InitializeSolution(best_known)
+'     best_known = incumbent
     
-    Dim iteration As Long
+'     Dim iteration As Long
     
-    Dim i As Long
-    Dim j As Long
-    Dim k As Long
-    Dim l As Long
+'     Dim i As Long
+'     Dim j As Long
+'     Dim k As Long
+'     Dim l As Long
     
-    Dim nonempty_container_cnt As Long
-    Dim container_id As Long
+'     Dim nonempty_container_cnt As Long
+'     Dim container_id As Long
     
-    Dim start_time As Double
-    Dim end_time As Double
+'     Dim start_time As Double
+'     Dim end_time As Double
     
-    Dim continue_flag As Boolean
-    Dim sort_criterion As Double
-    Dim selected_rotation As Double
+'     Dim continue_flag As Boolean
+'     Dim sort_criterion As Double
+'     Dim selected_rotation As Double
     
-    'infeasibility check
+'     'infeasibility check
     
-    Dim infeasibility_count As Long
-    Dim infeasibility_string As String
+'     Dim infeasibility_count As Long
+'     Dim infeasibility_string As String
 
-    Call FeasibilityCheckData(infeasibility_count, infeasibility_string)
+'     Call FeasibilityCheckData(infeasibility_count, infeasibility_string)
 
-    If infeasibility_count > 0 Then
-        reply = MsgBox("Infeasibilities detected." & Chr(13) & infeasibility_string & "Do you want to continue?", vbYesNo, "CLP Spreadsheet Solver")
-        If reply = vbNo Then
-            Application.ScreenUpdating = True
-            Application.Calculation = xlCalculationAutomatic
-            Exit Sub
-        End If
-    End If
+'     If infeasibility_count > 0 Then
+'         reply = MsgBox("Infeasibilities detected." & Chr(13) & infeasibility_string & "Do you want to continue?", vbYesNo, "CLP Spreadsheet Solver")
+'         If reply = vbNo Then
+'             Application.ScreenUpdating = True
+'             Application.Calculation = xlCalculationAutomatic
+'             Exit Sub
+'         End If
+'     End If
     
-    start_time = Timer
-    end_time = Timer
+'     start_time = Timer
+'     end_time = Timer
         
-    'constructive phase
+'     'constructive phase
     
-    Application.ScreenUpdating = True
-    Application.StatusBar = "Constructive phase..."
-    Application.ScreenUpdating = False
+'     Application.ScreenUpdating = True
+'     Application.StatusBar = "Constructive phase..."
+'     Application.ScreenUpdating = False
     
-    Call SortContainers(incumbent, 0)
+'     Call SortContainers(incumbent, 0)
     
-    For i = 1 To incumbent.num_containers
+'     For i = 1 To incumbent.num_containers
         
-        'sort the rotation order for this container
+'         'sort the rotation order for this container
         
-        For j = 1 To item_list.num_item_types
+'         For j = 1 To item_list.num_item_types
             
-            sort_criterion = 0
-            selected_rotation = 0
+'             sort_criterion = 0
+'             selected_rotation = 0
             
-            If sort_criterion < (Int(incumbent.container(i).width / item_list.item_types(j).width) * item_list.item_types(j).width) * (Int(incumbent.container(i).height / item_list.item_types(j).height) * item_list.item_types(j).height) Then
-                sort_criterion = (Int(incumbent.container(i).width / item_list.item_types(j).width) * item_list.item_types(j).width) * (Int(incumbent.container(i).height / item_list.item_types(j).height) * item_list.item_types(j).height)
-                selected_rotation = 1
-            End If
+'             If sort_criterion < (Int(incumbent.container(i).width / item_list.item_types(j).width) * item_list.item_types(j).width) * (Int(incumbent.container(i).height / item_list.item_types(j).height) * item_list.item_types(j).height) Then
+'                 sort_criterion = (Int(incumbent.container(i).width / item_list.item_types(j).width) * item_list.item_types(j).width) * (Int(incumbent.container(i).height / item_list.item_types(j).height) * item_list.item_types(j).height)
+'                 selected_rotation = 1
+'             End If
             
-            If sort_criterion < (Int(incumbent.container(i).width / item_list.item_types(j).length) * item_list.item_types(j).length) * (Int(incumbent.container(i).height / item_list.item_types(j).height) * item_list.item_types(j).height) Then
-                sort_criterion = (Int(incumbent.container(i).width / item_list.item_types(j).length) * item_list.item_types(j).length) * (Int(incumbent.container(i).height / item_list.item_types(j).height) * item_list.item_types(j).height)
-                selected_rotation = 2
-            End If
+'             If sort_criterion < (Int(incumbent.container(i).width / item_list.item_types(j).length) * item_list.item_types(j).length) * (Int(incumbent.container(i).height / item_list.item_types(j).height) * item_list.item_types(j).height) Then
+'                 sort_criterion = (Int(incumbent.container(i).width / item_list.item_types(j).length) * item_list.item_types(j).length) * (Int(incumbent.container(i).height / item_list.item_types(j).height) * item_list.item_types(j).height)
+'                 selected_rotation = 2
+'             End If
             
-            If (item_list.item_types(j).xy_rotatable = True) And (sort_criterion < (Int(incumbent.container(i).width / item_list.item_types(j).width) * item_list.item_types(j).width) * (Int(incumbent.container(i).height / item_list.item_types(j).length) * item_list.item_types(j).length)) Then
-                sort_criterion = (Int(incumbent.container(i).width / item_list.item_types(j).width) * item_list.item_types(j).width) * (Int(incumbent.container(i).height / item_list.item_types(j).length) * item_list.item_types(j).length)
-                selected_rotation = 3
-            End If
+'             If (item_list.item_types(j).xy_rotatable = True) And (sort_criterion < (Int(incumbent.container(i).width / item_list.item_types(j).width) * item_list.item_types(j).width) * (Int(incumbent.container(i).height / item_list.item_types(j).length) * item_list.item_types(j).length)) Then
+'                 sort_criterion = (Int(incumbent.container(i).width / item_list.item_types(j).width) * item_list.item_types(j).width) * (Int(incumbent.container(i).height / item_list.item_types(j).length) * item_list.item_types(j).length)
+'                 selected_rotation = 3
+'             End If
             
-            If (item_list.item_types(j).xy_rotatable = True) And (sort_criterion < (Int(incumbent.container(i).width / item_list.item_types(j).height) * item_list.item_types(j).height) * (Int(incumbent.container(i).height / item_list.item_types(j).length) * item_list.item_types(j).length)) Then
-                sort_criterion = sort_criterion < (Int(incumbent.container(i).width / item_list.item_types(j).height) * item_list.item_types(j).height) * (Int(incumbent.container(i).height / item_list.item_types(j).length) * item_list.item_types(j).length)
-                selected_rotation = 4
-            End If
+'             If (item_list.item_types(j).xy_rotatable = True) And (sort_criterion < (Int(incumbent.container(i).width / item_list.item_types(j).height) * item_list.item_types(j).height) * (Int(incumbent.container(i).height / item_list.item_types(j).length) * item_list.item_types(j).length)) Then
+'                 sort_criterion = sort_criterion < (Int(incumbent.container(i).width / item_list.item_types(j).height) * item_list.item_types(j).height) * (Int(incumbent.container(i).height / item_list.item_types(j).length) * item_list.item_types(j).length)
+'                 selected_rotation = 4
+'             End If
             
-            If (item_list.item_types(j).yz_rotatable = True) And (sort_criterion < (Int(incumbent.container(i).width / item_list.item_types(j).height) * item_list.item_types(j).height) * (Int(incumbent.container(i).height / item_list.item_types(j).width) * item_list.item_types(j).width)) Then
-                sort_criterion = (Int(incumbent.container(i).width / item_list.item_types(j).height) * item_list.item_types(j).height) * (Int(incumbent.container(i).height / item_list.item_types(j).width) * item_list.item_types(j).width)
-                selected_rotation = 5
-            End If
+'             If (item_list.item_types(j).yz_rotatable = True) And (sort_criterion < (Int(incumbent.container(i).width / item_list.item_types(j).height) * item_list.item_types(j).height) * (Int(incumbent.container(i).height / item_list.item_types(j).width) * item_list.item_types(j).width)) Then
+'                 sort_criterion = (Int(incumbent.container(i).width / item_list.item_types(j).height) * item_list.item_types(j).height) * (Int(incumbent.container(i).height / item_list.item_types(j).width) * item_list.item_types(j).width)
+'                 selected_rotation = 5
+'             End If
             
-            If (item_list.item_types(j).yz_rotatable = True) And (sort_criterion < (Int(incumbent.container(i).width / item_list.item_types(j).length) * item_list.item_types(j).length) * (Int(incumbent.container(i).height / item_list.item_types(j).width) * item_list.item_types(j).width)) Then
-                sort_criterion = (Int(incumbent.container(i).width / item_list.item_types(j).length) * item_list.item_types(j).length) * (Int(incumbent.container(i).height / item_list.item_types(j).width) * item_list.item_types(j).width)
-                selected_rotation = 6
-            End If
+'             If (item_list.item_types(j).yz_rotatable = True) And (sort_criterion < (Int(incumbent.container(i).width / item_list.item_types(j).length) * item_list.item_types(j).length) * (Int(incumbent.container(i).height / item_list.item_types(j).width) * item_list.item_types(j).width)) Then
+'                 sort_criterion = (Int(incumbent.container(i).width / item_list.item_types(j).length) * item_list.item_types(j).length) * (Int(incumbent.container(i).height / item_list.item_types(j).width) * item_list.item_types(j).width)
+'                 selected_rotation = 6
+'             End If
             
-            If selected_rotation = 0 Then
-                selected_rotation = 1
-            End If
+'             If selected_rotation = 0 Then
+'                 selected_rotation = 1
+'             End If
             
-            incumbent.rotation_order(j, 1) = selected_rotation
-            incumbent.rotation_order(j, selected_rotation) = 1
-        Next j
+'             incumbent.rotation_order(j, 1) = selected_rotation
+'             incumbent.rotation_order(j, selected_rotation) = 1
+'         Next j
         
-        For j = 1 To item_list.num_item_types
+'         For j = 1 To item_list.num_item_types
         
-            continue_flag = True
-            Do While (incumbent.unpacked_item_count(incumbent.item_type_order(j)) > 0) And (continue_flag = True)
-                continue_flag = AddItemToContainer(incumbent, i, incumbent.item_type_order(j), 1, False)
-            Loop
-        Next j
+'             continue_flag = True
+'             Do While (incumbent.unpacked_item_count(incumbent.item_type_order(j)) > 0) And (continue_flag = True)
+'                 continue_flag = AddItemToContainer(incumbent, i, incumbent.item_type_order(j), 1, False)
+'             Loop
+'         Next j
         
-        incumbent.feasible = True
+'         incumbent.feasible = True
 
         
-        For j = 1 To item_list.num_item_types
-            If (incumbent.unpacked_item_count(j) > 0) And (item_list.item_types(j).mandatory = 1) Then
-                incumbent.feasible = False
-                Exit For
-            End If
-        Next j
+'         For j = 1 To item_list.num_item_types
+'             If (incumbent.unpacked_item_count(j) > 0) And (item_list.item_types(j).mandatory = 1) Then
+'                 incumbent.feasible = False
+'                 Exit For
+'             End If
+'         Next j
         
-        Call CalculateDispersion(incumbent)
+'         Call CalculateDispersion(incumbent)
 
-        If ((incumbent.feasible = True) And (best_known.feasible = False)) Or _
-           ((incumbent.feasible = False) And (best_known.feasible = False) And (incumbent.total_volume > best_known.total_volume + epsilon)) Or _
-           ((incumbent.feasible = True) And (best_known.feasible = True) And (incumbent.net_profit > best_known.net_profit + epsilon)) Or _
-           ((incumbent.feasible = True) And (best_known.feasible = True) And (incumbent.net_profit > best_known.net_profit - epsilon) And (incumbent.total_volume > best_known.total_volume + epsilon)) Then
+'         If ((incumbent.feasible = True) And (best_known.feasible = False)) Or _
+'            ((incumbent.feasible = False) And (best_known.feasible = False) And (incumbent.total_volume > best_known.total_volume + epsilon)) Or _
+'            ((incumbent.feasible = True) And (best_known.feasible = True) And (incumbent.net_profit > best_known.net_profit + epsilon)) Or _
+'            ((incumbent.feasible = True) And (best_known.feasible = True) And (incumbent.net_profit > best_known.net_profit - epsilon) And (incumbent.total_volume > best_known.total_volume + epsilon)) Then
 
-            best_known = incumbent
+'             best_known = incumbent
             
-        End If
+'         End If
         
-    Next i
+'     Next i
     
-    'GoTo CLP_Solver_Finish
+'     'GoTo CLP_Solver_Finish
     
-    'end_time = Timer
-    'MsgBox "Constructive phase result: " & best_known.net_profit & " time: " & end_time - start_time
+'     'end_time = Timer
+'     'MsgBox "Constructive phase result: " & best_known.net_profit & " time: " & end_time - start_time
     
-    'improvement phase
+'     'improvement phase
 
-    iteration = 0
+'     iteration = 0
 
-    Do
+'     Do
         
-        If iteration Mod 100 = 0 Then
-            Application.ScreenUpdating = True
-            If best_known.feasible = True Then
-                Application.StatusBar = "Starting iteration " & iteration & ". Best net profit found so far: " & best_known.net_profit & " Dispersion: " & best_known.total_dispersion
-            Else
-                Application.StatusBar = "Starting iteration " & iteration & ". Best net profit found so far: N/A" & " Dispersion: " & best_known.total_dispersion
-            End If
-            Application.ScreenUpdating = False
-            DoEvents
-        End If
+'         If iteration Mod 100 = 0 Then
+'             Application.ScreenUpdating = True
+'             If best_known.feasible = True Then
+'                 Application.StatusBar = "Starting iteration " & iteration & ". Best net profit found so far: " & best_known.net_profit & " Dispersion: " & best_known.total_dispersion
+'             Else
+'                 Application.StatusBar = "Starting iteration " & iteration & ". Best net profit found so far: N/A" & " Dispersion: " & best_known.total_dispersion
+'             End If
+'             Application.ScreenUpdating = False
+'             DoEvents
+'         End If
 
-        If Rnd < 0.5 Then ' < ((end_time - start_time) / solver_options.CPU_time_limit) ^ 2 Then
+'         If Rnd < 0.5 Then ' < ((end_time - start_time) / solver_options.CPU_time_limit) ^ 2 Then
 
-             incumbent = best_known
+'              incumbent = best_known
 
-        End If
+'         End If
         
-        With incumbent
+'         With incumbent
         
-            For i = 1 To .num_containers
-                Call PerturbSolution(incumbent, i, 1 - ((end_time - start_time) / solver_options.CPU_time_limit))
-            Next i
-            Call PerturbRotationAndOrderOfItems(incumbent)
+'             For i = 1 To .num_containers
+'                 Call PerturbSolution(incumbent, i, 1 - ((end_time - start_time) / solver_options.CPU_time_limit))
+'             Next i
+'             Call PerturbRotationAndOrderOfItems(incumbent)
             
-        End With
+'         End With
         
-        Call SortContainers(incumbent, 0.2)
+'         Call SortContainers(incumbent, 0.2)
 
-        With incumbent
+'         With incumbent
         
-            For i = 1 To .num_containers
+'             For i = 1 To .num_containers
     
-                For j = 1 To item_list.num_item_types
+'                 For j = 1 To item_list.num_item_types
                     
-                    continue_flag = True
-                    Do While (.unpacked_item_count(.item_type_order(j)) > 0) And (continue_flag = True)
-                        continue_flag = AddItemToContainer(incumbent, i, .item_type_order(j), 1, False)
-                        'DoEvents
-                    Loop
-                Next j
+'                     continue_flag = True
+'                     Do While (.unpacked_item_count(.item_type_order(j)) > 0) And (continue_flag = True)
+'                         continue_flag = AddItemToContainer(incumbent, i, .item_type_order(j), 1, False)
+'                         'DoEvents
+'                     Loop
+'                 Next j
     
-                .feasible = True
-                For j = 1 To item_list.num_item_types
-                    If (.unpacked_item_count(j) > 0) And (item_list.item_types(j).mandatory = 1) Then
-                        .feasible = False
-                        Exit For
-                    End If
-                Next j
+'                 .feasible = True
+'                 For j = 1 To item_list.num_item_types
+'                     If (.unpacked_item_count(j) > 0) And (item_list.item_types(j).mandatory = 1) Then
+'                         .feasible = False
+'                         Exit For
+'                     End If
+'                 Next j
                 
-                If .feasible = True Then
-                    Call CalculateDispersion(incumbent)
-                End If
+'                 If .feasible = True Then
+'                     Call CalculateDispersion(incumbent)
+'                 End If
                 
-                If ((.feasible = True) And (best_known.feasible = False)) Or _
-                   ((.feasible = False) And (best_known.feasible = False) And (.total_volume > best_known.total_volume + epsilon)) Or _
-                   ((.feasible = True) And (best_known.feasible = True) And (.net_profit > best_known.net_profit + epsilon)) Or _
-                   ((.feasible = True) And (best_known.feasible = True) And (.net_profit > best_known.net_profit - epsilon) And (.total_volume > best_known.total_volume + epsilon)) Or _
-                   ((.feasible = True) And (best_known.feasible = True) And (.net_profit > best_known.net_profit - epsilon) And (.total_volume > best_known.total_volume - epsilon) And (.total_dispersion < best_known.total_dispersion - epsilon)) Then
+'                 If ((.feasible = True) And (best_known.feasible = False)) Or _
+'                    ((.feasible = False) And (best_known.feasible = False) And (.total_volume > best_known.total_volume + epsilon)) Or _
+'                    ((.feasible = True) And (best_known.feasible = True) And (.net_profit > best_known.net_profit + epsilon)) Or _
+'                    ((.feasible = True) And (best_known.feasible = True) And (.net_profit > best_known.net_profit - epsilon) And (.total_volume > best_known.total_volume + epsilon)) Or _
+'                    ((.feasible = True) And (best_known.feasible = True) And (.net_profit > best_known.net_profit - epsilon) And (.total_volume > best_known.total_volume - epsilon) And (.total_dispersion < best_known.total_dispersion - epsilon)) Then
         
-                    best_known = incumbent
+'                     best_known = incumbent
                     
-                End If
+'                 End If
     
-            Next i
+'             Next i
             
-        End With
+'         End With
 
-        iteration = iteration + 1
+'         iteration = iteration + 1
         
-        end_time = Timer
+'         end_time = Timer
         
-        If end_time < start_time - 0.01 Then
-            solver_options.CPU_time_limit = solver_options.CPU_time_limit - (86400 - start_time)
-            start_time = end_time
-        End If
+'         If end_time < start_time - 0.01 Then
+'             solver_options.CPU_time_limit = solver_options.CPU_time_limit - (86400 - start_time)
+'             start_time = end_time
+'         End If
         
-    Loop While end_time - start_time < solver_options.CPU_time_limit / 3
+'     Loop While end_time - start_time < solver_options.CPU_time_limit / 3
     
-    ' reorganize now
+'     ' reorganize now
     
-    nonempty_container_cnt = 0
-    With best_known
-        For i = 1 To .num_containers
+'     nonempty_container_cnt = 0
+'     With best_known
+'         For i = 1 To .num_containers
 
-            If .container(i).item_cnt > 0 Then
-                nonempty_container_cnt = nonempty_container_cnt + 1
-            End If
+'             If .container(i).item_cnt > 0 Then
+'                 nonempty_container_cnt = nonempty_container_cnt + 1
+'             End If
 
-        Next i
-    End With
+'         Next i
+'     End With
 
-    For container_id = 1 To best_known.num_containers
+'     For container_id = 1 To best_known.num_containers
 
-        Call CalculateDistance(best_known, container_id)
+'         Call CalculateDistance(best_known, container_id)
             
-        Application.ScreenUpdating = True
-        If best_known.feasible = True Then
-            Application.StatusBar = "Reorganizing container " & container_id & ". Best net profit found so far: " & best_known.net_profit & " Distance: " & best_known.total_distance
-        Else
-            Application.StatusBar = "Reorganizing container " & container_id & ". Best net profit found so far: N/A" & " Distance: " & best_known.total_distance
-        End If
-        Application.ScreenUpdating = False
+'         Application.ScreenUpdating = True
+'         If best_known.feasible = True Then
+'             Application.StatusBar = "Reorganizing container " & container_id & ". Best net profit found so far: " & best_known.net_profit & " Distance: " & best_known.total_distance
+'         Else
+'             Application.StatusBar = "Reorganizing container " & container_id & ". Best net profit found so far: N/A" & " Distance: " & best_known.total_distance
+'         End If
+'         Application.ScreenUpdating = False
 
-        If best_known.container(container_id).item_cnt > 0 Then
+'         If best_known.container(container_id).item_cnt > 0 Then
 
-            incumbent = best_known
+'             incumbent = best_known
 
-            start_time = Timer
-            end_time = Timer
+'             start_time = Timer
+'             end_time = Timer
 
-            Do
-                If iteration Mod 100 = 0 Then
+'             Do
+'                 If iteration Mod 100 = 0 Then
                 
-                    Application.ScreenUpdating = True
-                    If best_known.feasible = True Then
-                        Application.StatusBar = "Reorganizing container " & container_id & ". Best net profit found so far: " & best_known.net_profit & " Distance: " & best_known.total_distance
-                    Else
-                        Application.StatusBar = "Reorganizing container " & container_id & ". Best net profit found so far: N/A" & " Distance: " & best_known.total_distance
-                    End If
-                    Application.ScreenUpdating = False
+'                     Application.ScreenUpdating = True
+'                     If best_known.feasible = True Then
+'                         Application.StatusBar = "Reorganizing container " & container_id & ". Best net profit found so far: " & best_known.net_profit & " Distance: " & best_known.total_distance
+'                     Else
+'                         Application.StatusBar = "Reorganizing container " & container_id & ". Best net profit found so far: N/A" & " Distance: " & best_known.total_distance
+'                     End If
+'                     Application.ScreenUpdating = False
                     
-                    DoEvents
-                End If
+'                     DoEvents
+'                 End If
 
-                Call PerturbSolution(incumbent, container_id, 0.1 + 0.2 * ((end_time - start_time) / ((solver_options.CPU_time_limit * 0.666) / nonempty_container_cnt)))
-                Call PerturbRotationAndOrderOfItems(incumbent)
+'                 Call PerturbSolution(incumbent, container_id, 0.1 + 0.2 * ((end_time - start_time) / ((solver_options.CPU_time_limit * 0.666) / nonempty_container_cnt)))
+'                 Call PerturbRotationAndOrderOfItems(incumbent)
 
-                With incumbent
+'                 With incumbent
 
-                    For j = 1 To item_list.num_item_types
+'                     For j = 1 To item_list.num_item_types
 
-                        continue_flag = True
-                        Do While (.unpacked_item_count(.item_type_order(j)) > 0) And (continue_flag = True)
-                            continue_flag = AddItemToContainer(incumbent, container_id, .item_type_order(j), 1, True)
-                            'DoEvents
-                        Loop
-                    Next j
+'                         continue_flag = True
+'                         Do While (.unpacked_item_count(.item_type_order(j)) > 0) And (continue_flag = True)
+'                             continue_flag = AddItemToContainer(incumbent, container_id, .item_type_order(j), 1, True)
+'                             'DoEvents
+'                         Loop
+'                     Next j
 
-                    .feasible = True
-                    For j = 1 To item_list.num_item_types
-                        If (.unpacked_item_count(j) > 0) And (item_list.item_types(j).mandatory = 1) Then
-                            .feasible = False
-                            Exit For
-                        End If
-                    Next j
+'                     .feasible = True
+'                     For j = 1 To item_list.num_item_types
+'                         If (.unpacked_item_count(j) > 0) And (item_list.item_types(j).mandatory = 1) Then
+'                             .feasible = False
+'                             Exit For
+'                         End If
+'                     Next j
 
-                    Call CalculateDistance(incumbent, container_id)
+'                     Call CalculateDistance(incumbent, container_id)
 
-                    If ((.feasible = True) And (best_known.feasible = False)) Or _
-                       ((.feasible = False) And (best_known.feasible = False) And (.total_volume > best_known.total_volume + epsilon)) Or _
-                       ((.feasible = True) And (best_known.feasible = True) And (.net_profit > best_known.net_profit + epsilon)) Or _
-                       ((.feasible = True) And (best_known.feasible = True) And (.net_profit > best_known.net_profit - epsilon) And (.total_volume < best_known.total_volume - epsilon)) Or _
-                       ((.feasible = True) And (best_known.feasible = True) And (.net_profit > best_known.net_profit - epsilon) And (.total_volume < best_known.total_volume + epsilon)) And (.total_distance < best_known.total_distance - epsilon) Or _
-                       ((.feasible = True) And (best_known.feasible = True) And (.net_profit > best_known.net_profit - epsilon) And (.total_volume < best_known.total_volume + epsilon)) And (.total_distance < best_known.total_distance + epsilon) And (.total_x_moment < best_known.total_x_moment - epsilon) Or _
-                       ((.feasible = True) And (best_known.feasible = True) And (.net_profit > best_known.net_profit - epsilon) And (.total_volume < best_known.total_volume + epsilon)) And (.total_distance < best_known.total_distance + epsilon) And (.total_x_moment < best_known.total_x_moment + epsilon) And (.total_yz_moment < best_known.total_yz_moment - epsilon) Then
+'                     If ((.feasible = True) And (best_known.feasible = False)) Or _
+'                        ((.feasible = False) And (best_known.feasible = False) And (.total_volume > best_known.total_volume + epsilon)) Or _
+'                        ((.feasible = True) And (best_known.feasible = True) And (.net_profit > best_known.net_profit + epsilon)) Or _
+'                        ((.feasible = True) And (best_known.feasible = True) And (.net_profit > best_known.net_profit - epsilon) And (.total_volume < best_known.total_volume - epsilon)) Or _
+'                        ((.feasible = True) And (best_known.feasible = True) And (.net_profit > best_known.net_profit - epsilon) And (.total_volume < best_known.total_volume + epsilon)) And (.total_distance < best_known.total_distance - epsilon) Or _
+'                        ((.feasible = True) And (best_known.feasible = True) And (.net_profit > best_known.net_profit - epsilon) And (.total_volume < best_known.total_volume + epsilon)) And (.total_distance < best_known.total_distance + epsilon) And (.total_x_moment < best_known.total_x_moment - epsilon) Or _
+'                        ((.feasible = True) And (best_known.feasible = True) And (.net_profit > best_known.net_profit - epsilon) And (.total_volume < best_known.total_volume + epsilon)) And (.total_distance < best_known.total_distance + epsilon) And (.total_x_moment < best_known.total_x_moment + epsilon) And (.total_yz_moment < best_known.total_yz_moment - epsilon) Then
             
-                        best_known = incumbent
+'                         best_known = incumbent
                         
-                       ' If best_known.feasible = True Then
-                       '     Application.StatusBar = "Reorganizing container " & container_id & ". Best net profit found so far: " & best_known.net_profit & " Distance: " & best_known.total_distance
-                       ' Else
-                       '     Application.StatusBar = "Reorganizing container " & container_id & ". Best net profit found so far: N/A" & " Distance: " & best_known.total_distance
-                       ' End If
+'                        ' If best_known.feasible = True Then
+'                        '     Application.StatusBar = "Reorganizing container " & container_id & ". Best net profit found so far: " & best_known.net_profit & " Distance: " & best_known.total_distance
+'                        ' Else
+'                        '     Application.StatusBar = "Reorganizing container " & container_id & ". Best net profit found so far: N/A" & " Distance: " & best_known.total_distance
+'                        ' End If
                         
-                    End If
+'                     End If
 
-                End With
+'                 End With
 
-                iteration = iteration + 1
+'                 iteration = iteration + 1
                 
-                end_time = Timer
+'                 end_time = Timer
                 
-                If end_time < start_time - 0.01 Then
-                    solver_options.CPU_time_limit = solver_options.CPU_time_limit - (86400 - start_time)
-                    start_time = end_time
-                End If
+'                 If end_time < start_time - 0.01 Then
+'                     solver_options.CPU_time_limit = solver_options.CPU_time_limit - (86400 - start_time)
+'                     start_time = end_time
+'                 End If
 
-            Loop While end_time - start_time < (solver_options.CPU_time_limit * 0.666) / nonempty_container_cnt
+'             Loop While end_time - start_time < (solver_options.CPU_time_limit * 0.666) / nonempty_container_cnt
 
-        End If
+'         End If
 
-    Next container_id
+'     Next container_id
 
-    'MsgBox "Iterations performed: " & iteration
+'     'MsgBox "Iterations performed: " & iteration
     
-CLP_Solver_Finish:
+' CLP_Solver_Finish:
     
-    'ensure loadability
+'     'ensure loadability
 
-    Dim min_x As Double
-    Dim min_y As Double
-    Dim min_z As Double
+'     Dim min_x As Double
+'     Dim min_y As Double
+'     Dim min_z As Double
 
-    Dim intersection_right As Double
-    Dim intersection_left As Double
-    Dim intersection_top As Double
-    Dim intersection_bottom As Double
+'     Dim intersection_right As Double
+'     Dim intersection_left As Double
+'     Dim intersection_top As Double
+'     Dim intersection_bottom As Double
 
-    Dim selected_item_index As Long
-    Dim swap_item As item_in_container
+'     Dim selected_item_index As Long
+'     Dim swap_item As item_in_container
 
-    Dim area_supported As Double
-    Dim area_required As Double
-    Dim support_flag As Boolean
+'     Dim area_supported As Double
+'     Dim area_required As Double
+'     Dim support_flag As Boolean
 
-    For i = 1 To best_known.num_containers
+'     For i = 1 To best_known.num_containers
 
-        With best_known.container(i)
+'         With best_known.container(i)
 
-            For j = 1 To .item_cnt
+'             For j = 1 To .item_cnt
 
-                selected_item_index = 0
-                min_x = .width
-                min_y = .height
-                min_z = .length
+'                 selected_item_index = 0
+'                 min_x = .width
+'                 min_y = .height
+'                 min_z = .length
                 
-                For k = j To .item_cnt
+'                 For k = j To .item_cnt
 
-                    If (.items(k).origin_z < min_z - epsilon) Or _
-                        ((.items(k).origin_z < min_z + epsilon) And (.items(k).origin_y < min_y - epsilon)) Or _
-                        ((.items(k).origin_z < min_z + epsilon) And (.items(k).origin_y < min_y + epsilon) And (.items(k).origin_x < min_x - epsilon)) Then
+'                     If (.items(k).origin_z < min_z - epsilon) Or _
+'                         ((.items(k).origin_z < min_z + epsilon) And (.items(k).origin_y < min_y - epsilon)) Or _
+'                         ((.items(k).origin_z < min_z + epsilon) And (.items(k).origin_y < min_y + epsilon) And (.items(k).origin_x < min_x - epsilon)) Then
 
-                        'check for support
+'                         'check for support
                     
-                        If .items(k).origin_y < epsilon Then
-                            support_flag = True
-                        Else
-                            area_supported = 0
-                            area_required = ((.items(k).opposite_x - .items(k).origin_x) * (.items(k).opposite_z - .items(k).origin_z))
-                            support_flag = False
-                            For l = j - 1 To 1 Step -1
+'                         If .items(k).origin_y < epsilon Then
+'                             support_flag = True
+'                         Else
+'                             area_supported = 0
+'                             area_required = ((.items(k).opposite_x - .items(k).origin_x) * (.items(k).opposite_z - .items(k).origin_z))
+'                             support_flag = False
+'                             For l = j - 1 To 1 Step -1
                                         
-                                If (Abs(.items(k).origin_y - .items(l).opposite_y) < epsilon) Then
+'                                 If (Abs(.items(k).origin_y - .items(l).opposite_y) < epsilon) Then
                                     
-                                    'check for intersection
+'                                     'check for intersection
                                     
-                                    intersection_right = .items(k).opposite_x
-                                    If intersection_right > .items(l).opposite_x Then intersection_right = .items(l).opposite_x
+'                                     intersection_right = .items(k).opposite_x
+'                                     If intersection_right > .items(l).opposite_x Then intersection_right = .items(l).opposite_x
                                     
-                                    intersection_left = .items(k).origin_x
-                                    If intersection_left < .items(l).origin_x Then intersection_left = .items(l).origin_x
+'                                     intersection_left = .items(k).origin_x
+'                                     If intersection_left < .items(l).origin_x Then intersection_left = .items(l).origin_x
                                     
-                                    intersection_top = .items(k).opposite_z
-                                    If intersection_top > .items(l).opposite_z Then intersection_top = .items(l).opposite_z
+'                                     intersection_top = .items(k).opposite_z
+'                                     If intersection_top > .items(l).opposite_z Then intersection_top = .items(l).opposite_z
                                     
-                                    intersection_bottom = .items(k).origin_z
-                                    If intersection_bottom < .items(l).origin_z Then intersection_bottom = .items(l).origin_z
+'                                     intersection_bottom = .items(k).origin_z
+'                                     If intersection_bottom < .items(l).origin_z Then intersection_bottom = .items(l).origin_z
                                     
-                                    If (intersection_right > intersection_left) And (intersection_top > intersection_bottom) Then
-                                        area_supported = area_supported + (intersection_right - intersection_left) * (intersection_top - intersection_bottom)
-                                        If area_supported > area_required - epsilon Then
-                                            support_flag = True
-                                            Exit For
-                                        End If
-                                    End If
+'                                     If (intersection_right > intersection_left) And (intersection_top > intersection_bottom) Then
+'                                         area_supported = area_supported + (intersection_right - intersection_left) * (intersection_top - intersection_bottom)
+'                                         If area_supported > area_required - epsilon Then
+'                                             support_flag = True
+'                                             Exit For
+'                                         End If
+'                                     End If
                                     
-                                End If
-                            Next l
+'                                 End If
+'                             Next l
                             
-                        End If
+'                         End If
                         
-                        If support_flag = True Then
-                            selected_item_index = k
+'                         If support_flag = True Then
+'                             selected_item_index = k
 
-                            min_x = .items(k).origin_x
-                            min_y = .items(k).origin_y
-                            min_z = .items(k).origin_z
-                        End If
-                    End If
+'                             min_x = .items(k).origin_x
+'                             min_y = .items(k).origin_y
+'                             min_z = .items(k).origin_z
+'                         End If
+'                     End If
                 
-                Next k
+'                 Next k
 
-                If selected_item_index > 0 Then
-                    swap_item = .items(selected_item_index)
-                    .items(selected_item_index) = .items(j)
-                    .items(j) = swap_item
-                Else
-                    MsgBox ("Loading order could not be constructed.")
-                End If
-            Next j
+'                 If selected_item_index > 0 Then
+'                     swap_item = .items(selected_item_index)
+'                     .items(selected_item_index) = .items(j)
+'                     .items(j) = swap_item
+'                 Else
+'                     MsgBox ("Loading order could not be constructed.")
+'                 End If
+'             Next j
 
-        End With
-    Next i
+'         End With
+'     Next i
         
-    'write the solution
+'     'write the solution
     
-    'MsgBox best_known.total_distance
+'     'MsgBox best_known.total_distance
     
-    If best_known.feasible = True Then
-        reply = MsgBox("CLP Spreadsheet Solver performed " & iteration & " LNS iterations and found a solution with a net profit of " & best_known.net_profit & ". Do you want to overwrite the current solution with the best found solution?", vbYesNo, "CLP Spreadsheet Solver")
-        If reply = vbYes Then
-            Call WriteSolution(best_known)
-        End If
-    ElseIf infeasibility_count > 0 Then
-        Call WriteSolution(best_known)
-    Else
-        reply = MsgBox("The best found solution after " & iteration & " LNS iterations does not satisfy all constraints. Do you want to overwrite the current solution with the best found solution?", vbYesNo, "CLP Spreadsheet Solver")
-        If reply = vbYes Then
-            Call WriteSolution(best_known)
-        End If
-    End If
+'     If best_known.feasible = True Then
+'         reply = MsgBox("CLP Spreadsheet Solver performed " & iteration & " LNS iterations and found a solution with a net profit of " & best_known.net_profit & ". Do you want to overwrite the current solution with the best found solution?", vbYesNo, "CLP Spreadsheet Solver")
+'         If reply = vbYes Then
+'             Call WriteSolution(best_known)
+'         End If
+'     ElseIf infeasibility_count > 0 Then
+'         Call WriteSolution(best_known)
+'     Else
+'         reply = MsgBox("The best found solution after " & iteration & " LNS iterations does not satisfy all constraints. Do you want to overwrite the current solution with the best found solution?", vbYesNo, "CLP Spreadsheet Solver")
+'         If reply = vbYes Then
+'             Call WriteSolution(best_known)
+'         End If
+'     End If
     
-    'Erase the data
+'     'Erase the data
     
-    Erase item_list.item_types
-    Erase container_list.container_types
-    Erase compatibility_list.item_to_item
-    Erase compatibility_list.container_to_item
+'     Erase item_list.item_types
+'     Erase container_list.container_types
+'     Erase compatibility_list.item_to_item
+'     Erase compatibility_list.container_to_item
 
-    For i = 1 To incumbent.num_containers
-        Erase incumbent.container(i).items
-    Next i
-    Erase incumbent.container
-    Erase incumbent.unpacked_item_count
+'     For i = 1 To incumbent.num_containers
+'         Erase incumbent.container(i).items
+'     Next i
+'     Erase incumbent.container
+'     Erase incumbent.unpacked_item_count
     
-    For i = 1 To best_known.num_containers
-        Erase best_known.container(i).items
-    Next i
-    Erase best_known.container
-    Erase best_known.unpacked_item_count
+'     For i = 1 To best_known.num_containers
+'         Erase best_known.container(i).items
+'     Next i
+'     Erase best_known.container
+'     Erase best_known.unpacked_item_count
     
-    Application.StatusBar = False
-    Application.ScreenUpdating = True
-    Application.Calculation = xlCalculationAutomatic
+'     Application.StatusBar = False
+'     Application.ScreenUpdating = True
+'     Application.Calculation = xlCalculationAutomatic
     
-    If CheckWorksheetExistence("4.Visualization") Then
-        ThisWorkbook.Worksheets("4.Visualization").Activate
-    Else
-        ThisWorkbook.Worksheets("3.Solution").Activate
-    End If
-    Cells(1, 1).Select
+'     If CheckWorksheetExistence("4.Visualization") Then
+'         ThisWorkbook.Worksheets("4.Visualization").Activate
+'     Else
+'         ThisWorkbook.Worksheets("3.Solution").Activate
+'     End If
+'     Cells(1, 1).Select
     
-End Sub
+' End Sub
 
 
 Sub FeasibilityCheckData(infeasibility_count As Long, infeasibility_string As String)

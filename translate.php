@@ -5251,3 +5251,374 @@ function CLP_Solver()
      * This is defined inside the Sub, so we'll just define it afterwards.
      */
 }
+
+/**
+ * CLP_Solver_Finish:
+ *
+ * @param solution_data $best_known
+ */
+function CLP_Solver_Finish(solution_data $best_known)
+{
+    /**
+     * 'ensure loadability
+     */
+
+    /**
+     * Dim min_x As Double
+     * @var float
+     */
+    $min_x = 0.0;
+
+    /**
+     * Dim min_y As Double
+     * @var float
+     */
+    $min_y = 0.0;
+
+    /**
+     * Dim min_z As Double
+     * @var float
+     */
+    $min_z = 0.0;
+
+    /**
+     * Dim intersection_right As Double
+     * @var float
+     */
+    $intersection_right = 0.0;
+
+    /**
+     * Dim intersection_left As Double
+     * @var float
+     */
+    $intersection_left = 0.0;
+
+    /**
+     * Dim intersection_top As Double
+     * @var float
+     */
+    $intersection_top = 0.0;
+
+    /**
+     * Dim intersection_bottom As Double
+     * @var float
+     */
+    $intersection_bottom = 0.0;
+
+    /**
+     * Dim selected_item_index As Long
+     * @var integer
+     */
+    $selected_item_index = 0;
+
+    /**
+     * Dim swap_item As item_in_container
+     * @var item_in_container
+     */
+    $swap_item = new item_in_container();
+
+    /**
+     * Dim area_supported As Double
+     * @var float
+     */
+    $area_supported = 0.0;
+
+    /**
+     * Dim area_required As Double
+     * @var float
+     */
+    $area_required = 0.0;
+
+    /**
+     * Dim support_flag As Boolean
+     * @var boolean
+     */
+    $support_flag = false;
+
+    /**
+     * For i = 1 To best_known.num_containers
+     */
+    for ($i = 1; $i <= $best_known->num_containers; ++$i) {
+        /**
+         * With best_known.container(i)
+         *
+         * We'll call this $bkc
+         */
+        $bkc = $best_known->container[$i];
+
+        /**
+         * For j = 1 To .item_cnt
+         */
+        for ($j = 1; $j <= $bkc->item_cnt; ++$j) {
+            /**
+             * selected_item_index = 0
+             */
+            $selected_item_index = 0;
+
+            /**
+             * min_x = .width
+             */
+            $min_x = $bkc->width;
+
+            /**
+             * min_y = .height
+             */
+            $min_y = $bkc->height;
+
+            /**
+             * min_z = .length
+             */
+            $min_z = $bkc->length;
+
+            /**
+             * For k = j To .item_cnt
+             */
+            for ($k = $j; $k <= $bkc->item_cnt; ++$k) {
+                /**
+                 * If (.items(k).origin_z < min_z - epsilon) Or _
+                 *    ((.items(k).origin_z < min_z + epsilon) And (.items(k).origin_y < min_y - epsilon)) Or _
+                 *    ((.items(k).origin_z < min_z + epsilon) And (.items(k).origin_y < min_y + epsilon) And (.items(k).origin_x < min_x - epsilon)) Then
+                 *
+                 */
+
+                /*
+                 * TODO: recheck conditions
+                 * */
+                if (
+                    $bkc->items[$k]->origin_z < $min_z - epsilon ||
+                    ($bkc->items[$k]->origin_z < $min_z + epsilon && $bkc->items[$k]->origin_y < $min_y - epsilon) ||
+                    ($bkc->items[$k]->origin_z < $min_z + epsilon && $bkc->items[$k]->origin_y < $min_y + epsilon && $bkc->items[$k]->origin_x < $min_x - epsilon)
+                )
+                {
+                    /*
+                     * 'check for support
+                     * */
+
+                    /**
+                     * If .items(k).origin_y < epsilon Then
+                     */
+                    if ($bkc->items[$k]->origin_y < epsilon) {
+                        /**
+                         * support_flag = True
+                         */
+                        $support_flag = true;
+                    /**
+                     * Else
+                     */
+                    } else {
+                        /**
+                         * area_supported = 0
+                         */
+                        $area_supported = 0;
+
+                        /**
+                         * area_required = ((.items(k).opposite_x - .items(k).origin_x) * (.items(k).opposite_z - .items(k).origin_z))
+                         */
+                        $area_required = ($bkc->items[$k]->opposite_x - $bkc->items[$k]->origin_x) * ($bkc->items[$k]->opposite_z - $bkc->items[$k]->origin_z);
+
+                        /**
+                         * support_flag = False
+                         */
+                        $support_flag = false;
+
+                        /**
+                         * For l = j - 1 To 1 Step -1
+                         */
+                        for ($l = $j - 1; $l >= 1; --$j) {
+                            /**
+                             * If (Abs(.items(k).origin_y - .items(l).opposite_y) < epsilon) Then
+                             */
+                            if (abs($bkc->items[$k]->origin_y - $bkc->items[$l]->opposite_y) < epsilon) {
+                                /*
+                                 * 'check for intersection
+                                 * */
+
+                                /**
+                                 * intersection_right = .items(k).opposite_x
+                                 */
+                                $intersection_right = $bkc->items[$k]->opposite_x;
+
+                                /**
+                                 * If intersection_right > .items(l).opposite_x Then intersection_right = .items(l).opposite_x
+                                 */
+                                if ($intersection_right > $bkc->items[$l]->opposite_x) {
+                                    $intersection_right = $bkc->items[$l]->opposite_x;
+                                }
+
+                                /**
+                                 * intersection_left = .items(k).origin_x
+                                 */
+                                $intersection_left = $bkc->items[$k]->origin_x;
+
+                                /**
+                                 * If intersection_left > .items(l).origin_x Then intersection_left = .items(l).origin_x
+                                 */
+                                if ($intersection_left > $bkc->items[$l]->origin_x) {
+                                    $intersection_left = $bkc->items[$l]->origin_x;
+                                }
+
+                                /**
+                                 * intersection_top = .items(k).opposite_z
+                                 */
+                                $intersection_top = $bkc->items[$k]->opposite_z;
+
+                                /**
+                                 * If intersection_top > .items(l).opposite_z Then intersection_top = .items(l).opposite_z
+                                 */
+                                if ($intersection_top > $bkc->items[$l]->opposite_z) {
+                                    $intersection_top = $bkc->items[$l]->opposite_z;
+                                }
+
+                                /**
+                                 * intersection_bottom = .items(k).origin_z
+                                 */
+                                $intersection_bottom = $bkc->items[$k]->origin_z;
+
+                                /**
+                                 * If intersection_bottom > .items(l).origin_z Then intersection_bottom = .items(l).origin_z
+                                 */
+                                if ($intersection_bottom > $bkc->items[$l]->origin_z) {
+                                    $intersection_bottom = $bkc->items[$l]->origin_z;
+                                }
+
+                                /**
+                                 * If (intersection_right > intersection_left) And (intersection_top > intersection_bottom) Then
+                                 */
+                                if ($intersection_right > $intersection_left && $intersection_top > $intersection_bottom) {
+                                    /**
+                                     * area_supported = area_supported + (intersection_right - intersection_left) * (intersection_top - intersection_bottom)
+                                     */
+                                    $area_supported = $area_supported + ($intersection_right - $intersection_left) * ($intersection_top - $intersection_bottom);
+
+                                    /**
+                                     * If area_supported > area_required - epsilon Then
+                                     */
+                                    if ($area_supported > $area_required - epsilon) {
+                                        /**
+                                         * support_flag = True
+                                         */
+                                        $support_flag = true;
+
+                                        /**
+                                         * Exit For
+                                         */
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    /**
+                     * If support_flag = True Then
+                     */
+                    if ($support_flag == true) {
+                        /**
+                         * selected_item_index = k
+                         */
+                        $selected_item_index = $k;
+
+                        /**
+                         * min_x = .items(k).origin_x
+                         */
+                        $min_x = $bkc->items[$k]->origin_x;
+
+                        /**
+                         * min_y = .items(k).origin_y
+                         */
+                        $min_y = $bkc->items[$k]->origin_y;
+
+                        /**
+                         * min_z = .items(k).origin_z
+                         */
+                        $min_z = $bkc->items[$k]->origin_z;
+                    }
+                }
+            }
+
+            /**
+             * If selected_item_index > 0 Then
+             */
+            if ($selected_item_index > 0) {
+                /**
+                 * swap_item = .items(selected_item_index)
+                 */
+                $swap_item = $bkc->items[$selected_item_index];
+                $bkc->items[$selected_item_index] = $bkc->items[$j];
+                $bkc->items[$j] = $swap_item;
+            /**
+             * Else
+             */
+            } else {
+                /**
+                 * MsgBox ("Loading order could not be constructed.")
+                 */
+                continue;
+            }
+        }
+        /**
+         * End With
+         */
+    }
+
+    /*
+     * 'write the solution
+     *
+     * 'MsgBox best_known.total_distance
+     * */
+
+    /**
+     * If best_known.feasible = True Then
+     *      reply = MsgBox("CLP Spreadsheet Solver performed " & iteration & " LNS iterations and found a solution with a net profit of " & best_known.net_profit & ". Do you want to overwrite the current solution with the best found solution?", vbYesNo, "CLP Spreadsheet Solver")
+     *      If reply = vbYes Then
+     *          Call WriteSolution(best_known)
+     *      End If
+     * ElseIf infeasibility_count > 0 Then
+     *      Call WriteSolution(best_known)
+     * Else
+     *      reply = MsgBox("The best found solution after " & iteration & " LNS iterations does not satisfy all constraints. Do you want to overwrite the current solution with the best found solution?", vbYesNo, "CLP Spreadsheet Solver")
+     *      If reply = vbYes Then
+     *          Call WriteSolution(best_known)
+     *      End If
+     * End If
+     *
+     * * * Writes solution to worksheet if user clicks yes on the MsgBox or infeasibilities exist.
+     */
+
+    /*
+     * 'Erase the data
+     * */
+
+    /**
+     * Erase item_list.item_types
+     * Erase container_list.container_types
+     * Erase compatibility_list.item_to_item
+     * Erase compatibility_list.container_to_item
+     *
+     * For i = 1 To incumbent.num_containers
+     *      Erase incumbent.container(i).items
+     * Next i
+     *
+     * Erase incumbent.container
+     * Erase incumbent.unpacked_item_count
+     *
+     * For i = 1 To best_known.num_containers
+     *      Erase best_known.container(i).items
+     * Next i
+     * Erase best_known.container
+     * Erase best_known.unpacked_item_count
+     *
+     * Application.StatusBar = False
+     * Application.ScreenUpdating = True
+     * Application.Calculation = xlCalculationAutomatic
+     *
+     * If CheckWorksheetExistence("4.Visualization") Then
+     *      ThisWorkbook.Worksheets("4.Visualization").Activate
+     * Else
+     *      ThisWorkbook.Worksheets("3.Solution").Activate
+     * End If
+     * Cells(1, 1).Select
+     *
+     * * * from what I gather, this part is done to free up some memory after everything.
+     */
+}
