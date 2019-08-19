@@ -5627,7 +5627,7 @@ function CLP_Solver_Finish(solution_data $best_known)
  * Sub FeasibilityCheckData(infeasibility_count As Long, infeasibility_string As String)
  *
  */
-function FeasibilityCheckData(int $infeasibility_count, string $infeasibility_string, item_list_data $item_list, container_list_data $container_list)
+function FeasibilityCheckData(int $infeasibility_count, string $infeasibility_string, item_list_data $item_list, container_list_data $container_list, instance_data $instance, )
 {
     /**
      * Dim i As Long
@@ -5875,6 +5875,261 @@ function FeasibilityCheckData(int $infeasibility_count, string $infeasibility_st
          * * * Excel stuff.
          */
     }
-    ###BOOKMARK
 
+    /**
+     * With item_list
+     * $il
+     */
+    $il = $item_list;
+
+    /**
+     * For i = 1 To .num_item_types
+     */
+    for ($i = 1; $i <= $il->num_item_types; ++$i) {
+        /**
+         * With .item_types(i)
+         *
+         * This will be $ilit
+         */
+        $ilit = $il->item_types[$i];
+
+        /**
+         * If (.mandatory = 1) And (.xy_rotatable = False) And (.yz_rotatable = False) And ((.width > max_width + epsilon) Or (.height > max_heigth + epsilon) Or (.length > max_length + epsilon)) Then
+         */
+        if (
+            $ilit->mandatory == 1 &&
+            $ilit->xy_rotatable == false &&
+            $ilit->yz_rotatable == false &&
+            (
+                $ilit->width > $max_width + epsilon ||
+                $ilit->height > $max_heigth + epsilon ||
+                $ilit->length > $max_length + epsilon
+            )
+        ) {
+            /**
+             * infeasibility_count = infeasibility_count + 1
+             */
+            $infeasibility_count = $infeasibility_count + 1;
+
+            /**
+             * If infeasibility_count < 5 Then
+             */
+            if ($infeasibility_count < 5) {
+                /**
+                 * infeasibility_string = infeasibility_string & "Item type " & i & " is too large to fit into any container." & Chr(13)
+                 */
+                $infeasibility_string = $infeasibility_string . "Item type " . $i . " is too large to fit into any container.";
+            }
+
+            /**
+             * If infeasibility_count = 5 Then
+             */
+            if ($infeasibility_count == 5) {
+                /**
+                 * infeasibility_string = infeasibility_string & "More can be found in the list of detected infeasibilities in the solution worksheet." & Chr(13)
+                 */
+                $infeasibility_string = $infeasibility_string . "More can be found in the list of detected infeasibilities in the solution worksheet.";
+            }
+
+            /**
+             * ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + infeasibility_count, 1).Value = "Item type " & i & " is too large to fit into any container."
+             *
+             * * * Excel stuff
+             */
+        }
+
+        /**
+         * If (.mandatory = 1) And (.width > max_width + epsilon) And (.width > max_heigth + epsilon) And (.width > max_length + epsilon) Then
+         */
+        if (
+            $ilit->mandatory == 1 &&
+            $ilit->width > $max_width + epsilon &&
+            $ilit->width > $max_heigth + epsilon &&
+            $ilit->width > $max_length + epsilon
+        )
+        {
+            /**
+             * infeasibility_count = infeasibility_count + 1
+             */
+            $infeasibility_count = $infeasibility_count + 1;
+
+            /**
+             * If infeasibility_count < 5 Then
+             */
+            if ($infeasibility_count < 5) {
+                /**
+                 * infeasibility_string = infeasibility_string & "Item type " & i & " is too wide to fit into any container." & Chr(13)
+                 */
+                $infeasibility_string = $infeasibility_string . "Item type " . $i . " is too wide to fit into any container.";
+            }
+
+            /**
+             * If infeasibility_count = 5 Then
+             */
+            if ($infeasibility_count == 5) {
+                /**
+                 * infeasibility_string = infeasibility_string & "More can be found in the list of detected infeasibilities in the solution worksheet." & Chr(13)
+                 */
+                $infeasibility_string = $infeasibility_string . "More can be found in the list of detected infeasibilities in the solution worksheet.";
+            }
+
+            /**
+             * ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + infeasibility_count, 1).Value = "Item type " & i & " is too wide to fit into any container."
+             */
+        }
+
+
+        /**
+         * If (.mandatory = 1) And (.height > max_width + epsilon) And (.height > max_heigth + epsilon) And (.height > max_length + epsilon) Then
+         */
+        if (
+            $ilit->mandatory == 1 &&
+            $ilit->height > $max_width + epsilon &&
+            $ilit->height > $max_heigth + epsilon &&
+            $ilit->height > $max_length + epsilon
+        )
+        {
+            /**
+             * infeasibility_count = infeasibility_count + 1
+             */
+            $infeasibility_count = $infeasibility_count + 1;
+
+            /**
+             * If infeasibility_count < 5 Then
+             */
+            if ($infeasibility_count < 5) {
+                /**
+                 * infeasibility_string = infeasibility_string & "Item type " & i & " is too tall to fit into any container." & Chr(13)
+                 */
+                $infeasibility_string = $infeasibility_string . "Item type " . $i . " is too tall to fit into any container.";
+            }
+
+            /**
+             * If infeasibility_count = 5 Then
+             */
+            if ($infeasibility_count == 5) {
+                /**
+                 * infeasibility_string = infeasibility_string & "More can be found in the list of detected infeasibilities in the solution worksheet." & Chr(13)
+                 */
+                $infeasibility_string = $infeasibility_string . "More can be found in the list of detected infeasibilities in the solution worksheet.";
+            }
+
+            /**
+             * ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + infeasibility_count, 1).Value = "Item type " & i & " is too tall to fit into any container."
+             */
+        }
+
+        /**
+         * If (.mandatory = 1) And (.length > max_width + epsilon) And (.length > max_heigth + epsilon) And (.length > max_length + epsilon) Then
+         */
+        if (
+            $ilit->mandatory == 1 &&
+            $ilit->length > $max_width + epsilon &&
+            $ilit->length > $max_heigth + epsilon &&
+            $ilit->length > $max_length + epsilon
+        )
+        {
+            /**
+             * infeasibility_count = infeasibility_count + 1
+             */
+            $infeasibility_count = $infeasibility_count + 1;
+
+            /**
+             * If infeasibility_count < 5 Then
+             */
+            if ($infeasibility_count < 5) {
+                /**
+                 * infeasibility_string = infeasibility_string & "Item type " & i & " is too long to fit into any container." & Chr(13)
+                 */
+                $infeasibility_string = $infeasibility_string . "Item type " . $i . " is too long to fit into any container.";
+            }
+
+            /**
+             * If infeasibility_count = 5 Then
+             */
+            if ($infeasibility_count == 5) {
+                /**
+                 * infeasibility_string = infeasibility_string & "More can be found in the list of detected infeasibilities in the solution worksheet." & Chr(13)
+                 */
+                $infeasibility_string = $infeasibility_string . "More can be found in the list of detected infeasibilities in the solution worksheet.";
+            }
+
+            /**
+             * ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + infeasibility_count, 1).Value = "Item type " & i & " is too long to fit into any container."
+             */
+        }
+        /**
+         * End With
+         */
+    }
+    /**
+     * End With
+     */
+
+    /**
+     * If instance.container_item_compatibility_worksheet = True Then
+     */
+    if ($instance->container_item_compatibility_worksheet == true) {
+        /**
+         * For i = 1 To item_list.num_item_types
+         */
+        for ($i = 1; $i <= $item_list->num_item_types; ++$i) {
+            /**
+             * feasibility_flag = False
+             */
+            $feasibility_flag = false;
+
+            /**
+             * For j = 1 To container_list.num_container_types
+             */
+            for ($j = 1; $j <= $container_list->num_container_types; ++$j) {
+                /**
+                 * If compatibility_list.container_to_item(j, i) = True Then
+                 */
+                if ($compatibility_list->container_to_item[$j][$i] == true) {
+                    /**
+                     * feasibility_flag = True
+                     */
+                    $feasibility_flag = true;
+                    /**
+                     * Exit For
+                     */
+                    break;
+                }
+            }
+
+            /**
+             * If feasibility_flag = False Then
+             */
+            if ($feasibility_flag == false) {
+                /**
+                 * infeasibility_count = infeasibility_count + 1
+                 */
+                $infeasibility_count = $infeasibility_count + 1;
+
+                /**
+                 * If infeasibility_count < 5 Then
+                 */
+                if ($infeasibility_count < 5) {
+                    /**
+                     * infeasibility_string = infeasibility_string & "Item type " & i & " is not compatible with any container." & Chr(13)
+                     */
+                    $infeasibility_string = $infeasibility_string . "Item type " . $i . " is not compatible with any container.";
+                }
+
+                /**
+                 * If infeasibility_count = 5 Then
+                 */
+                if ($infeasibility_count == 5) {
+                    /**
+                     * infeasibility_string = infeasibility_string & "More can be found in the list of detected infeasibilities in the solution worksheet." & Chr(13)
+                     */
+                    $infeasibility_string = $infeasibility_string . "More can be found in the list of detected infeasibilities in the solution worksheet.";
+                }
+                /**
+                 * ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + infeasibility_count, 1).Value = "Item type " & i & " is not compatible with any container."
+                 */
+            }
+        }
+    }
 }

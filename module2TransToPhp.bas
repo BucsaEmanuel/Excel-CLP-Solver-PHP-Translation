@@ -1904,153 +1904,152 @@
 ' End Sub
 
 
-Sub FeasibilityCheckData(infeasibility_count As Long, infeasibility_string As String)
+' Sub FeasibilityCheckData(infeasibility_count As Long, infeasibility_string As String)
     
-    Dim i As Long
-    Dim j As Long
-    Dim feasibility_flag As Boolean
+'     Dim i As Long
+'     Dim j As Long
+'     Dim feasibility_flag As Boolean
     
-    infeasibility_count = 0
-    infeasibility_string = vbNullString
+'     infeasibility_count = 0
+'     infeasibility_string = vbNullString
     
-    Range(ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 9, 1), ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + (4 * item_list.total_number_of_items), 1)).Clear
+'     Range(ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 9, 1), ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + (4 * item_list.total_number_of_items), 1)).Clear
     
-    Dim volume_capacity_required As Double
-    Dim volume_capacity_available As Double
+'     Dim volume_capacity_required As Double
+'     Dim volume_capacity_available As Double
     
-    Dim weight_capacity_required As Double
-    Dim weight_capacity_available As Double
+'     Dim weight_capacity_required As Double
+'     Dim weight_capacity_available As Double
     
-    Dim max_width As Double
-    Dim max_heigth As Double
-    Dim max_length As Double
+'     Dim max_width As Double
+'     Dim max_heigth As Double
+'     Dim max_length As Double
     
-    volume_capacity_required = 0
-    volume_capacity_available = 0
+'     volume_capacity_required = 0
+'     volume_capacity_available = 0
     
-    weight_capacity_required = 0
-    weight_capacity_available = 0
+'     weight_capacity_required = 0
+'     weight_capacity_available = 0
     
-    max_width = 0
-    max_heigth = 0
-    max_length = 0
+'     max_width = 0
+'     max_heigth = 0
+'     max_length = 0
     
-    With item_list
-        For i = 1 To .num_item_types
-            If .item_types(i).mandatory = 1 Then
-                volume_capacity_required = volume_capacity_required + (.item_types(i).volume * .item_types(i).number_requested)
-                weight_capacity_required = weight_capacity_required + (.item_types(i).weight * .item_types(i).number_requested)
-            End If
-        Next i
-    End With
+'     With item_list
+'         For i = 1 To .num_item_types
+'             If .item_types(i).mandatory = 1 Then
+'                 volume_capacity_required = volume_capacity_required + (.item_types(i).volume * .item_types(i).number_requested)
+'                 weight_capacity_required = weight_capacity_required + (.item_types(i).weight * .item_types(i).number_requested)
+'             End If
+'         Next i
+'     End With
     
-    With container_list
-        For i = 1 To .num_container_types
-            If .container_types(i).mandatory >= 0 Then
+'     With container_list
+'         For i = 1 To .num_container_types
+'             If .container_types(i).mandatory >= 0 Then
                 
-                volume_capacity_available = volume_capacity_available + (.container_types(i).volume_capacity * .container_types(i).number_available)
-                weight_capacity_available = weight_capacity_available + (.container_types(i).weight_capacity * .container_types(i).number_available)
+'                 volume_capacity_available = volume_capacity_available + (.container_types(i).volume_capacity * .container_types(i).number_available)
+'                 weight_capacity_available = weight_capacity_available + (.container_types(i).weight_capacity * .container_types(i).number_available)
                 
-                If .container_types(i).width > max_width Then max_width = .container_types(i).width
-                If .container_types(i).height > max_heigth Then max_heigth = .container_types(i).height
-                If .container_types(i).length > max_length Then max_length = .container_types(i).length
+'                 If .container_types(i).width > max_width Then max_width = .container_types(i).width
+'                 If .container_types(i).height > max_heigth Then max_heigth = .container_types(i).height
+'                 If .container_types(i).length > max_length Then max_length = .container_types(i).length
                 
-            End If
-        Next i
-    End With
+'             End If
+'         Next i
+'     End With
     
-    If volume_capacity_required > volume_capacity_available + epsilon Then
-        infeasibility_count = infeasibility_count + 1
-        infeasibility_string = infeasibility_string & "The amount of available volume is not enough to pack the mandatory items." & Chr(13)
-        ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + infeasibility_count, 1).Value = "The amount of available volume is not enough to pack the mandatory items."
-    End If
+'     If volume_capacity_required > volume_capacity_available + epsilon Then
+'         infeasibility_count = infeasibility_count + 1
+'         infeasibility_string = infeasibility_string & "The amount of available volume is not enough to pack the mandatory items." & Chr(13)
+'         ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + infeasibility_count, 1).Value = "The amount of available volume is not enough to pack the mandatory items."
+'     End If
     
-    If weight_capacity_required > weight_capacity_available + epsilon Then
-        infeasibility_count = infeasibility_count + 1
-        infeasibility_string = infeasibility_string & "The amount of available weight capacity is not enough to pack the mandatory items." & Chr(13)
-        ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + infeasibility_count, 1).Value = "The amount of available weight capacity is not enough to pack the mandatory items."
-    End If
-    ###BOOKMARK
+'     If weight_capacity_required > weight_capacity_available + epsilon Then
+'         infeasibility_count = infeasibility_count + 1
+'         infeasibility_string = infeasibility_string & "The amount of available weight capacity is not enough to pack the mandatory items." & Chr(13)
+'         ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + infeasibility_count, 1).Value = "The amount of available weight capacity is not enough to pack the mandatory items."
+'     End If
     
-    With item_list
-        For i = 1 To .num_item_types
-            With .item_types(i)
-                If (.mandatory = 1) And (.xy_rotatable = False) And (.yz_rotatable = False) And ((.width > max_width + epsilon) Or (.height > max_heigth + epsilon) Or (.length > max_length + epsilon)) Then
-                    infeasibility_count = infeasibility_count + 1
-                    If infeasibility_count < 5 Then
-                        infeasibility_string = infeasibility_string & "Item type " & i & " is too large to fit into any container." & Chr(13)
-                    End If
-                    If infeasibility_count = 5 Then
-                        infeasibility_string = infeasibility_string & "More can be found in the list of detected infeasibilities in the solution worksheet." & Chr(13)
-                    End If
-                    ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + infeasibility_count, 1).Value = "Item type " & i & " is too large to fit into any container."
-                End If
+'     With item_list
+'         For i = 1 To .num_item_types
+'             With .item_types(i)
+'                 If (.mandatory = 1) And (.xy_rotatable = False) And (.yz_rotatable = False) And ((.width > max_width + epsilon) Or (.height > max_heigth + epsilon) Or (.length > max_length + epsilon)) Then
+'                     infeasibility_count = infeasibility_count + 1
+'                     If infeasibility_count < 5 Then
+'                         infeasibility_string = infeasibility_string & "Item type " & i & " is too large to fit into any container." & Chr(13)
+'                     End If
+'                     If infeasibility_count = 5 Then
+'                         infeasibility_string = infeasibility_string & "More can be found in the list of detected infeasibilities in the solution worksheet." & Chr(13)
+'                     End If
+'                     ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + infeasibility_count, 1).Value = "Item type " & i & " is too large to fit into any container."
+'                 End If
 
-                If (.mandatory = 1) And (.width > max_width + epsilon) And (.width > max_heigth + epsilon) And (.width > max_length + epsilon) Then
-                    infeasibility_count = infeasibility_count + 1
-                    If infeasibility_count < 5 Then
-                        infeasibility_string = infeasibility_string & "Item type " & i & " is too wide to fit into any container." & Chr(13)
-                    End If
-                    If infeasibility_count = 5 Then
-                        infeasibility_string = infeasibility_string & "More can be found in the list of detected infeasibilities in the solution worksheet." & Chr(13)
-                    End If
-                    ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + infeasibility_count, 1).Value = "Item type " & i & " is too wide to fit into any container."
-                End If
+'                 If (.mandatory = 1) And (.width > max_width + epsilon) And (.width > max_heigth + epsilon) And (.width > max_length + epsilon) Then
+'                     infeasibility_count = infeasibility_count + 1
+'                     If infeasibility_count < 5 Then
+'                         infeasibility_string = infeasibility_string & "Item type " & i & " is too wide to fit into any container." & Chr(13)
+'                     End If
+'                     If infeasibility_count = 5 Then
+'                         infeasibility_string = infeasibility_string & "More can be found in the list of detected infeasibilities in the solution worksheet." & Chr(13)
+'                     End If
+'                     ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + infeasibility_count, 1).Value = "Item type " & i & " is too wide to fit into any container."
+'                 End If
 
-                If (.mandatory = 1) And (.height > max_width + epsilon) And (.height > max_heigth + epsilon) And (.height > max_length + epsilon) Then
-                    infeasibility_count = infeasibility_count + 1
-                    If infeasibility_count < 5 Then
-                        infeasibility_string = infeasibility_string & "Item type " & i & " is too tall to fit into any container." & Chr(13)
-                    End If
-                    If infeasibility_count = 5 Then
-                        infeasibility_string = infeasibility_string & "More can be found in the list of detected infeasibilities in the solution worksheet." & Chr(13)
-                    End If
-                    ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + infeasibility_count, 1).Value = "Item type " & i & " is too tall to fit into any container."
-                End If
+'                 If (.mandatory = 1) And (.height > max_width + epsilon) And (.height > max_heigth + epsilon) And (.height > max_length + epsilon) Then
+'                     infeasibility_count = infeasibility_count + 1
+'                     If infeasibility_count < 5 Then
+'                         infeasibility_string = infeasibility_string & "Item type " & i & " is too tall to fit into any container." & Chr(13)
+'                     End If
+'                     If infeasibility_count = 5 Then
+'                         infeasibility_string = infeasibility_string & "More can be found in the list of detected infeasibilities in the solution worksheet." & Chr(13)
+'                     End If
+'                     ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + infeasibility_count, 1).Value = "Item type " & i & " is too tall to fit into any container."
+'                 End If
                 
-                If (.mandatory = 1) And (.length > max_width + epsilon) And (.length > max_heigth + epsilon) And (.length > max_length + epsilon) Then
-                    infeasibility_count = infeasibility_count + 1
-                    If infeasibility_count < 5 Then
-                        infeasibility_string = infeasibility_string & "Item type " & i & " is too long to fit into any container." & Chr(13)
-                    End If
-                    If infeasibility_count = 5 Then
-                        infeasibility_string = infeasibility_string & "More can be found in the list of detected infeasibilities in the solution worksheet." & Chr(13)
-                    End If
-                    ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + infeasibility_count, 1).Value = "Item type " & i & " is too long to fit into any container."
-                End If
-            End With
-        Next i
-    End With
+'                 If (.mandatory = 1) And (.length > max_width + epsilon) And (.length > max_heigth + epsilon) And (.length > max_length + epsilon) Then
+'                     infeasibility_count = infeasibility_count + 1
+'                     If infeasibility_count < 5 Then
+'                         infeasibility_string = infeasibility_string & "Item type " & i & " is too long to fit into any container." & Chr(13)
+'                     End If
+'                     If infeasibility_count = 5 Then
+'                         infeasibility_string = infeasibility_string & "More can be found in the list of detected infeasibilities in the solution worksheet." & Chr(13)
+'                     End If
+'                     ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + infeasibility_count, 1).Value = "Item type " & i & " is too long to fit into any container."
+'                 End If
+'             End With
+'         Next i
+'     End With
     
-    If instance.container_item_compatibility_worksheet = True Then
+'     If instance.container_item_compatibility_worksheet = True Then
     
-        For i = 1 To item_list.num_item_types
+'         For i = 1 To item_list.num_item_types
             
-            feasibility_flag = False
+'             feasibility_flag = False
             
-            For j = 1 To container_list.num_container_types
-                If compatibility_list.container_to_item(j, i) = True Then
-                    feasibility_flag = True
-                    Exit For
-                End If
-            Next j
+'             For j = 1 To container_list.num_container_types
+'                 If compatibility_list.container_to_item(j, i) = True Then
+'                     feasibility_flag = True
+'                     Exit For
+'                 End If
+'             Next j
             
-            If feasibility_flag = False Then
+'             If feasibility_flag = False Then
                 
-                infeasibility_count = infeasibility_count + 1
-                If infeasibility_count < 5 Then
-                    infeasibility_string = infeasibility_string & "Item type " & i & " is not compatible with any container." & Chr(13)
-                End If
-                If infeasibility_count = 5 Then
-                    infeasibility_string = infeasibility_string & "More can be found in the list of detected infeasibilities in the solution worksheet." & Chr(13)
-                End If
-                ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + infeasibility_count, 1).Value = "Item type " & i & " is not compatible with any container."
-            End If
+'                 infeasibility_count = infeasibility_count + 1
+'                 If infeasibility_count < 5 Then
+'                     infeasibility_string = infeasibility_string & "Item type " & i & " is not compatible with any container." & Chr(13)
+'                 End If
+'                 If infeasibility_count = 5 Then
+'                     infeasibility_string = infeasibility_string & "More can be found in the list of detected infeasibilities in the solution worksheet." & Chr(13)
+'                 End If
+'                 ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + infeasibility_count, 1).Value = "Item type " & i & " is not compatible with any container."
+'             End If
             
-        Next i
-    End If
+'         Next i
+'     End If
     
-End Sub
+' End Sub
 
 Sub FeasibilityCheckDataAndSolution()
     
