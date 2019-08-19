@@ -1537,7 +1537,7 @@
         
 '         incumbent.feasible = True
 
-        
+
 '         For j = 1 To item_list.num_item_types
 '             If (incumbent.unpacked_item_count(j) > 0) And (item_list.item_types(j).mandatory = 1) Then
 '                 incumbent.feasible = False
@@ -1970,6 +1970,7 @@ Sub FeasibilityCheckData(infeasibility_count As Long, infeasibility_string As St
         infeasibility_string = infeasibility_string & "The amount of available weight capacity is not enough to pack the mandatory items." & Chr(13)
         ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + infeasibility_count, 1).Value = "The amount of available weight capacity is not enough to pack the mandatory items."
     End If
+    ###BOOKMARK
     
     With item_list
         For i = 1 To .num_item_types

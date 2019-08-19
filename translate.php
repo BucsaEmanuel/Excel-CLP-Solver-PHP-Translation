@@ -5622,3 +5622,259 @@ function CLP_Solver_Finish(solution_data $best_known)
      * * * from what I gather, this part is done to free up some memory after everything.
      */
 }
+
+/**
+ * Sub FeasibilityCheckData(infeasibility_count As Long, infeasibility_string As String)
+ *
+ */
+function FeasibilityCheckData(int $infeasibility_count, string $infeasibility_string, item_list_data $item_list, container_list_data $container_list)
+{
+    /**
+     * Dim i As Long
+     * @var integer
+     */
+    $i = 0;
+
+    /**
+     * Dim j As Long
+     * @var integer
+     */
+    $j = 0;
+
+    /**
+     * Dim feasibility_flag As Boolean
+     * @var boolean
+     */
+    $feasibility_flag = true;
+
+    /**
+     * infeasibility_count = 0
+     */
+    $infeasibility_count = 0;
+
+    /**
+     * infeasibility_string = vbNullString
+     */
+    $infeasibility_string = "";
+
+    /**
+     * Range(ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 9, 1), ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + (4 * item_list.total_number_of_items), 1)).Clear
+     *
+     * * * Clear some cells.
+     */
+
+    /**
+     * Dim volume_capacity_required As Double
+     * @var float
+     */
+    $volume_capacity_required = 0.0;
+
+    /**
+     * Dim volume_capacity_available As Double
+     * @var float
+     */
+    $volume_capacity_available = 0.0;
+
+    /**
+     * Dim weight_capacity_required As Double
+     * @var float
+     */
+    $weight_capacity_required = 0.0;
+
+    /**
+     * Dim weight_capacity_available As Double
+     * @var float
+     */
+    $weight_capacity_available = 0.0;
+
+    /**
+     * Dim max_width As Double
+     * @var float
+     */
+    $max_width = 0.0;
+
+    /**
+     * Dim max_heigth As Double
+     * @var float
+     */
+    $max_heigth = 0.0;
+
+    /**
+     * Dim max_length As Double
+     * @var float
+     */
+    $max_length = 0.0;
+
+    /**
+     * volume_capacity_required = 0
+     *
+     * * * already defined
+     */
+
+    /**
+     * volume_capacity_available = 0
+     *
+     * * * already defined
+     */
+
+    /**
+     * weight_capacity_required = 0
+     *
+     * * * already defined
+     */
+
+    /**
+     * weight_capacity_available = 0
+     *
+     * * * already defined
+     */
+
+    /**
+     * max_width = 0
+     *
+     * * * already defined
+     */
+
+    /**
+     * max_heigth = 0
+     *
+     * * * already defined
+     */
+
+    /**
+     * max_heigth = 0
+     *
+     * * * already defined
+     */
+
+    /**
+     * max_length = 0
+     *
+     * * * already defined
+     */
+
+    /**
+     * With item_list
+     *
+     * * * We'll just call this $il
+     */
+    $il = $item_list;
+
+    /**
+     * For i = 1 To .num_item_types
+     */
+    for ($i = 1; $i <= $il->num_item_types; ++$i) {
+        /**
+         * If .item_types(i).mandatory = 1 Then
+         */
+        if ($il->item_types[$i]->mandatory == 1) {
+            /**
+             * volume_capacity_required = volume_capacity_required + (.item_types(i).volume * .item_types(i).number_requested)
+             */
+            $volume_capacity_required = $volume_capacity_required + ($il->item_types[$i]->volume * $il->item_types[$i]->number_requested);
+
+            /**
+             * weight_capacity_required = weight_capacity_required + (.item_types(i).weight * .item_types(i).number_requested)
+             */
+            $weight_capacity_required = $weight_capacity_required + ($il->item_types[$i]->weight)
+        }
+    }
+    /**
+     * End With
+     */
+
+    /**
+     * With container_list
+     *
+     * $cl should be fine
+     */
+    $cl = $container_list;
+
+    /**
+     * For i = 1 To .num_container_types
+     */
+    for ($i = 1; $i <= $cl->num_container_types; ++$i) {
+        /**
+         * If .container_types(i).mandatory >= 0 Then
+         */
+        if ($cl->container_types[$i]->mandatory >= 0) {
+            /**
+             * volume_capacity_available = volume_capacity_available + (.container_types(i).volume_capacity * .container_types(i).number_available)
+             */
+            $volume_capacity_available = $volume_capacity_available + ($cl->container_types[$i]->volume_capacity * $cl->container_types[$i]->number_available);
+
+            /**
+             * weight_capacity_available = weight_capacity_available + (.container_types(i).weight_capacity * .container_types(i).number_available)
+             */
+            $weight_capacity_available = $weight_capacity_available + ($cl->container_types[$i]->weight_capacity * $cl->container_types[$i]->number_available);
+
+            /**
+             * If .container_types(i).width > max_width Then max_width = .container_types(i).width
+             */
+            if ($cl->container_types[$i]->width > $max_width) {
+                $max_width = $cl->container_types[$i]->width;
+            }
+
+            /**
+             * If .container_types(i).height > max_heigth Then max_heigth = .container_types(i).height
+             */
+            if ($cl->container_types[$i]->height > $max_heigth) {
+                $max_heigth = $cl->container_types[$i]->height;
+            }
+
+            /**
+             * If .container_types(i).length > max_length Then max_length = .container_types(i).length
+             */
+            if ($cl->container_types[$i]->length > $max_length) {
+                $max_length = $cl->container_types[$i]->length;
+            }
+        }
+    }
+    /**
+     * End With
+     */
+
+    /**
+     * If volume_capacity_required > volume_capacity_available + epsilon Then
+     */
+    if ($volume_capacity_required > $volume_capacity_available + epsilon) {
+        /**
+         * infeasibility_count = infeasibility_count + 1
+         */
+        $infeasibility_count = $infeasibility_count + 1;
+
+        /**
+         * infeasibility_string = infeasibility_string & "The amount of available volume is not enough to pack the mandatory items." & Chr(13)
+         */
+        $infeasibility_string = $infeasibility_string .  "The amount of available volume is not enough to pack the mandatory items.";
+
+        /**
+         * ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + infeasibility_count, 1).Value = "The amount of available volume is not enough to pack the mandatory items."
+         *
+         * * * Excel stuff
+         */
+    }
+
+    /**
+     * If weight_capacity_required > weight_capacity_available + epsilon Then
+     */
+    if ($weight_capacity_required > $weight_capacity_available + epsilon) {
+        /**
+         * infeasibility_count = infeasibility_count + 1
+         */
+        $infeasibility_count = $infeasibility_count + 1;
+
+        /**
+         * infeasibility_string = infeasibility_string & "The amount of available weight capacity is not enough to pack the mandatory items." & Chr(13)
+         */
+        $infeasibility_string = $infeasibility_string . "The amount of available weight capacity is not enough to pack the mandatory items.";
+
+        /**
+         * ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + infeasibility_count, 1).Value = "The amount of available weight capacity is not enough to pack the mandatory items."
+         *
+         * * * Excel stuff.
+         */
+    }
+    ###BOOKMARK
+
+}
