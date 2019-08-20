@@ -7901,3 +7901,131 @@ function SortItems(item_list_data $item_list)
      * ' Next i
      * */
 }
+
+/**
+ * Private Sub CalculateDistance(solution As solution_data, container_id As Long)
+ *
+ * @param solution_data $solution
+ * @param int $container_id
+ */
+function CalculateDistance(solution_data $solution, int $container_id)
+{
+    /**
+     * Dim i As Long
+     * @var integer
+     */
+    $i = 0;
+
+    /**
+     * Dim j As Long
+     * @var integer
+     */
+    $j = 0;
+
+    /**
+     * Dim k As Long
+     * @var integer
+     */
+    $k = 0;
+
+    /**
+     * Dim l As Long
+     * @var integer
+     */
+    $l = 0;
+
+    /**
+     * Dim max_z As Double
+     * @var float
+     */
+    $max_z = 0;
+
+    /**
+     * With solution
+     *
+     * * * $s
+     */
+    $s = $solution;
+
+    /**
+     * .total_distance = 0
+     */
+    $s->total_distance = 0;
+
+    /*
+     * '.total_x_moment = 0
+     * '.total_yz_moment = 0
+     * */
+
+    /**
+     * With .container(container_id)
+     *
+     * * * $sc
+     */
+    $sc = $s->container[$container_id];
+
+    /**
+     * max_z = 0
+     */
+    $max_z = 0;
+
+    /**
+     * For k = 1 To .item_cnt
+     */
+    for ($k = 1; $k <= $sc->item_cnt; ++$k) {
+        /**
+         * For l = k + 1 To .item_cnt
+         */
+        for ($l = $k + 1; $l <= $sc->item_cnt; ++$l) {
+            /**
+             * If .items(k).item_type = .items(l).item_type Then
+             */
+            if ($sc->items[$k]->item_type == $sc->items[$l]->item_type) {
+                /**
+                 * solution.total_distance = solution.total_distance + Abs(.items(k).opposite_x + .items(k).origin_x - .items(l).opposite_x - .items(l).origin_x) + Abs(.items(k).opposite_y + .items(k).origin_y - .items(l).opposite_y - .items(l).origin_y) + Abs(.items(k).opposite_z + .items(k).origin_z - .items(l).opposite_z - .items(l).origin_z)
+                 */
+                $solution->total_distance = $solution->total_distance +
+                    abs($sc->items[$k]->opposite_x + $sc->items[$k]->origin_x - $sc->items[$l]->opposite_x - $sc->items[$l]->origin_x) +
+                    abs($sc->items[$k]->opposite_y + $sc->items[$k]->origin_y - $sc->items[$l]->opposite_y - $sc->items[$l]->origin_y) +
+                    abs($sc->items[$k]->opposite_z + $sc->items[$k]->origin_z - $sc->items[$l]->opposite_z - $sc->items[$l]->origin_z);
+            }
+
+            /*
+             * 'solution.total_distance = solution.total_distance + .items(k).opposite_z
+             * */
+        }
+
+        /**
+         * If max_z < .items(k).opposite_z Then max_z = .items(k).opposite_z
+         */
+        if ($max_z < $sc->items[$k]->opposite_z) {
+            $max_z = $sc->items[$k]->opposite_z;
+        }
+
+        /*
+         * 'solution.total_distance = solution.total_distance + penalty * max_z
+         * */
+
+        /**
+         * solution.total_distance = solution.total_distance + .items(k).opposite_z
+         */
+        $solution->total_distance = $solution->total_distance + $sc->items[$k]->opposite_z;
+
+        /*
+         * ' solution.total_x_moment = solution.total_x_moment + (.items(k).origin_y + .items(k).opposite_y) * item_list.item_types(.items(k).item_type).weight
+         * */
+    }
+
+    /**
+     * solution.total_distance = solution.total_distance + .item_cnt * .item_cnt * max_z
+     */
+    $solution->total_distance = $solution->total_distance + $sc->item_cnt * $sc->item_cnt * $max_z;
+
+    /**
+     * End With
+     */
+
+    /**
+     * End With
+     */
+}

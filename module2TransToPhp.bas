@@ -2681,47 +2681,47 @@
     
 ' End Sub
 
-Private Sub CalculateDistance(solution As solution_data, container_id As Long)
+' Private Sub CalculateDistance(solution As solution_data, container_id As Long)
 
-    Dim i As Long
-    Dim j As Long
-    Dim k As Long
-    Dim l As Long
-    Dim max_z As Double
+'     Dim i As Long
+'     Dim j As Long
+'     Dim k As Long
+'     Dim l As Long
+'     Dim max_z As Double
 
-    With solution
+'     With solution
     
-        .total_distance = 0
-        '.total_x_moment = 0
-        '.total_yz_moment = 0
+'         .total_distance = 0
+'         '.total_x_moment = 0
+'         '.total_yz_moment = 0
         
-        With .container(container_id)
-            max_z = 0
-            For k = 1 To .item_cnt
-                   For l = k + 1 To .item_cnt
-                       If .items(k).item_type = .items(l).item_type Then
-                           solution.total_distance = solution.total_distance + Abs(.items(k).opposite_x + .items(k).origin_x - .items(l).opposite_x - .items(l).origin_x) + Abs(.items(k).opposite_y + .items(k).origin_y - .items(l).opposite_y - .items(l).origin_y) + Abs(.items(k).opposite_z + .items(k).origin_z - .items(l).opposite_z - .items(l).origin_z)
-                       End If
+'         With .container(container_id)
+'             max_z = 0
+'             For k = 1 To .item_cnt
+'                    For l = k + 1 To .item_cnt
+'                        If .items(k).item_type = .items(l).item_type Then
+'                            solution.total_distance = solution.total_distance + Abs(.items(k).opposite_x + .items(k).origin_x - .items(l).opposite_x - .items(l).origin_x) + Abs(.items(k).opposite_y + .items(k).origin_y - .items(l).opposite_y - .items(l).origin_y) + Abs(.items(k).opposite_z + .items(k).origin_z - .items(l).opposite_z - .items(l).origin_z)
+'                        End If
 
-                      'solution.total_distance = solution.total_distance + .items(k).opposite_z
-                   Next l
+'                       'solution.total_distance = solution.total_distance + .items(k).opposite_z
+'                    Next l
 
-                If max_z < .items(k).opposite_z Then max_z = .items(k).opposite_z
+'                 If max_z < .items(k).opposite_z Then max_z = .items(k).opposite_z
 
-               'solution.total_distance = solution.total_distance + penalty * max_z
-               solution.total_distance = solution.total_distance + .items(k).opposite_z
+'                'solution.total_distance = solution.total_distance + penalty * max_z
+'                solution.total_distance = solution.total_distance + .items(k).opposite_z
 
-              ' solution.total_x_moment = solution.total_x_moment + (.items(k).origin_y + .items(k).opposite_y) * item_list.item_types(.items(k).item_type).weight
+'               ' solution.total_x_moment = solution.total_x_moment + (.items(k).origin_y + .items(k).opposite_y) * item_list.item_types(.items(k).item_type).weight
 
-            Next k
+'             Next k
 
-            solution.total_distance = solution.total_distance + .item_cnt * .item_cnt * max_z
+'             solution.total_distance = solution.total_distance + .item_cnt * .item_cnt * max_z
 
-        End With
+'         End With
 
-    End With
+'     End With
     
-End Sub
+' End Sub
 
 Private Sub CalculateDispersion(solution As solution_data)
 
