@@ -7820,3 +7820,84 @@ function FeasibilityCheckDataAndSolution()
         $infeasibility_string = $infeasibility_string . "The solution is infeasible.";
     }
 }
+
+/**
+ * Private Sub SortItems()
+ *
+ *
+ */
+function SortItems(item_list_data $item_list)
+{
+    /**
+     * Dim i As Long
+     * @var integer
+     */
+    $i = 0;
+
+    /**
+     * Dim j As Long
+     * @var integer
+     */
+    $j = 0;
+
+    /**
+     * Dim swap_item_type As item_type_data
+     * @var item_type_data
+     */
+    $swap_item_type = new item_type_data();
+
+    /**
+     * If item_list.num_item_types > 1 Then
+     */
+    if ($item_list->num_item_types > 1) {
+        /**
+         * For i = 1 To item_list.num_item_types
+         */
+        for ($i = 1; $i <= $item_list->num_item_types; ++$i) {
+            /**
+             * For j = item_list.num_item_types To 2 Step -1
+             */
+            for ($j = $item_list->num_item_types; $j >= 2; --$j) {
+                /**
+                 * If (item_list.item_types(j).mandatory > item_list.item_types(j - 1).mandatory) Or _
+                 */
+                if (
+                    $item_list->item_types[$j]->mandatory > $item_list->item_types[$j - 1]->mandatory ||
+                    (
+                        $item_list->item_types[$j]->mandatory == 1 &&
+                        $item_list->item_types[$j - 1]->mandatory == 1 &&
+                        $item_list->item_types[$j]->sort_criterion > $item_list->item_types[$j - 1]->sort_criterion
+                    ) ||
+                    (
+                        $item_list->item_types[$j]->mandatory == 0 &&
+                        $item_list->item_types[$j - 1]->mandatory == 0 &&
+                        (
+                            $item_list->item_types[$j]->profit / $item_list->item_types[$j]->volume > $item_list->item_types[$j - 1]->profit / $item_list->item_types[$j - 1]->volume
+                        )
+                    )
+                ) {
+                    /**
+                     * swap_item_type = item_list.item_types(j)
+                     */
+                    $swap_item_type = $item_list->item_types[$j];
+
+                    /**
+                     * item_list.item_types(j) = item_list.item_types(j - 1)
+                     */
+                    $item_list->item_types[$j] = $item_list->item_types[$j - 1];
+
+                    /**
+                     * item_list.item_types(j - 1) = swap_item_type
+                     */
+                    $item_list->item_types[$j - 1] = $swap_item_type;
+                }
+            }
+        }
+    }
+
+    /*
+     * ' For i = 1 To item_list.num_item_types
+     * '    MsgBox item_list.item_types(i).id & " " & item_list.item_types(i).weight & " " & item_list.item_types(i).sort_criterion
+     * ' Next i
+     * */
+}

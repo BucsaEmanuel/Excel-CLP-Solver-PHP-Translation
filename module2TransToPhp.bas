@@ -2652,34 +2652,34 @@
 
 ' End Sub
 
-Private Sub SortItems()
+' Private Sub SortItems()
 
-    Dim i As Long
-    Dim j As Long
+'     Dim i As Long
+'     Dim j As Long
     
-    Dim swap_item_type As item_type_data
+'     Dim swap_item_type As item_type_data
     
-    If item_list.num_item_types > 1 Then
-       For i = 1 To item_list.num_item_types
-           For j = item_list.num_item_types To 2 Step -1
-               If (item_list.item_types(j).mandatory > item_list.item_types(j - 1).mandatory) Or _
-                   ((item_list.item_types(j).mandatory = 1) And (item_list.item_types(j - 1).mandatory = 1) And (item_list.item_types(j).sort_criterion > item_list.item_types(j - 1).sort_criterion)) Or _
-                   ((item_list.item_types(j).mandatory = 0) And (item_list.item_types(j - 1).mandatory = 0) And ((item_list.item_types(j).profit / item_list.item_types(j).volume) > (item_list.item_types(j - 1).profit / item_list.item_types(j - 1).volume))) Then
+'     If item_list.num_item_types > 1 Then
+'        For i = 1 To item_list.num_item_types
+'            For j = item_list.num_item_types To 2 Step -1
+'                If (item_list.item_types(j).mandatory > item_list.item_types(j - 1).mandatory) Or _
+'                    ((item_list.item_types(j).mandatory = 1) And (item_list.item_types(j - 1).mandatory = 1) And (item_list.item_types(j).sort_criterion > item_list.item_types(j - 1).sort_criterion)) Or _
+'                    ((item_list.item_types(j).mandatory = 0) And (item_list.item_types(j - 1).mandatory = 0) And ((item_list.item_types(j).profit / item_list.item_types(j).volume) > (item_list.item_types(j - 1).profit / item_list.item_types(j - 1).volume))) Then
                    
-                   swap_item_type = item_list.item_types(j)
-                   item_list.item_types(j) = item_list.item_types(j - 1)
-                   item_list.item_types(j - 1) = swap_item_type
+'                    swap_item_type = item_list.item_types(j)
+'                    item_list.item_types(j) = item_list.item_types(j - 1)
+'                    item_list.item_types(j - 1) = swap_item_type
                    
-               End If
-           Next j
-       Next i
-    End If
+'                End If
+'            Next j
+'        Next i
+'     End If
     
-   ' For i = 1 To item_list.num_item_types
-   '    MsgBox item_list.item_types(i).id & " " & item_list.item_types(i).weight & " " & item_list.item_types(i).sort_criterion
-   ' Next i
+'    ' For i = 1 To item_list.num_item_types
+'    '    MsgBox item_list.item_types(i).id & " " & item_list.item_types(i).weight & " " & item_list.item_types(i).sort_criterion
+'    ' Next i
     
-End Sub
+' End Sub
 
 Private Sub CalculateDistance(solution As solution_data, container_id As Long)
 
