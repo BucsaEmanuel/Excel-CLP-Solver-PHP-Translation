@@ -6141,3 +6141,714 @@ function FeasibilityCheckData(int $infeasibility_count, string $infeasibility_st
         }
     }
 }
+
+/**
+ * Sub FeasibilityCheckDataAndSolution()
+ *
+ *
+ */
+function FeasibilityCheckDataAndSolution()
+{
+    /**
+     * Application.ScreenUpdating = False
+     * Application.Calculation = xlCalculationManual
+     */
+
+    /**
+     * Dim WorksheetExists As Boolean
+     * @var boolean
+     */
+    $WorksheetExists = false;
+
+    /**
+     * Dim reply As Integer
+     * @var integer
+     */
+    $reply = 0;
+
+    /**
+     * WorksheetExists = CheckWorksheetExistence("1.Items") And CheckWorksheetExistence("2.Containers") And CheckWorksheetExistence("3.Solution")
+     */
+    $WorksheetExists = CheckWorksheetExistence("1.Items") && CheckWorksheetExistence("2.Containers") && CheckWorksheetExistence("3.Solution");
+
+    /**
+     * If WorksheetExists = False Then
+     */
+    if ($WorksheetExists == false) {
+        /**
+         * MsgBox "Worksheets 1.Items, 2.Containers, and 3.Solution must exist for the Feasibility Check."
+         * Exit Sub
+         */
+        return;
+    }
+    /**
+     * Call GetItemData
+     */
+    $item_list = new item_list_data();
+    $num_item_types = 0;
+    $items = array();
+    $solver_options = new solver_option_data();
+    GetItemData($item_list, $num_item_types, $items, $solver_options);
+
+    /**
+     * Call GetInstanceData
+     */
+    $instance = new instance_data();
+    $front_side_support = false;
+    $item_item_compatibility_worksheet = false;
+    $container_item_compatibility_worksheet = false;
+    GetInstanceData($instance, $front_side_support, $item_item_compatibility_worksheet, $container_item_compatibility_worksheet);
+
+    /**
+     * Call GetCompatibilityData
+     */
+    $compatibility_list = new compatibility_data();
+    $instance = new instance_data();
+    $item_list = new item_list_data();
+    $container_list = new container_list_data();
+    $item_item_compatibilities = array();
+    $container_item_compatibilities = array();
+    GetCompatibilityData($compatibility_list, $instance, $item_list, $container_list, $item_item_compatibilities, $container_item_compatibilities);
+
+    /**
+     * ThisWorkbook.Worksheets("3.Solution").Activate
+     *
+     * Activate the worksheet.
+     */
+
+    /**
+     * Range(Cells(2, 1), Cells(2, 10)).Clear
+     * Range(ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 9, 1), ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + (4 * item_list.total_number_of_items), 1)).Clear
+     */
+
+    /**
+     * Dim infeasibility_count As Long
+     * infeasibility_count = 0
+     * @var integer
+     */
+    $infeasibility_count = 0;
+
+    /**
+     * Dim infeasibility_string As String
+     * infeasibility_string = vbNullString
+     * @var string
+     */
+    $infeasibility_string = "";
+
+    /**
+     * Dim i As Long
+     * @var integer
+     */
+    $i = 0;
+
+    /**
+     * Dim j As Long
+     * @var integer
+     */
+    $j = 0;
+
+    /**
+     * Dim k As Long
+     * @var integer
+     */
+    $k = 0;
+
+    /**
+     * Dim l As Long
+     * @var integer
+     */
+    $l = 0;
+
+    /**
+     * Dim container_index As Long
+     * @var integer
+     */
+    $container_index = 0;
+
+    /**
+     * Dim offset As Long
+     * @var integer
+     */
+    $offset = 0;
+
+    /**
+     * Dim container_name As String
+     * @var string
+     */
+    $container_name = "";
+
+    /**
+     * Dim feasibility_flag as Boolean
+     * @var boolean
+     */
+    $feasibility_flag = false;
+
+    /**
+     * Dim incumbent As solution_data
+     * @var solution_data
+     */
+    $incumbent = new solution_data();
+
+    /**
+     * Call InitializeSolution(incumbent)
+     */
+    $container_list = new container_list_data();
+    $item_list = new item_list_data();
+    InitializeSolution($incumbent, $container_list, $item_list);
+
+    /**
+     * Call ReadSolution(incumbent)
+     */
+    $container_list = new container_list_data();
+    $item_list = new item_list_data();
+    ReadSolution($incumbent, $container_list, $item_list);
+
+    /**
+     * Dim volume_capacity_required As Double
+     * @var float
+     */
+    $volume_capacity_required = 0.0;
+
+    /**
+     * Dim volume_capacity_available As Double
+     * @var float
+     */
+    $volume_capacity_available = 0.0;
+
+    /**
+     * Dim weight_capacity_required As Double
+     * @var float
+     */
+    $weight_capacity_required = 0.0;
+
+    /**
+     * Dim weight_capacity_available As Double
+     * @var float
+     */
+    $weight_capacity_available = 0.0;
+
+    /**
+     * Dim area_supported As Double
+     * @var float
+     */
+    $area_supported = 0.0;
+
+    /**
+     * Dim intersection_right As Double
+     * @var float
+     */
+    $intersection_right = 0.0;
+
+    /**
+     * Dim intersection_left As Double
+     * @var float
+     */
+    $intersection_left = 0.0;
+
+    /**
+     * Dim intersection_top As Double
+     * @var float
+     */
+    $intersection_top = 0.0;
+
+    /**
+     * Dim intersection_bottom As Double
+     * @var float
+     */
+    $intersection_bottom = 0.0;
+
+    /**
+     * Dim max_width As Double
+     * @var float
+     */
+    $max_width = 0.0;
+
+    /**
+     * Dim max_heigth As Double
+     * @var float
+     */
+    $max_heigth = 0.0;
+
+    /**
+     * Dim max_length As Double
+     * @var float
+     */
+    $max_length = 0.0;
+
+    /**
+     * volume_capacity_required = 0
+     *
+     * * * already defined
+     */
+
+    /**
+     * volume_capacity_available = 0
+     *
+     * * * already defined
+     */
+
+    /**
+     * weight_capacity_required = 0
+     *
+     * * * already defined
+     */
+
+    /**
+     * weight_capacity_available = 0
+     *
+     * * * already defined
+     */
+
+    /**
+     * max_width = 0
+     *
+     * * * already defined
+     */
+
+    /**
+     * max_heigth = 0
+     *
+     * * * already defined
+     */
+
+    /**
+     * max_length = 0
+     *
+     * * * already defined
+     */
+
+    /**
+     * With item_list
+     *
+     * * * $il
+     */
+    $il = $item_list;
+
+    /**
+     * For i = 1 To .num_item_types
+     */
+    for ($i = 1; $i <= $il->num_item_types; ++$i) {
+        /**
+         * If .item_types(i).mandatory = 1 Then
+         */
+        if ($il->num_item_types[$i]->mandatory == 1) {
+            /**
+             * volume_capacity_required = volume_capacity_required + (.item_types(i).volume * .item_types(i).number_requested)
+             */
+            $volume_capacity_required = $volume_capacity_required + ($il->item_types[$i]->volume * $il->item_types[$i]->number_requested);
+
+            /**
+             * weight_capacity_required = weight_capacity_required + (.item_types(i).weight * .item_types(i).number_requested)
+             */
+            $weight_capacity_required = $weight_capacity_required + ($il->item_types[$i]->weight * $il->item_types[$i]->number_requested);
+        }
+    }
+    /**
+     * End With
+     */
+
+    /**
+     * With container_list
+     *
+     * * * $cl
+     */
+    $cl = $container_list;
+
+    /**
+     * For i = 1 To .num_container_types
+     */
+    for ($i = 1; $i <= $cl->num_container_types; ++$i) {
+        /**
+         * If .container_types(i).mandatory >= 0 Then
+         */
+        if ($cl->container_types[$i]->mandatory >= 0) {
+            /**
+             * volume_capacity_available = volume_capacity_available + (.container_types(i).volume_capacity * .container_types(i).number_available)
+             */
+            $volume_capacity_available = $volume_capacity_available + ($cl->container_types[$i]->volume_capacity * $cl->container_types[$i]->number_available);
+
+            /**
+             * weight_capacity_available = weight_capacity_available + (.container_types(i).weight_capacity * .container_types(i).number_available)
+             */
+            $weight_capacity_available = $weight_capacity_available + ($cl->container_types[$i]->weight_capacity * $cl->container_types[$i]->number_available);
+
+            /**
+             * If .container_types(i).width > max_width Then max_width = .container_types(i).width
+             */
+            if ($cl->container_types[$i]->width > $max_width) {
+                $max_width = $cl->container_types[$i]->width;
+            }
+
+            /**
+             * If .container_types(i).height > max_heigth Then max_heigth = .container_types(i).height
+             */
+            if ($cl->container_types[$i]->height > $max_heigth) {
+                $max_heigth = $cl->container_types[$i]->height;
+            }
+
+            /**
+             * If .container_types(i).length > max_length Then max_length = .container_types(i).length
+             */
+            if ($cl->container_types[$i]->length > $max_length) {
+                $max_length = $cl->container_types[$i]->length;
+            }
+        }
+    }
+    /**
+     * End With
+     */
+
+    /**
+     * If volume_capacity_required > volume_capacity_available + epsilon Then
+     */
+    if ($volume_capacity_required > $volume_capacity_available + epsilon) {
+        /**
+         * infeasibility_count = infeasibility_count + 1
+         */
+        $infeasibility_count = $infeasibility_count + 1;
+
+        /**
+         * infeasibility_string = infeasibility_string & "The amount of available volume is not enough to pack the mandatory items." & Chr(13)
+         */
+        $infeasibility_string = $infeasibility_string . "The amount of available volume is not enough to pack the mandatory items.";
+
+        /**
+         * ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + infeasibility_count, 1).Value = "The amount of available volume is not enough to pack the mandatory items."
+         *
+         * * * Write some stuff to some cells.
+         */
+    }
+
+    /**
+     * If weight_capacity_required > weight_capacity_available + epsilon Then
+     */
+    if ($weight_capacity_required > $weight_capacity_available + epsilon) {
+        /**
+         * infeasibility_count = infeasibility_count + 1
+         */
+        $infeasibility_count = $infeasibility_count + 1;
+
+        /**
+         * infeasibility_string = infeasibility_string & "The amount of available weight capacity is not enough to pack the mandatory items." & Chr(13)
+         */
+        $infeasibility_string = $infeasibility_string . "The amount of available weight capacity is not enough to pack the mandatory items.";
+
+        /**
+         * ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + infeasibility_count, 1).Value = "The amount of available weight capacity is not enough to pack the mandatory items."
+         */
+    }
+
+    /**
+     * With item_list
+     *
+     * * * $il
+     */
+    $il = $item_list;
+
+    /**
+     * For i = 1 To .num_item_types
+     */
+    for ($i = 1; $i <= $il->num_item_types; ++$il) {
+        /**
+         * With .item_types(i)
+         *
+         * $ilit
+         */
+        $ilit = $il->item_types[$i];
+
+        /**
+         * If (.mandatory = 1) And (.xy_rotatable = False) And (.yz_rotatable = False) And ((.width > max_width + epsilon) Or (.height > max_heigth + epsilon) Or (.length > max_length + epsilon)) Then
+         */
+        if (
+            $ilit->mandatory == 1 &&
+            $ilit->xy_rotatable == false &&
+            $ilit->yz_rotatable == false &&
+            (
+                $ilit->width > $max_width + epsilon ||
+                $ilit->height > $max_heigth + epsilon ||
+                $ilit->length > $max_length + epsilon
+            )
+        ) {
+            /**
+             * infeasibility_count = infeasibility_count + 1
+             */
+            $infeasibility_count = $infeasibility_count + 1;
+
+            /**
+             * If infeasibility_count < 5 Then
+             */
+            if ($infeasibility_count < 5) {
+                /**
+                 * infeasibility_string = infeasibility_string & "Item type " & i & " is too large to fit into any container." & Chr(13)
+                 */
+                $infeasibility_string = $infeasibility_string . "Item type " . $i . " is too large to fit into any container.";
+            }
+            /**
+             * If infeasibility_count = 5 Then
+             */
+            if ($infeasibility_count == 5) {
+                /**
+                 * infeasibility_string = infeasibility_string & "More can be found in the list of detected infeasibilities in the solution worksheet." & Chr(13)
+                 */
+                $infeasibility_string = $infeasibility_string . "More can be found in the list of detected infeasibilities in the solution worksheet.";
+            }
+            /**
+             * ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + infeasibility_count, 1).Value = "Item type " & i & " is too large to fit into any container."
+             */
+        }
+
+        /**
+         * If (.mandatory = 1) And (.width > max_width + epsilon) And (.width > max_heigth + epsilon) And (.width > max_length + epsilon) Then
+         */
+        if (
+            $ilit->mandatory = 1 &&
+            $ilit->width > $max_width + epsilon &&
+            $ilit->width > $max_heigth + epsilon &&
+            $ilit->width > $max_length + epsilon
+        ) {
+            /**
+             * infeasibility_count = infeasibility_count + 1
+             */
+            $infeasibility_count = $infeasibility_count + 1;
+
+            /**
+             * If infeasibility_count < 5 Then
+             */
+            if ($infeasibility_count < 5) {
+                /**
+                 * infeasibility_string = infeasibility_string & "Item type " & i & " is too wide to fit into any container." & Chr(13)
+                 */
+                $infeasibility_string = $infeasibility_string . "Item type " . $i . " is too wide to fit into any container.";
+            }
+
+            /**
+             * If infeasibility_count = 5 Then
+             */
+            if ($infeasibility_count == 5) {
+                /**
+                 * infeasibility_string = infeasibility_string & "More can be found in the list of detected infeasibilities in the solution worksheet." & Chr(13)
+                 */
+                $infeasibility_string = $infeasibility_string . "More can be found in the list of detected infeasibilities in the solution worksheet.";
+            }
+            /**
+             * ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + infeasibility_count, 1).Value = "Item type " & i & " is too wide to fit into any container."
+             */
+        }
+
+        /**
+         * If (.mandatory = 1) And (.height > max_width + epsilon) And (.height > max_heigth + epsilon) And (.height > max_length + epsilon) Then
+         */
+        if (
+            $ilit->mandatory = 1 &&
+            $ilit->height > $max_width + epsilon &&
+            $ilit->height > $max_heigth + epsilon &&
+            $ilit->height > $max_length + epsilon
+        ) {
+            /**
+             * infeasibility_count = infeasibility_count + 1
+             */
+            $infeasibility_count = $infeasibility_count + 1;
+
+            /**
+             * If infeasibility_count < 5 Then
+             */
+            if ($infeasibility_count < 5) {
+                /**
+                 * infeasibility_string = infeasibility_string & "Item type " & i & " is too tall to fit into any container." & Chr(13)
+                 */
+                $infeasibility_string = $infeasibility_string . "Item type " . $i . " is too tall to fit into any container.";
+            }
+
+            /**
+             * If infeasibility_count = 5 Then
+             */
+            if ($infeasibility_count == 5) {
+                /**
+                 * infeasibility_string = infeasibility_string & "More can be found in the list of detected infeasibilities in the solution worksheet." & Chr(13)
+                 */
+                $infeasibility_string = $infeasibility_string . "More can be found in the list of detected infeasibilities in the solution worksheet.";
+            }
+
+            /**
+             * ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + infeasibility_count, 1).Value = "Item type " & i & " is too tall to fit into any container."
+             */
+        }
+
+        /**
+         * If (.mandatory = 1) And (.length > max_width + epsilon) And (.length > max_heigth + epsilon) And (.length > max_length + epsilon) Then
+         */
+        if (
+            $ilit->mandatory = 1 &&
+            $ilit->length > $max_width + epsilon &&
+            $ilit->length > $max_heigth + epsilon &&
+            $ilit->length > $max_length + epsilon
+        )
+        {
+            /**
+             * infeasibility_count = infeasibility_count + 1
+             */
+            $infeasibility_count = $infeasibility_count + 1;
+
+            /**
+             * If infeasibility_count < 5 Then
+             */
+            if ($infeasibility_count < 5) {
+                /**
+                 * infeasibility_string = infeasibility_string & "Item type " & i & " is too long to fit into any container." & Chr(13)
+                 */
+                $infeasibility_string = $infeasibility_string . "Item type " . $i . " is too long to fit into any container.";
+            }
+
+            /**
+             * If infeasibility_count = 5 Then
+             */
+            if ($infeasibility_count == 5) {
+                /**
+                 * infeasibility_string = infeasibility_string & "More can be found in the list of detected infeasibilities in the solution worksheet." & Chr(13)
+                 */
+                $infeasibility_string = $infeasibility_string . "More can be found in the list of detected infeasibilities in the solution worksheet.";
+            }
+
+            /**
+             * ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + infeasibility_count, 1).Value = "Item type " & i & " is too long to fit into any container."
+             */
+        }
+        /**
+         * End With
+         */
+    }
+    /**
+     * End With
+     *
+     * another instance of nested Withs. Hope I got the scope right.
+     */
+
+    /**
+     * offset = 0
+     */
+    $offset = 0;
+
+    /**
+     * For i = 1 To container_list.num_container_types
+     */
+    for ($i = 1; $i<=$container_list->num_container_types; ++$i) {
+        /**
+         * For j = 1 To container_list.container_types(i).number_available
+         */
+        for ($j = 1; $container_list->container_types[$i]->number_available; ++$j) {
+            /**
+             * If container_list.container_types(i).mandatory = -1 Then
+             */
+            if ($container_list->container_types[$i]->mandatory == -1) {
+                /**
+                 * feasibility_flag = True
+                 */
+                $feasibility_flag = true;
+                    /**
+                     * For k = 1 To item_list.total_number_of_items
+                     *      If ThisWorkbook.Worksheets("3.Solution").Cells(5 + k, offset + 2) <> vbNullString Then
+                     *          feasibility_flag = False
+                     *          Exit For
+                     *      End If
+                     * Next k
+                     *
+                     * * * we'll see about this later.
+                     */
+
+                    /**
+                     * If feasibility_flag = False Then
+                     */
+                    if ($feasibility_flag == false) {
+                        /**
+                         * infeasibility_count = infeasibility_count + 1
+                         */
+                        $infeasibility_count = $infeasibility_count + 1;
+
+                        /**
+                         * If infeasibility_count < 5 Then
+                         */
+                        if ($infeasibility_count < 5) {
+                            /**
+                             * infeasibility_string = infeasibility_string & "There are item(s) in the unavailable " & ThisWorkbook.Worksheets("3.Solution").Cells(3, offset + 1) & Chr(13)
+                             */
+                            $infeasibility_string = $infeasibility_string . "There are item(s) in the unavailable \"thing\"";
+                            /*
+                             * TODO: clarify "thing" :)
+                             * */
+                        }
+
+                        /**
+                         * If infeasibility_count = 5 Then
+                         */
+                        if ($infeasibility_count == 5) {
+                            /**
+                             * infeasibility_string = infeasibility_string & "More can be found in the list of detected infeasibilities in the solution worksheet." & Chr(13)
+                             */
+                            $infeasibility_string = $infeasibility_string . "More can be found in the list of detected infeasibilities in the solution worksheet.";
+                        }
+
+                        /**
+                         * ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + infeasibility_count, 1).Value = "There are item(s) in the unavailable " & ThisWorkbook.Worksheets("3.Solution").Cells(3, offset + 1)
+                         */
+                }
+            }
+            $offset = $offset + column_offset;
+        }
+    }
+
+    /**
+     * offset = 0
+     */
+    $offset = 0;
+
+    /**
+     * container_index = 1
+     */
+    $container_index = 1;
+
+    /**
+     * For i = 1 To container_list.num_container_types
+     */
+    for ($i = 1; $i <= $container_list->num_container_types; ++$i) {
+        /**
+         * For j = 1 To container_list.container_types(i).number_available
+         */
+        for ($j = 1; $j <= $container_list->container_types[$i]->number_available; ++$j) {
+            /**
+             * If container_list.container_types(i).mandatory >= 0 Then
+             */
+            if ($container_list->container_types[$i]->mandatory >= 0) {
+                /**
+                 * For k = 1 To incumbent.container(container_index).item_cnt
+                 */
+                for ($k = 1; $k <= $incumbent->container[$container_index]->item_cnt; ++$k) {
+                    /**
+                     * If ((incumbent.container(container_index).items(k).rotation = 3) Or (incumbent.container(container_index).items(k).rotation = 4)) And (item_list.item_types(incumbent.container(container_index).items(k).item_type).xy_rotatable = False) Then
+                     */
+                    if (
+                        ($incumbent->container[$container_index]->items[$k]->rotation == 3 ||
+                        $incumbent->container[$container_index]->items[$k]->rotation == 4) &&
+                        $item_list->item_types[$incumbent->container[$container_index]->items[$k]->item_type]->xy_rotatable == false
+                    )
+                    {
+                        /**
+                         * container_name = ThisWorkbook.Worksheets("3.Solution").Cells(3, offset + 1)
+                         */
+                        $container_name = "";
+                        /*
+                         * TODO: Fix this. Get the actual container name from either the solution obj, or req.
+                         * */
+
+                        /**
+                         * infeasibility_count = infeasibility_count + 1
+                         */
+                        $infeasibility_count = $infeasibility_count + 1;
+                        ###BOOKMARK
+                    }
+                }
+            }
+        }
+    }
+
+
+}

@@ -2254,6 +2254,7 @@ Sub FeasibilityCheckDataAndSolution()
                         container_name = ThisWorkbook.Worksheets("3.Solution").Cells(3, offset + 1)
 
                         infeasibility_count = infeasibility_count + 1
+                        ###BOOKMARK
                         If infeasibility_count < 5 Then
                             infeasibility_string = infeasibility_string & "Item " & k & " in " & container_name & " is placed on its xy surface, which is not allowed." & Chr(13)
                         End If
