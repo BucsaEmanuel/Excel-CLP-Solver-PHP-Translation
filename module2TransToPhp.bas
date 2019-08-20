@@ -2051,609 +2051,606 @@
     
 ' End Sub
 
-Sub FeasibilityCheckDataAndSolution()
+' Sub FeasibilityCheckDataAndSolution()
     
-    Application.ScreenUpdating = False
-    Application.Calculation = xlCalculationManual
+'     Application.ScreenUpdating = False
+'     Application.Calculation = xlCalculationManual
     
-    Dim WorksheetExists As Boolean
-    Dim reply As Integer
+'     Dim WorksheetExists As Boolean
+'     Dim reply As Integer
     
-    WorksheetExists = CheckWorksheetExistence("1.Items") And CheckWorksheetExistence("2.Containers") And CheckWorksheetExistence("3.Solution")
-    If WorksheetExists = False Then
-        MsgBox "Worksheets 1.Items, 2.Containers, and 3.Solution must exist for the Feasibility Check."
-        Exit Sub
-    End If
+'     WorksheetExists = CheckWorksheetExistence("1.Items") And CheckWorksheetExistence("2.Containers") And CheckWorksheetExistence("3.Solution")
+'     If WorksheetExists = False Then
+'         MsgBox "Worksheets 1.Items, 2.Containers, and 3.Solution must exist for the Feasibility Check."
+'         Exit Sub
+'     End If
     
-    Call GetItemData
-    Call GetContainerData
-    Call GetInstanceData
-    Call GetCompatibilityData
+'     Call GetItemData
+'     Call GetContainerData
+'     Call GetInstanceData
+'     Call GetCompatibilityData
 
-    ThisWorkbook.Worksheets("3.Solution").Activate
+'     ThisWorkbook.Worksheets("3.Solution").Activate
     
-    Range(Cells(2, 1), Cells(2, 10)).Clear
-    Range(ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 9, 1), ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + (4 * item_list.total_number_of_items), 1)).Clear
+'     Range(Cells(2, 1), Cells(2, 10)).Clear
+'     Range(ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 9, 1), ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + (4 * item_list.total_number_of_items), 1)).Clear
     
-    Dim infeasibility_count As Long
-    infeasibility_count = 0
+'     Dim infeasibility_count As Long
+'     infeasibility_count = 0
     
-    Dim infeasibility_string As String
-    infeasibility_string = vbNullString
+'     Dim infeasibility_string As String
+'     infeasibility_string = vbNullString
     
-    Dim i As Long
-    Dim j As Long
-    Dim k As Long
-    Dim l As Long
-    Dim container_index As Long
+'     Dim i As Long
+'     Dim j As Long
+'     Dim k As Long
+'     Dim l As Long
+'     Dim container_index As Long
         
-    Dim offset As Long
-    Dim container_name As String
-    Dim feasibility_flag As Boolean
+'     Dim offset As Long
+'     Dim container_name As String
+'     Dim feasibility_flag As Boolean
         
-    Dim incumbent As solution_data
+'     Dim incumbent As solution_data
     
-    Call InitializeSolution(incumbent)
-    Call ReadSolution(incumbent)
+'     Call InitializeSolution(incumbent)
+'     Call ReadSolution(incumbent)
     
-    Dim volume_capacity_required As Double
-    Dim volume_capacity_available As Double
+'     Dim volume_capacity_required As Double
+'     Dim volume_capacity_available As Double
     
-    Dim weight_capacity_required As Double
-    Dim weight_capacity_available As Double
+'     Dim weight_capacity_required As Double
+'     Dim weight_capacity_available As Double
     
-    Dim area_supported As Double
-    Dim intersection_right As Double
-    Dim intersection_left As Double
-    Dim intersection_top As Double
-    Dim intersection_bottom As Double
+'     Dim area_supported As Double
+'     Dim intersection_right As Double
+'     Dim intersection_left As Double
+'     Dim intersection_top As Double
+'     Dim intersection_bottom As Double
     
-    Dim max_width As Double
-    Dim max_heigth As Double
-    Dim max_length As Double
+'     Dim max_width As Double
+'     Dim max_heigth As Double
+'     Dim max_length As Double
     
-    volume_capacity_required = 0
-    volume_capacity_available = 0
+'     volume_capacity_required = 0
+'     volume_capacity_available = 0
     
-    weight_capacity_required = 0
-    weight_capacity_available = 0
+'     weight_capacity_required = 0
+'     weight_capacity_available = 0
     
-    max_width = 0
-    max_heigth = 0
-    max_length = 0
+'     max_width = 0
+'     max_heigth = 0
+'     max_length = 0
     
-    With item_list
-        For i = 1 To .num_item_types
-            If .item_types(i).mandatory = 1 Then
-                volume_capacity_required = volume_capacity_required + (.item_types(i).volume * .item_types(i).number_requested)
-                weight_capacity_required = weight_capacity_required + (.item_types(i).weight * .item_types(i).number_requested)
-            End If
-        Next i
-    End With
+'     With item_list
+'         For i = 1 To .num_item_types
+'             If .item_types(i).mandatory = 1 Then
+'                 volume_capacity_required = volume_capacity_required + (.item_types(i).volume * .item_types(i).number_requested)
+'                 weight_capacity_required = weight_capacity_required + (.item_types(i).weight * .item_types(i).number_requested)
+'             End If
+'         Next i
+'     End With
     
-    With container_list
-        For i = 1 To .num_container_types
-            If .container_types(i).mandatory >= 0 Then
+'     With container_list
+'         For i = 1 To .num_container_types
+'             If .container_types(i).mandatory >= 0 Then
                 
-                volume_capacity_available = volume_capacity_available + (.container_types(i).volume_capacity * .container_types(i).number_available)
-                weight_capacity_available = weight_capacity_available + (.container_types(i).weight_capacity * .container_types(i).number_available)
+'                 volume_capacity_available = volume_capacity_available + (.container_types(i).volume_capacity * .container_types(i).number_available)
+'                 weight_capacity_available = weight_capacity_available + (.container_types(i).weight_capacity * .container_types(i).number_available)
                 
-                If .container_types(i).width > max_width Then max_width = .container_types(i).width
-                If .container_types(i).height > max_heigth Then max_heigth = .container_types(i).height
-                If .container_types(i).length > max_length Then max_length = .container_types(i).length
+'                 If .container_types(i).width > max_width Then max_width = .container_types(i).width
+'                 If .container_types(i).height > max_heigth Then max_heigth = .container_types(i).height
+'                 If .container_types(i).length > max_length Then max_length = .container_types(i).length
                 
-            End If
-        Next i
-    End With
+'             End If
+'         Next i
+'     End With
     
-    If volume_capacity_required > volume_capacity_available + epsilon Then
-        infeasibility_count = infeasibility_count + 1
-        infeasibility_string = infeasibility_string & "The amount of available volume is not enough to pack the mandatory items." & Chr(13)
-        ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + infeasibility_count, 1).Value = "The amount of available volume is not enough to pack the mandatory items."
-    End If
+'     If volume_capacity_required > volume_capacity_available + epsilon Then
+'         infeasibility_count = infeasibility_count + 1
+'         infeasibility_string = infeasibility_string & "The amount of available volume is not enough to pack the mandatory items." & Chr(13)
+'         ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + infeasibility_count, 1).Value = "The amount of available volume is not enough to pack the mandatory items."
+'     End If
     
-    If weight_capacity_required > weight_capacity_available + epsilon Then
-        infeasibility_count = infeasibility_count + 1
-        infeasibility_string = infeasibility_string & "The amount of available weight capacity is not enough to pack the mandatory items." & Chr(13)
-        ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + infeasibility_count, 1).Value = "The amount of available weight capacity is not enough to pack the mandatory items."
-    End If
+'     If weight_capacity_required > weight_capacity_available + epsilon Then
+'         infeasibility_count = infeasibility_count + 1
+'         infeasibility_string = infeasibility_string & "The amount of available weight capacity is not enough to pack the mandatory items." & Chr(13)
+'         ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + infeasibility_count, 1).Value = "The amount of available weight capacity is not enough to pack the mandatory items."
+'     End If
     
-    With item_list
-        For i = 1 To .num_item_types
-            With .item_types(i)
-                If (.mandatory = 1) And (.xy_rotatable = False) And (.yz_rotatable = False) And ((.width > max_width + epsilon) Or (.height > max_heigth + epsilon) Or (.length > max_length + epsilon)) Then
-                    infeasibility_count = infeasibility_count + 1
-                    If infeasibility_count < 5 Then
-                        infeasibility_string = infeasibility_string & "Item type " & i & " is too large to fit into any container." & Chr(13)
-                    End If
-                    If infeasibility_count = 5 Then
-                        infeasibility_string = infeasibility_string & "More can be found in the list of detected infeasibilities in the solution worksheet." & Chr(13)
-                    End If
-                    ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + infeasibility_count, 1).Value = "Item type " & i & " is too large to fit into any container."
-                End If
+'     With item_list
+'         For i = 1 To .num_item_types
+'             With .item_types(i)
+'                 If (.mandatory = 1) And (.xy_rotatable = False) And (.yz_rotatable = False) And ((.width > max_width + epsilon) Or (.height > max_heigth + epsilon) Or (.length > max_length + epsilon)) Then
+'                     infeasibility_count = infeasibility_count + 1
+'                     If infeasibility_count < 5 Then
+'                         infeasibility_string = infeasibility_string & "Item type " & i & " is too large to fit into any container." & Chr(13)
+'                     End If
+'                     If infeasibility_count = 5 Then
+'                         infeasibility_string = infeasibility_string & "More can be found in the list of detected infeasibilities in the solution worksheet." & Chr(13)
+'                     End If
+'                     ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + infeasibility_count, 1).Value = "Item type " & i & " is too large to fit into any container."
+'                 End If
 
-                If (.mandatory = 1) And (.width > max_width + epsilon) And (.width > max_heigth + epsilon) And (.width > max_length + epsilon) Then
-                    infeasibility_count = infeasibility_count + 1
-                    If infeasibility_count < 5 Then
-                        infeasibility_string = infeasibility_string & "Item type " & i & " is too wide to fit into any container." & Chr(13)
-                    End If
-                    If infeasibility_count = 5 Then
-                        infeasibility_string = infeasibility_string & "More can be found in the list of detected infeasibilities in the solution worksheet." & Chr(13)
-                    End If
-                    ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + infeasibility_count, 1).Value = "Item type " & i & " is too wide to fit into any container."
-                End If
+'                 If (.mandatory = 1) And (.width > max_width + epsilon) And (.width > max_heigth + epsilon) And (.width > max_length + epsilon) Then
+'                     infeasibility_count = infeasibility_count + 1
+'                     If infeasibility_count < 5 Then
+'                         infeasibility_string = infeasibility_string & "Item type " & i & " is too wide to fit into any container." & Chr(13)
+'                     End If
+'                     If infeasibility_count = 5 Then
+'                         infeasibility_string = infeasibility_string & "More can be found in the list of detected infeasibilities in the solution worksheet." & Chr(13)
+'                     End If
+'                     ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + infeasibility_count, 1).Value = "Item type " & i & " is too wide to fit into any container."
+'                 End If
 
-                If (.mandatory = 1) And (.height > max_width + epsilon) And (.height > max_heigth + epsilon) And (.height > max_length + epsilon) Then
-                    infeasibility_count = infeasibility_count + 1
-                    If infeasibility_count < 5 Then
-                        infeasibility_string = infeasibility_string & "Item type " & i & " is too tall to fit into any container." & Chr(13)
-                    End If
-                    If infeasibility_count = 5 Then
-                        infeasibility_string = infeasibility_string & "More can be found in the list of detected infeasibilities in the solution worksheet." & Chr(13)
-                    End If
-                    ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + infeasibility_count, 1).Value = "Item type " & i & " is too tall to fit into any container."
-                End If
+'                 If (.mandatory = 1) And (.height > max_width + epsilon) And (.height > max_heigth + epsilon) And (.height > max_length + epsilon) Then
+'                     infeasibility_count = infeasibility_count + 1
+'                     If infeasibility_count < 5 Then
+'                         infeasibility_string = infeasibility_string & "Item type " & i & " is too tall to fit into any container." & Chr(13)
+'                     End If
+'                     If infeasibility_count = 5 Then
+'                         infeasibility_string = infeasibility_string & "More can be found in the list of detected infeasibilities in the solution worksheet." & Chr(13)
+'                     End If
+'                     ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + infeasibility_count, 1).Value = "Item type " & i & " is too tall to fit into any container."
+'                 End If
                 
-                If (.mandatory = 1) And (.length > max_width + epsilon) And (.length > max_heigth + epsilon) And (.length > max_length + epsilon) Then
-                    infeasibility_count = infeasibility_count + 1
-                    If infeasibility_count < 5 Then
-                        infeasibility_string = infeasibility_string & "Item type " & i & " is too long to fit into any container." & Chr(13)
-                    End If
-                    If infeasibility_count = 5 Then
-                        infeasibility_string = infeasibility_string & "More can be found in the list of detected infeasibilities in the solution worksheet." & Chr(13)
-                    End If
-                    ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + infeasibility_count, 1).Value = "Item type " & i & " is too long to fit into any container."
-                End If
-            End With
-        Next i
-    End With
+'                 If (.mandatory = 1) And (.length > max_width + epsilon) And (.length > max_heigth + epsilon) And (.length > max_length + epsilon) Then
+'                     infeasibility_count = infeasibility_count + 1
+'                     If infeasibility_count < 5 Then
+'                         infeasibility_string = infeasibility_string & "Item type " & i & " is too long to fit into any container." & Chr(13)
+'                     End If
+'                     If infeasibility_count = 5 Then
+'                         infeasibility_string = infeasibility_string & "More can be found in the list of detected infeasibilities in the solution worksheet." & Chr(13)
+'                     End If
+'                     ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + infeasibility_count, 1).Value = "Item type " & i & " is too long to fit into any container."
+'                 End If
+'             End With
+'         Next i
+'     End With
     
-    offset = 0
-    For i = 1 To container_list.num_container_types
-        For j = 1 To container_list.container_types(i).number_available
-            If container_list.container_types(i).mandatory = -1 Then
+'     offset = 0
+'     For i = 1 To container_list.num_container_types
+'         For j = 1 To container_list.container_types(i).number_available
+'             If container_list.container_types(i).mandatory = -1 Then
                 
-                feasibility_flag = True
-                For k = 1 To item_list.total_number_of_items
-                    If ThisWorkbook.Worksheets("3.Solution").Cells(5 + k, offset + 2) <> vbNullString Then
-                        feasibility_flag = False
-                        Exit For
-                    End If
-                Next k
+'                 feasibility_flag = True
+'                 For k = 1 To item_list.total_number_of_items
+'                     If ThisWorkbook.Worksheets("3.Solution").Cells(5 + k, offset + 2) <> vbNullString Then
+'                         feasibility_flag = False
+'                         Exit For
+'                     End If
+'                 Next k
                 
-                If feasibility_flag = False Then
+'                 If feasibility_flag = False Then
                 
-                    infeasibility_count = infeasibility_count + 1
-                    If infeasibility_count < 5 Then
-                        infeasibility_string = infeasibility_string & "There are item(s) in the unavailable " & ThisWorkbook.Worksheets("3.Solution").Cells(3, offset + 1) & Chr(13)
-                    End If
-                    If infeasibility_count = 5 Then
-                        infeasibility_string = infeasibility_string & "More can be found in the list of detected infeasibilities in the solution worksheet." & Chr(13)
-                    End If
-                    ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + infeasibility_count, 1).Value = "There are item(s) in the unavailable " & ThisWorkbook.Worksheets("3.Solution").Cells(3, offset + 1)
+'                     infeasibility_count = infeasibility_count + 1
+'                     If infeasibility_count < 5 Then
+'                         infeasibility_string = infeasibility_string & "There are item(s) in the unavailable " & ThisWorkbook.Worksheets("3.Solution").Cells(3, offset + 1) & Chr(13)
+'                     End If
+'                     If infeasibility_count = 5 Then
+'                         infeasibility_string = infeasibility_string & "More can be found in the list of detected infeasibilities in the solution worksheet." & Chr(13)
+'                     End If
+'                     ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + infeasibility_count, 1).Value = "There are item(s) in the unavailable " & ThisWorkbook.Worksheets("3.Solution").Cells(3, offset + 1)
                     
-                End If
-            End If
+'                 End If
+'             End If
             
-            offset = offset + column_offset
-        Next j
-    Next i
+'             offset = offset + column_offset
+'         Next j
+'     Next i
     
-    offset = 0
-    container_index = 1
-    For i = 1 To container_list.num_container_types
+'     offset = 0
+'     container_index = 1
+'     For i = 1 To container_list.num_container_types
     
-        For j = 1 To container_list.container_types(i).number_available
+'         For j = 1 To container_list.container_types(i).number_available
                 
-            If container_list.container_types(i).mandatory >= 0 Then
+'             If container_list.container_types(i).mandatory >= 0 Then
 
-                For k = 1 To incumbent.container(container_index).item_cnt
+'                 For k = 1 To incumbent.container(container_index).item_cnt
                 
-                    If ((incumbent.container(container_index).items(k).rotation = 3) Or (incumbent.container(container_index).items(k).rotation = 4)) And (item_list.item_types(incumbent.container(container_index).items(k).item_type).xy_rotatable = False) Then
+'                     If ((incumbent.container(container_index).items(k).rotation = 3) Or (incumbent.container(container_index).items(k).rotation = 4)) And (item_list.item_types(incumbent.container(container_index).items(k).item_type).xy_rotatable = False) Then
 
-                        container_name = ThisWorkbook.Worksheets("3.Solution").Cells(3, offset + 1)
+'                         container_name = ThisWorkbook.Worksheets("3.Solution").Cells(3, offset + 1)
 
-                        infeasibility_count = infeasibility_count + 1
-                        ###BOOKMARK
-                        If infeasibility_count < 5 Then
-                            infeasibility_string = infeasibility_string & "Item " & k & " in " & container_name & " is placed on its xy surface, which is not allowed." & Chr(13)
-                        End If
-                        If infeasibility_count = 5 Then
-                            infeasibility_string = infeasibility_string & "More can be found in the list of detected infeasibilities in the solution worksheet." & Chr(13)
-                        End If
-                        ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + infeasibility_count, 1).Value = "Item " & k & " in " & container_name & " is placed on its xy surface, which is not allowed."
+'                         infeasibility_count = infeasibility_count + 1
+'                         If infeasibility_count < 5 Then
+'                             infeasibility_string = infeasibility_string & "Item " & k & " in " & container_name & " is placed on its xy surface, which is not allowed." & Chr(13)
+'                         End If
+'                         If infeasibility_count = 5 Then
+'                             infeasibility_string = infeasibility_string & "More can be found in the list of detected infeasibilities in the solution worksheet." & Chr(13)
+'                         End If
+'                         ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + infeasibility_count, 1).Value = "Item " & k & " in " & container_name & " is placed on its xy surface, which is not allowed."
 
-                    End If
+'                     End If
                     
-                    If ((incumbent.container(container_index).items(k).rotation = 5) Or (incumbent.container(container_index).items(k).rotation = 6)) And (item_list.item_types(incumbent.container(container_index).items(k).item_type).yz_rotatable = False) Then
+'                     If ((incumbent.container(container_index).items(k).rotation = 5) Or (incumbent.container(container_index).items(k).rotation = 6)) And (item_list.item_types(incumbent.container(container_index).items(k).item_type).yz_rotatable = False) Then
 
-                        container_name = ThisWorkbook.Worksheets("3.Solution").Cells(3, offset + 1)
+'                         container_name = ThisWorkbook.Worksheets("3.Solution").Cells(3, offset + 1)
 
-                        infeasibility_count = infeasibility_count + 1
-                        If infeasibility_count < 5 Then
-                            infeasibility_string = infeasibility_string & "Item " & k & " in " & container_name & " is placed on its yz surface, which is not allowed." & Chr(13)
-                        End If
-                        If infeasibility_count = 5 Then
-                            infeasibility_string = infeasibility_string & "More can be found in the list of detected infeasibilities in the solution worksheet." & Chr(13)
-                        End If
-                        ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + infeasibility_count, 1).Value = "Item " & k & " in " & container_name & " is placed on its yz surface, which is not allowed."
+'                         infeasibility_count = infeasibility_count + 1
+'                         If infeasibility_count < 5 Then
+'                             infeasibility_string = infeasibility_string & "Item " & k & " in " & container_name & " is placed on its yz surface, which is not allowed." & Chr(13)
+'                         End If
+'                         If infeasibility_count = 5 Then
+'                             infeasibility_string = infeasibility_string & "More can be found in the list of detected infeasibilities in the solution worksheet." & Chr(13)
+'                         End If
+'                         ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + infeasibility_count, 1).Value = "Item " & k & " in " & container_name & " is placed on its yz surface, which is not allowed."
 
-                    End If
-                Next k
+'                     End If
+'                 Next k
                 
-                container_index = container_index + 1
-            End If
+'                 container_index = container_index + 1
+'             End If
             
-            offset = offset + column_offset
+'             offset = offset + column_offset
         
-        Next j
+'         Next j
         
-    Next i
+'     Next i
     
-    With incumbent
-        For i = 1 To item_list.num_item_types
-            If (item_list.item_types(i).mandatory = 1) And (.unpacked_item_count(i) > 0) Then
+'     With incumbent
+'         For i = 1 To item_list.num_item_types
+'             If (item_list.item_types(i).mandatory = 1) And (.unpacked_item_count(i) > 0) Then
             
-                infeasibility_count = infeasibility_count + 1
-                If infeasibility_count < 5 Then
-                    infeasibility_string = infeasibility_string & "There are " & .unpacked_item_count(i) & " item(s) of type " & ThisWorkbook.Worksheets("1.Items").Cells(2 + i, 2) & " that are not packed in the available containers." & Chr(13)
-                End If
-                If infeasibility_count = 5 Then
-                    infeasibility_string = infeasibility_string & "More can be found in the list of detected infeasibilities in the solution worksheet." & Chr(13)
-                End If
-                ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + infeasibility_count, 1).Value = "There are " & .unpacked_item_count(i) & " item(s) of type " & ThisWorkbook.Worksheets("1.Items").Cells(2 + i, 2) & " that are not packed in the available containers."
+'                 infeasibility_count = infeasibility_count + 1
+'                 If infeasibility_count < 5 Then
+'                     infeasibility_string = infeasibility_string & "There are " & .unpacked_item_count(i) & " item(s) of type " & ThisWorkbook.Worksheets("1.Items").Cells(2 + i, 2) & " that are not packed in the available containers." & Chr(13)
+'                 End If
+'                 If infeasibility_count = 5 Then
+'                     infeasibility_string = infeasibility_string & "More can be found in the list of detected infeasibilities in the solution worksheet." & Chr(13)
+'                 End If
+'                 ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + infeasibility_count, 1).Value = "There are " & .unpacked_item_count(i) & " item(s) of type " & ThisWorkbook.Worksheets("1.Items").Cells(2 + i, 2) & " that are not packed in the available containers."     
+'             End If
+            
+'             If .unpacked_item_count(i) < 0 Then
+'                 infeasibility_count = infeasibility_count + 1
+'                 If infeasibility_count < 5 Then
+'                     infeasibility_string = infeasibility_string & "Too many item(s) of type " & ThisWorkbook.Worksheets("1.Items").Cells(2 + i, 2) & " are packed." & Chr(13)
+'                 End If
+'                 If infeasibility_count = 5 Then
+'                     infeasibility_string = infeasibility_string & "More can be found in the list of detected infeasibilities in the solution worksheet." & Chr(13)
+'                 End If
+'                 ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + infeasibility_count, 1).Value = "Too many item(s) of type " & ThisWorkbook.Worksheets("1.Items").Cells(2 + i, 2) & " are packed."
                 
-            End If
+'             End If
+'         Next i
+'     End With
+    
+'     If instance.container_item_compatibility_worksheet = True Then
+    
+'         For i = 1 To item_list.num_item_types
             
-            If .unpacked_item_count(i) < 0 Then
+'             feasibility_flag = False
             
-                infeasibility_count = infeasibility_count + 1
-                If infeasibility_count < 5 Then
-                    infeasibility_string = infeasibility_string & "Too many item(s) of type " & ThisWorkbook.Worksheets("1.Items").Cells(2 + i, 2) & " are packed." & Chr(13)
-                End If
-                If infeasibility_count = 5 Then
-                    infeasibility_string = infeasibility_string & "More can be found in the list of detected infeasibilities in the solution worksheet." & Chr(13)
-                End If
-                ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + infeasibility_count, 1).Value = "Too many item(s) of type " & ThisWorkbook.Worksheets("1.Items").Cells(2 + i, 2) & " are packed."
+'             For j = 1 To container_list.num_container_types
+'                 If compatibility_list.container_to_item(j, i) = True Then
+'                     feasibility_flag = True
+'                     Exit For
+'                 End If
+'             Next j
+            
+'             If feasibility_flag = False Then
                 
-            End If
-        Next i
-    End With
-    
-    If instance.container_item_compatibility_worksheet = True Then
-    
-        For i = 1 To item_list.num_item_types
+'                 infeasibility_count = infeasibility_count + 1
+'                 If infeasibility_count < 5 Then
+'                     infeasibility_string = infeasibility_string & "Item type " & i & " is not compatible with any container." & Chr(13)
+'                 End If
+'                 If infeasibility_count = 5 Then
+'                     infeasibility_string = infeasibility_string & "More can be found in the list of detected infeasibilities in the solution worksheet." & Chr(13)
+'                 End If
+'                 ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + infeasibility_count, 1).Value = "Item type " & i & " is not compatible with any container."
+'             End If
             
-            feasibility_flag = False
-            
-            For j = 1 To container_list.num_container_types
-                If compatibility_list.container_to_item(j, i) = True Then
-                    feasibility_flag = True
-                    Exit For
-                End If
-            Next j
-            
-            If feasibility_flag = False Then
-                
-                infeasibility_count = infeasibility_count + 1
-                If infeasibility_count < 5 Then
-                    infeasibility_string = infeasibility_string & "Item type " & i & " is not compatible with any container." & Chr(13)
-                End If
-                If infeasibility_count = 5 Then
-                    infeasibility_string = infeasibility_string & "More can be found in the list of detected infeasibilities in the solution worksheet." & Chr(13)
-                End If
-                ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + infeasibility_count, 1).Value = "Item type " & i & " is not compatible with any container."
-            End If
-            
-        Next i
+'         Next i
         
-    End If
+'     End If
         
-    If instance.item_item_compatibility_worksheet = True Then
+'     If instance.item_item_compatibility_worksheet = True Then
     
-        offset = 0
-        container_index = 1
-        For i = 1 To container_list.num_container_types
+'         offset = 0
+'         container_index = 1
+'         For i = 1 To container_list.num_container_types
         
-            For j = 1 To container_list.container_types(i).number_available
+'             For j = 1 To container_list.container_types(i).number_available
                     
-                If container_list.container_types(i).mandatory >= 0 Then
+'                 If container_list.container_types(i).mandatory >= 0 Then
 
-                    For k = 1 To incumbent.container(container_index).item_cnt
+'                     For k = 1 To incumbent.container(container_index).item_cnt
                     
-                        For l = k + 1 To incumbent.container(container_index).item_cnt
+'                         For l = k + 1 To incumbent.container(container_index).item_cnt
                             
-                            If compatibility_list.item_to_item(incumbent.container(container_index).items(k).item_type, incumbent.container(container_index).items(l).item_type) = False Then
+'                             If compatibility_list.item_to_item(incumbent.container(container_index).items(k).item_type, incumbent.container(container_index).items(l).item_type) = False Then
                                 
-                                container_name = ThisWorkbook.Worksheets("3.Solution").Cells(3, offset + 1)
+'                                 container_name = ThisWorkbook.Worksheets("3.Solution").Cells(3, offset + 1)
                                 
-                                infeasibility_count = infeasibility_count + 1
-                                If infeasibility_count < 5 Then
-                                    infeasibility_string = infeasibility_string & "Items " & k & " and " & l & " in " & container_name & " are incompatible." & Chr(13)
-                                End If
-                                If infeasibility_count = 5 Then
-                                    infeasibility_string = infeasibility_string & "More can be found in the list of detected infeasibilities in the solution worksheet." & Chr(13)
-                                End If
-                                ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + infeasibility_count, 1).Value = "Items " & k & " and " & l & " in " & container_name & " are incompatible."
+'                                 infeasibility_count = infeasibility_count + 1
+'                                 If infeasibility_count < 5 Then
+'                                     infeasibility_string = infeasibility_string & "Items " & k & " and " & l & " in " & container_name & " are incompatible." & Chr(13)
+'                                 End If
+'                                 If infeasibility_count = 5 Then
+'                                     infeasibility_string = infeasibility_string & "More can be found in the list of detected infeasibilities in the solution worksheet." & Chr(13)
+'                                 End If
+'                                 ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + infeasibility_count, 1).Value = "Items " & k & " and " & l & " in " & container_name & " are incompatible."
                             
-                            End If
+'                             End If
                             
-                        Next l
-                    Next k
+'                         Next l
+'                     Next k
                     
-                    container_index = container_index + 1
-                End If
+'                     container_index = container_index + 1
+'                 End If
                 
-                offset = offset + column_offset
+'                 offset = offset + column_offset
             
-            Next j
+'             Next j
             
-        Next i
+'         Next i
         
-    End If
+'     End If
     
     
-    offset = 0
-    container_index = 1
-    For i = 1 To container_list.num_container_types
+'     offset = 0
+'     container_index = 1
+'     For i = 1 To container_list.num_container_types
     
-        For j = 1 To container_list.container_types(i).number_available
+'         For j = 1 To container_list.container_types(i).number_available
                 
-            If container_list.container_types(i).mandatory >= 0 Then
+'             If container_list.container_types(i).mandatory >= 0 Then
 
-                With incumbent.container(container_index)
+'                 With incumbent.container(container_index)
             
-                    For k = 1 To incumbent.container(container_index).item_cnt
+'                     For k = 1 To incumbent.container(container_index).item_cnt
                     
-                        If (.items(k).origin_y > epsilon) And (item_list.item_types(.items(k).item_type).heavy = True) Then
-                            container_name = ThisWorkbook.Worksheets("3.Solution").Cells(3, offset + 1)
+'                         If (.items(k).origin_y > epsilon) And (item_list.item_types(.items(k).item_type).heavy = True) Then
+'                             container_name = ThisWorkbook.Worksheets("3.Solution").Cells(3, offset + 1)
                                 
-                            infeasibility_count = infeasibility_count + 1
-                            If infeasibility_count < 5 Then
-                                infeasibility_string = infeasibility_string & "Item " & k & " in " & container_name & " is a heavy item that rests on another item." & Chr(13)
-                            End If
-                            If infeasibility_count = 5 Then
-                                infeasibility_string = infeasibility_string & "More can be found in the list of detected infeasibilities in the solution worksheet." & Chr(13)
-                            End If
-                            ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + infeasibility_count, 1).Value = "Item " & k & " in " & container_name & " is a heavy item that rests on another item."
-                        End If
+'                             infeasibility_count = infeasibility_count + 1
+'                             If infeasibility_count < 5 Then
+'                                 infeasibility_string = infeasibility_string & "Item " & k & " in " & container_name & " is a heavy item that rests on another item." & Chr(13)
+'                             End If
+'                             If infeasibility_count = 5 Then
+'                                 infeasibility_string = infeasibility_string & "More can be found in the list of detected infeasibilities in the solution worksheet." & Chr(13)
+'                             End If
+'                             ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + infeasibility_count, 1).Value = "Item " & k & " in " & container_name & " is a heavy item that rests on another item."
+'                         End If
                         
-                        If (.items(k).opposite_x > container_list.container_types(i).width + epsilon) Or (.items(k).opposite_y > container_list.container_types(i).height + epsilon) Or (.items(k).opposite_z > container_list.container_types(i).length + epsilon) Then
-                            container_name = ThisWorkbook.Worksheets("3.Solution").Cells(3, offset + 1)
+'                         If (.items(k).opposite_x > container_list.container_types(i).width + epsilon) Or (.items(k).opposite_y > container_list.container_types(i).height + epsilon) Or (.items(k).opposite_z > container_list.container_types(i).length + epsilon) Then
+'                             container_name = ThisWorkbook.Worksheets("3.Solution").Cells(3, offset + 1)
                                 
-                            infeasibility_count = infeasibility_count + 1
-                            If infeasibility_count < 5 Then
-                                infeasibility_string = infeasibility_string & "Item " & k & " in " & container_name & " is out of the bounds of the container." & Chr(13)
-                            End If
-                            If infeasibility_count = 5 Then
-                                infeasibility_string = infeasibility_string & "More can be found in the list of detected infeasibilities in the solution worksheet." & Chr(13)
-                            End If
-                            ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + infeasibility_count, 1).Value = "Item " & k & " in " & container_name & " is out of the bounds of the container."
-                        End If
+'                             infeasibility_count = infeasibility_count + 1
+'                             If infeasibility_count < 5 Then
+'                                 infeasibility_string = infeasibility_string & "Item " & k & " in " & container_name & " is out of the bounds of the container." & Chr(13)
+'                             End If
+'                             If infeasibility_count = 5 Then
+'                                 infeasibility_string = infeasibility_string & "More can be found in the list of detected infeasibilities in the solution worksheet." & Chr(13)
+'                             End If
+'                             ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + infeasibility_count, 1).Value = "Item " & k & " in " & container_name & " is out of the bounds of the container."
+'                         End If
                     
-                        For l = k + 1 To incumbent.container(container_index).item_cnt
+'                         For l = k + 1 To incumbent.container(container_index).item_cnt
                                 
-                            If (.items(k).opposite_x < .items(l).origin_x + epsilon) Or _
-                                (.items(l).opposite_x < .items(k).origin_x + epsilon) Or _
-                                (.items(k).opposite_y < .items(l).origin_y + epsilon) Or _
-                                (.items(l).opposite_y < .items(k).origin_y + epsilon) Or _
-                                (.items(k).opposite_z < .items(l).origin_z + epsilon) Or _
-                                (.items(l).opposite_z < .items(k).origin_z + epsilon) Then
-                                'no conflict
-                            Else
-                                'conflict
+'                             If (.items(k).opposite_x < .items(l).origin_x + epsilon) Or _
+'                                 (.items(l).opposite_x < .items(k).origin_x + epsilon) Or _
+'                                 (.items(k).opposite_y < .items(l).origin_y + epsilon) Or _
+'                                 (.items(l).opposite_y < .items(k).origin_y + epsilon) Or _
+'                                 (.items(k).opposite_z < .items(l).origin_z + epsilon) Or _
+'                                 (.items(l).opposite_z < .items(k).origin_z + epsilon) Then
+'                                 'no conflict
+'                             Else
+'                                 'conflict
                                                             
-                                container_name = ThisWorkbook.Worksheets("3.Solution").Cells(3, offset + 1)
+'                                 container_name = ThisWorkbook.Worksheets("3.Solution").Cells(3, offset + 1)
                                 
-                                infeasibility_count = infeasibility_count + 1
-                                If infeasibility_count < 5 Then
-                                    infeasibility_string = infeasibility_string & "Items " & k & " and " & l & " in " & container_name & " are overlapping." & Chr(13)
-                                End If
-                                If infeasibility_count = 5 Then
-                                    infeasibility_string = infeasibility_string & "More can be found in the list of detected infeasibilities in the solution worksheet." & Chr(13)
-                                End If
-                                ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + infeasibility_count, 1).Value = "Items " & k & " and " & l & " in " & container_name & " are overlapping."
-                            End If
+'                                 infeasibility_count = infeasibility_count + 1
+'                                 If infeasibility_count < 5 Then
+'                                     infeasibility_string = infeasibility_string & "Items " & k & " and " & l & " in " & container_name & " are overlapping." & Chr(13)
+'                                 End If
+'                                 If infeasibility_count = 5 Then
+'                                     infeasibility_string = infeasibility_string & "More can be found in the list of detected infeasibilities in the solution worksheet." & Chr(13)
+'                                 End If
+'                                 ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + infeasibility_count, 1).Value = "Items " & k & " and " & l & " in " & container_name & " are overlapping."
+'                             End If
                             
-                        Next l
-                    Next k
+'                         Next l
+'                     Next k
                                         
-                End With
+'                 End With
 
-                container_index = container_index + 1
-            End If
+'                 container_index = container_index + 1
+'             End If
             
-            offset = offset + column_offset
+'             offset = offset + column_offset
         
-        Next j
+'         Next j
         
-    Next i
+'     Next i
     
-    'vertical support
+'     'vertical support
     
-    offset = 0
-    container_index = 1
-    For i = 1 To container_list.num_container_types
+'     offset = 0
+'     container_index = 1
+'     For i = 1 To container_list.num_container_types
     
-        For j = 1 To container_list.container_types(i).number_available
+'         For j = 1 To container_list.container_types(i).number_available
                 
-            If container_list.container_types(i).mandatory >= 0 Then
+'             If container_list.container_types(i).mandatory >= 0 Then
 
-                With incumbent.container(container_index)
+'                 With incumbent.container(container_index)
             
-                    For k = 1 To incumbent.container(container_index).item_cnt
+'                     For k = 1 To incumbent.container(container_index).item_cnt
                         
-                        If .items(k).origin_y < epsilon Then
-                            'supported by the floor
-                        Else
-                            area_supported = 0
-                            For l = 1 To incumbent.container(container_index).item_cnt
+'                         If .items(k).origin_y < epsilon Then
+'                             'supported by the floor
+'                         Else
+'                             area_supported = 0
+'                             For l = 1 To incumbent.container(container_index).item_cnt
                                 
-                                If (Abs(.items(k).origin_y - .items(l).opposite_y) < epsilon) Then
+'                                 If (Abs(.items(k).origin_y - .items(l).opposite_y) < epsilon) Then
                                     
-                                    'check for intersection
+'                                     'check for intersection
                                     
-                                    intersection_right = .items(k).opposite_x
-                                    If intersection_right > .items(l).opposite_x Then intersection_right = .items(l).opposite_x
+'                                     intersection_right = .items(k).opposite_x
+'                                     If intersection_right > .items(l).opposite_x Then intersection_right = .items(l).opposite_x
                                     
-                                    intersection_left = .items(k).origin_x
-                                    If intersection_left < .items(l).origin_x Then intersection_left = .items(l).origin_x
+'                                     intersection_left = .items(k).origin_x
+'                                     If intersection_left < .items(l).origin_x Then intersection_left = .items(l).origin_x
                                     
-                                    intersection_top = .items(k).opposite_z
-                                    If intersection_top > .items(l).opposite_z Then intersection_top = .items(l).opposite_z
+'                                     intersection_top = .items(k).opposite_z
+'                                     If intersection_top > .items(l).opposite_z Then intersection_top = .items(l).opposite_z
                                     
-                                    intersection_bottom = .items(k).origin_z
-                                    If intersection_bottom < .items(l).origin_z Then intersection_bottom = .items(l).origin_z
+'                                     intersection_bottom = .items(k).origin_z
+'                                     If intersection_bottom < .items(l).origin_z Then intersection_bottom = .items(l).origin_z
                                     
-                                    If (intersection_right > intersection_left) And (intersection_top > intersection_bottom) Then
+'                                     If (intersection_right > intersection_left) And (intersection_top > intersection_bottom) Then
                                         
-                                        If item_list.item_types(.items(l).item_type).fragile = True Then
+'                                         If item_list.item_types(.items(l).item_type).fragile = True Then
                                             
-                                            'infeasible - resting on a fragile item
+'                                             'infeasible - resting on a fragile item
                                 
-                                            container_name = ThisWorkbook.Worksheets("3.Solution").Cells(3, offset + 1)
+'                                             container_name = ThisWorkbook.Worksheets("3.Solution").Cells(3, offset + 1)
                                             
-                                            infeasibility_count = infeasibility_count + 1
-                                            If infeasibility_count < 5 Then
-                                                infeasibility_string = infeasibility_string & "Item " & k & " in " & container_name & " is resting on fragile item " & l & "." & Chr(13)
-                                            End If
-                                            If infeasibility_count = 5 Then
-                                                infeasibility_string = infeasibility_string & "More can be found in the list of detected infeasibilities in the solution worksheet." & Chr(13)
-                                            End If
-                                            ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + infeasibility_count, 1).Value = "Item " & k & " in " & container_name & " is resting on fragile item " & l & "."
-                                        End If
+'                                             infeasibility_count = infeasibility_count + 1
+'                                             If infeasibility_count < 5 Then
+'                                                 infeasibility_string = infeasibility_string & "Item " & k & " in " & container_name & " is resting on fragile item " & l & "." & Chr(13)
+'                                             End If
+'                                             If infeasibility_count = 5 Then
+'                                                 infeasibility_string = infeasibility_string & "More can be found in the list of detected infeasibilities in the solution worksheet." & Chr(13)
+'                                             End If
+'                                             ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + infeasibility_count, 1).Value = "Item " & k & " in " & container_name & " is resting on fragile item " & l & "."
+'                                         End If
                                         
-                                        area_supported = area_supported + (intersection_right - intersection_left) * (intersection_top - intersection_bottom)
-                                    End If
-                                End If
-                            Next l
+'                                         area_supported = area_supported + (intersection_right - intersection_left) * (intersection_top - intersection_bottom)
+'                                     End If
+'                                 End If
+'                             Next l
                             
-                            If area_supported < (.items(k).opposite_x - .items(k).origin_x) * (.items(k).opposite_z - .items(k).origin_z) - epsilon Then
+'                             If area_supported < (.items(k).opposite_x - .items(k).origin_x) * (.items(k).opposite_z - .items(k).origin_z) - epsilon Then
                                 
-                                'infeasible
+'                                 'infeasible
                                 
-                                container_name = ThisWorkbook.Worksheets("3.Solution").Cells(3, offset + 1)
+'                                 container_name = ThisWorkbook.Worksheets("3.Solution").Cells(3, offset + 1)
                                 
-                                infeasibility_count = infeasibility_count + 1
-                                If infeasibility_count < 5 Then
-                                    infeasibility_string = infeasibility_string & "Item " & k & " in " & container_name & " is not supported. " & area_supported & " " & (.items(k).opposite_x - .items(k).origin_x) * (.items(k).opposite_z - .items(k).origin_z) & Chr(13)
-                                End If
-                                If infeasibility_count = 5 Then
-                                    infeasibility_string = infeasibility_string & "More can be found in the list of detected infeasibilities in the solution worksheet." & Chr(13)
-                                End If
-                                ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + infeasibility_count, 1).Value = "Item " & k & " in " & container_name & " is not supported."
+'                                 infeasibility_count = infeasibility_count + 1
+'                                 If infeasibility_count < 5 Then
+'                                     infeasibility_string = infeasibility_string & "Item " & k & " in " & container_name & " is not supported. " & area_supported & " " & (.items(k).opposite_x - .items(k).origin_x) * (.items(k).opposite_z - .items(k).origin_z) & Chr(13)
+'                                 End If
+'                                 If infeasibility_count = 5 Then
+'                                     infeasibility_string = infeasibility_string & "More can be found in the list of detected infeasibilities in the solution worksheet." & Chr(13)
+'                                 End If
+'                                 ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + infeasibility_count, 1).Value = "Item " & k & " in " & container_name & " is not supported."
                                 
-                            End If
+'                             End If
                             
-                        End If
+'                         End If
                         
-                    Next k
+'                     Next k
                                         
-                End With
+'                 End With
 
-                container_index = container_index + 1
-            End If
+'                 container_index = container_index + 1
+'             End If
             
-            offset = offset + column_offset
+'             offset = offset + column_offset
         
-        Next j
+'         Next j
         
-    Next i
+'     Next i
     
-    'front side support
+'     'front side support
     
-    If instance.front_side_support = True Then
+'     If instance.front_side_support = True Then
     
-        offset = 0
-        container_index = 1
-        For i = 1 To container_list.num_container_types
+'         offset = 0
+'         container_index = 1
+'         For i = 1 To container_list.num_container_types
         
-            For j = 1 To container_list.container_types(i).number_available
+'             For j = 1 To container_list.container_types(i).number_available
                     
-                If container_list.container_types(i).mandatory >= 0 Then
+'                 If container_list.container_types(i).mandatory >= 0 Then
     
-                    With incumbent.container(container_index)
+'                     With incumbent.container(container_index)
                 
-                        For k = 1 To incumbent.container(container_index).item_cnt
+'                         For k = 1 To incumbent.container(container_index).item_cnt
                             
-                            If .items(k).origin_z < epsilon Then
-                                'supported by the front wall
-                            Else
-                                area_supported = 0
-                                For l = 1 To incumbent.container(container_index).item_cnt
+'                             If .items(k).origin_z < epsilon Then
+'                                 'supported by the front wall
+'                             Else
+'                                 area_supported = 0
+'                                 For l = 1 To incumbent.container(container_index).item_cnt
                                     
-                                    If (Abs(.items(k).origin_z - .items(l).opposite_z) < epsilon) Then
+'                                     If (Abs(.items(k).origin_z - .items(l).opposite_z) < epsilon) Then
                                         
-                                        'check for intersection
+'                                         'check for intersection
                                         
-                                        intersection_right = .items(k).opposite_x
-                                        If intersection_right > .items(l).opposite_x Then intersection_right = .items(l).opposite_x
+'                                         intersection_right = .items(k).opposite_x
+'                                         If intersection_right > .items(l).opposite_x Then intersection_right = .items(l).opposite_x
                                         
-                                        intersection_left = .items(k).origin_x
-                                        If intersection_left < .items(l).origin_x Then intersection_left = .items(l).origin_x
+'                                         intersection_left = .items(k).origin_x
+'                                         If intersection_left < .items(l).origin_x Then intersection_left = .items(l).origin_x
                                         
-                                        intersection_top = .items(k).opposite_y
-                                        If intersection_top > .items(l).opposite_y Then intersection_top = .items(l).opposite_y
+'                                         intersection_top = .items(k).opposite_y
+'                                         If intersection_top > .items(l).opposite_y Then intersection_top = .items(l).opposite_y
                                         
-                                        intersection_bottom = .items(k).origin_y
-                                        If intersection_bottom < .items(l).origin_y Then intersection_bottom = .items(l).origin_y
+'                                         intersection_bottom = .items(k).origin_y
+'                                         If intersection_bottom < .items(l).origin_y Then intersection_bottom = .items(l).origin_y
                                         
-                                        If (intersection_right > intersection_left) And (intersection_top > intersection_bottom) Then
-                                            area_supported = area_supported + (intersection_right - intersection_left) * (intersection_top - intersection_bottom)
-                                        End If
-                                    End If
-                                Next l
+'                                         If (intersection_right > intersection_left) And (intersection_top > intersection_bottom) Then
+'                                             area_supported = area_supported + (intersection_right - intersection_left) * (intersection_top - intersection_bottom)
+'                                         End If
+'                                     End If
+'                                 Next l
                                 
-                                If area_supported < (.items(k).opposite_x - .items(k).origin_x) * (.items(k).opposite_y - .items(k).origin_y) - epsilon Then
+'                                 If area_supported < (.items(k).opposite_x - .items(k).origin_x) * (.items(k).opposite_y - .items(k).origin_y) - epsilon Then
                                     
-                                    'infeasible
+'                                     'infeasible
                                     
-                                    container_name = ThisWorkbook.Worksheets("3.Solution").Cells(3, offset + 1)
+'                                     container_name = ThisWorkbook.Worksheets("3.Solution").Cells(3, offset + 1)
                                     
-                                    infeasibility_count = infeasibility_count + 1
-                                    If infeasibility_count < 5 Then
-                                        infeasibility_string = infeasibility_string & "Item " & k & " in " & container_name & " does not have sufficient front side support. " & area_supported & " " & (.items(k).opposite_x - .items(k).origin_x) * (.items(k).opposite_z - .items(k).origin_z) & Chr(13)
-                                    End If
-                                    If infeasibility_count = 5 Then
-                                        infeasibility_string = infeasibility_string & "More can be found in the list of detected infeasibilities in the solution worksheet." & Chr(13)
-                                    End If
-                                    ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + infeasibility_count, 1).Value = "Item " & k & " in " & container_name & " does not have sufficient front side support."
+'                                     infeasibility_count = infeasibility_count + 1
+'                                     If infeasibility_count < 5 Then
+'                                         infeasibility_string = infeasibility_string & "Item " & k & " in " & container_name & " does not have sufficient front side support. " & area_supported & " " & (.items(k).opposite_x - .items(k).origin_x) * (.items(k).opposite_z - .items(k).origin_z) & Chr(13)
+'                                     End If
+'                                     If infeasibility_count = 5 Then
+'                                         infeasibility_string = infeasibility_string & "More can be found in the list of detected infeasibilities in the solution worksheet." & Chr(13)
+'                                     End If
+'                                     ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + infeasibility_count, 1).Value = "Item " & k & " in " & container_name & " does not have sufficient front side support."
                                     
-                                End If
+'                                 End If
                                 
-                            End If
+'                             End If
                             
-                        Next k
+'                         Next k
                                             
-                    End With
+'                     End With
     
-                    container_index = container_index + 1
-                End If
+'                     container_index = container_index + 1
+'                 End If
                 
-                offset = offset + column_offset
+'                 offset = offset + column_offset
             
-            Next j
+'             Next j
             
-        Next i
+'         Next i
             
-    End If
+'     End If
             
-    If infeasibility_count > 0 Then
-        Cells(2, 1) = "Warning: Last infeasibility check found problems with the solution."
-        Range(Cells(2, 1), Cells(2, 10)).Interior.ColorIndex = 45
-        Range(Cells(2, 1), Cells(2, 10)).Font.Bold = True
-        infeasibility_string = infeasibility_string & "The solution is infeasible."
-        MsgBox (infeasibility_string)
-        Cells(7 + item_list.total_number_of_items, 1).Select
-    Else
-        MsgBox ("The solution is feasible.")
-        Cells(1, 1).Select
-    End If
+'     If infeasibility_count > 0 Then
+'         Cells(2, 1) = "Warning: Last infeasibility check found problems with the solution."
+'         Range(Cells(2, 1), Cells(2, 10)).Interior.ColorIndex = 45
+'         Range(Cells(2, 1), Cells(2, 10)).Font.Bold = True
+'         infeasibility_string = infeasibility_string & "The solution is infeasible."
+'         MsgBox (infeasibility_string)
+'         Cells(7 + item_list.total_number_of_items, 1).Select
+'     Else
+'         MsgBox ("The solution is feasible.")
+'         Cells(1, 1).Select
+'     End If
     
-    Application.ScreenUpdating = True
-    Application.Calculation = xlCalculationAutomatic
+'     Application.ScreenUpdating = True
+'     Application.Calculation = xlCalculationAutomatic
 
-End Sub
+' End Sub
 
 Private Sub SortItems()
 

@@ -4038,37 +4038,37 @@ function WriteSolution(solution_data $solution, container_list_data $container_l
                         /**
                          * Cells(5 + k, offset + 6).Value = "xyz"
                          */
-                    /**
-                     * ElseIf .container(container_index).items(k).rotation = 2 Then
-                     */
+                        /**
+                         * ElseIf .container(container_index).items(k).rotation = 2 Then
+                         */
                     } else if ($s->container[$container_index]->items[$k]->rotation == 2) {
                         /**
                          * Cells(5 + k, offset + 6).Value = "zyx"
                          */
-                    /**
-                     * ElseIf .container(container_index).items(k).rotation = 3 Then
-                     */
+                        /**
+                         * ElseIf .container(container_index).items(k).rotation = 3 Then
+                         */
                     } else if ($s->container[$container_index]->items[$k]->rotation == 3) {
                         /**
                          * Cells(5 + k, offset + 6).Value = "xzy"
                          */
-                    /**
-                     * ElseIf .container(container_index).items(k).rotation = 4 Then
-                     */
+                        /**
+                         * ElseIf .container(container_index).items(k).rotation = 4 Then
+                         */
                     } else if ($s->container[$container_index]->items[$k]->rotation == 4) {
                         /**
                          * Cells(5 + k, offset + 6).Value = "yzx"
                          */
-                    /**
-                     * ElseIf .container(container_index).items(k).rotation = 5 Then
-                     */
+                        /**
+                         * ElseIf .container(container_index).items(k).rotation = 5 Then
+                         */
                     } else if ($s->container[$container_index]->items[$k]->rotation == 5) {
                         /**
                          * Cells(5 + k, offset + 6).Value = "yxz"
                          */
-                    /**
-                     * ElseIf .container(container_index).items(k).rotation = 6 Then
-                     */
+                        /**
+                         * ElseIf .container(container_index).items(k).rotation = 6 Then
+                         */
                     } else if ($s->container[$container_index]->items[$k]->rotation == 5) {
                         /**
                          * Cells(5 + k, offset + 6).Value = "zxy"
@@ -4831,9 +4831,9 @@ function CLP_Solver()
                  * oh, so this just writes to the excel statusbar something.
                  * ignoring.
                  */
-            /**
-             * Else
-             */
+                /**
+                 * Else
+                 */
             } else {
                 /**
                  * Application.StatusBar = "Starting iteration " & iteration & ". Best net profit found so far: N/A" & " Dispersion: " & best_known.total_dispersion
@@ -4867,7 +4867,7 @@ function CLP_Solver()
             /**
              * Call PerturbSolution(incumbent, i, 1 - ((end_time - start_time) / solver_options.CPU_time_limit))
              */
-            PerturbSolution($incumbent, $i, 1-(($end_time - $start_time) / $solver_options->CPU_time_limit), $item_list);
+            PerturbSolution($incumbent, $i, 1 - (($end_time - $start_time) / $solver_options->CPU_time_limit), $item_list);
         }
         /**
          * Call PerturbRotationAndOrderOfItems(incumbent)
@@ -5005,21 +5005,21 @@ function CLP_Solver()
             $start_time = $end_time;
         }
 
-    /**
-     * Loop While end_time - start_time < solver_options.CPU_time_limit / 3
-     *
-     * Again, this condition needs to be tied into the exit strategy.
-     */
-    /*
-     * TODO: figure out an exit strategy that doesn't rely on time.
-     * Reasoning: if we're tied into time as an exit strategy, then
-     * we are bound by hardware: weaker computers/servers will run less iterations
-     * in the given amount of time than better computers/servers.
-     * One way we should devise this exit strategy is by tracking improvement somehow.
-     * When there's less improvement in the process than a given threshold -> exit.
-     * Also, we would need to somehow do a naive precheck if there's even a possibility
-     * for improvement. Work on this later.
-     * */
+        /**
+         * Loop While end_time - start_time < solver_options.CPU_time_limit / 3
+         *
+         * Again, this condition needs to be tied into the exit strategy.
+         */
+        /*
+         * TODO: figure out an exit strategy that doesn't rely on time.
+         * Reasoning: if we're tied into time as an exit strategy, then
+         * we are bound by hardware: weaker computers/servers will run less iterations
+         * in the given amount of time than better computers/servers.
+         * One way we should devise this exit strategy is by tracking improvement somehow.
+         * When there's less improvement in the process than a given threshold -> exit.
+         * Also, we would need to somehow do a naive precheck if there's even a possibility
+         * for improvement. Work on this later.
+         * */
     } while ($end_time - $start_time < $solver_options->CPU_time_limit / 3);
 
     /*
@@ -5115,7 +5115,7 @@ function CLP_Solver()
                 /**
                  * Call PerturbSolution(incumbent, container_id, 0.1 + 0.2 * ((end_time - start_time) / ((solver_options.CPU_time_limit * 0.666) / nonempty_container_cnt)))
                  */
-                PerturbSolution($incumbent, $container_id, 0.1 + 0.2 * (($end_time - $start_time) / (($solver_options->CPU_time_limit * 0.666) / $nonempty_container_cnt )), $item_list);
+                PerturbSolution($incumbent, $container_id, 0.1 + 0.2 * (($end_time - $start_time) / (($solver_options->CPU_time_limit * 0.666) / $nonempty_container_cnt)), $item_list);
 
                 /**
                  * Call PerturbRotationAndOrderOfItems(incumbent)
@@ -5193,13 +5193,12 @@ function CLP_Solver()
                  * TODO: triple check this -> really long lines of conditions
                  * */
                 if ((($inc->feasible == true) && ($best_known->feasible == false)) ||
-                (($inc->feasible == false) && ($best_known->feasible == false) && ($inc->total_volume > $best_known->total_volume + epsilon)) ||
-                (($inc->feasible == true) && ($best_known->feasible == true) && ($inc->net_profit > $best_known->net_profit + epsilon)) ||
-                (($inc->feasible == true) && ($best_known->feasible == true) && ($inc->net_profit > $best_known->net_profit - epsilon) && ($inc->total_volume < $best_known->total_volume - epsilon)) ||
-                (($inc->feasible == true) && ($best_known->feasible == true) && ($inc->net_profit > $best_known->net_profit - epsilon) && ($inc->total_volume < $best_known->total_volume + epsilon)) && ($inc->total_distance < $best_known->total_distance - epsilon) ||
-                (($inc->feasible == true) && ($best_known->feasible == true) && ($inc->net_profit > $best_known->net_profit - epsilon) && ($inc->total_volume < $best_known->total_volume + epsilon)) && ($inc->total_distance < $best_known->total_distance + epsilon) && ($inc->total_x_moment < $best_known->total_x_moment - epsilon) ||
-                (($inc->feasible == true) && ($best_known->feasible == true) && ($inc->net_profit > $best_known->net_profit - epsilon) && ($inc->total_volume < $best_known->total_volume + epsilon)) && ($inc->total_distance < $best_known->total_distance + epsilon) && ($inc->total_x_moment < $best_known->total_x_moment + epsilon) && ($inc->total_yz_moment < $best_known->total_yz_moment - epsilon))
-                {
+                    (($inc->feasible == false) && ($best_known->feasible == false) && ($inc->total_volume > $best_known->total_volume + epsilon)) ||
+                    (($inc->feasible == true) && ($best_known->feasible == true) && ($inc->net_profit > $best_known->net_profit + epsilon)) ||
+                    (($inc->feasible == true) && ($best_known->feasible == true) && ($inc->net_profit > $best_known->net_profit - epsilon) && ($inc->total_volume < $best_known->total_volume - epsilon)) ||
+                    (($inc->feasible == true) && ($best_known->feasible == true) && ($inc->net_profit > $best_known->net_profit - epsilon) && ($inc->total_volume < $best_known->total_volume + epsilon)) && ($inc->total_distance < $best_known->total_distance - epsilon) ||
+                    (($inc->feasible == true) && ($best_known->feasible == true) && ($inc->net_profit > $best_known->net_profit - epsilon) && ($inc->total_volume < $best_known->total_volume + epsilon)) && ($inc->total_distance < $best_known->total_distance + epsilon) && ($inc->total_x_moment < $best_known->total_x_moment - epsilon) ||
+                    (($inc->feasible == true) && ($best_known->feasible == true) && ($inc->net_profit > $best_known->net_profit - epsilon) && ($inc->total_volume < $best_known->total_volume + epsilon)) && ($inc->total_distance < $best_known->total_distance + epsilon) && ($inc->total_x_moment < $best_known->total_x_moment + epsilon) && ($inc->total_yz_moment < $best_known->total_yz_moment - epsilon)) {
                     /**
                      * best_known = incumbent
                      */
@@ -5239,9 +5238,9 @@ function CLP_Solver()
                     $solver_options->CPU_time_limit = $solver_options->CPU_time_limit - (86400 - $start_time);
                     $start_time = $end_time;
                 }
-            /**
-             * Loop While end_time - start_time < (solver_options.CPU_time_limit * 0.666) / nonempty_container_cnt
-             */
+                /**
+                 * Loop While end_time - start_time < (solver_options.CPU_time_limit * 0.666) / nonempty_container_cnt
+                 */
             } while ($end_time - $start_time < ($solver_options->CPU_time_limit * 0.666) / $nonempty_container_cnt);
         }
     }
@@ -5392,8 +5391,7 @@ function CLP_Solver_Finish(solution_data $best_known)
                     $bkc->items[$k]->origin_z < $min_z - epsilon ||
                     ($bkc->items[$k]->origin_z < $min_z + epsilon && $bkc->items[$k]->origin_y < $min_y - epsilon) ||
                     ($bkc->items[$k]->origin_z < $min_z + epsilon && $bkc->items[$k]->origin_y < $min_y + epsilon && $bkc->items[$k]->origin_x < $min_x - epsilon)
-                )
-                {
+                ) {
                     /*
                      * 'check for support
                      * */
@@ -5406,9 +5404,9 @@ function CLP_Solver_Finish(solution_data $best_known)
                          * support_flag = True
                          */
                         $support_flag = true;
-                    /**
-                     * Else
-                     */
+                        /**
+                         * Else
+                         */
                     } else {
                         /**
                          * area_supported = 0
@@ -5550,9 +5548,9 @@ function CLP_Solver_Finish(solution_data $best_known)
                 $swap_item = $bkc->items[$selected_item_index];
                 $bkc->items[$selected_item_index] = $bkc->items[$j];
                 $bkc->items[$j] = $swap_item;
-            /**
-             * Else
-             */
+                /**
+                 * Else
+                 */
             } else {
                 /**
                  * MsgBox ("Loading order could not be constructed.")
@@ -5634,8 +5632,9 @@ function CLP_Solver_Finish(solution_data $best_known)
  * @param item_list_data $item_list
  * @param container_list_data $container_list
  * @param instance_data $instance
+ * @param compatibility_data $compatibility_list
  */
-function FeasibilityCheckData(int $infeasibility_count, string $infeasibility_string, item_list_data $item_list, container_list_data $container_list, instance_data $instance)
+function FeasibilityCheckData(int $infeasibility_count, string $infeasibility_string, item_list_data $item_list, container_list_data $container_list, instance_data $instance, compatibility_data $compatibility_list)
 {
     /**
      * Dim i As Long
@@ -5854,7 +5853,7 @@ function FeasibilityCheckData(int $infeasibility_count, string $infeasibility_st
         /**
          * infeasibility_string = infeasibility_string & "The amount of available volume is not enough to pack the mandatory items." & Chr(13)
          */
-        $infeasibility_string = $infeasibility_string .  "The amount of available volume is not enough to pack the mandatory items.";
+        $infeasibility_string = $infeasibility_string . "The amount of available volume is not enough to pack the mandatory items.";
 
         /**
          * ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + infeasibility_count, 1).Value = "The amount of available volume is not enough to pack the mandatory items."
@@ -5954,8 +5953,7 @@ function FeasibilityCheckData(int $infeasibility_count, string $infeasibility_st
             $ilit->width > $max_width + epsilon &&
             $ilit->width > $max_heigth + epsilon &&
             $ilit->width > $max_length + epsilon
-        )
-        {
+        ) {
             /**
              * infeasibility_count = infeasibility_count + 1
              */
@@ -5995,8 +5993,7 @@ function FeasibilityCheckData(int $infeasibility_count, string $infeasibility_st
             $ilit->height > $max_width + epsilon &&
             $ilit->height > $max_heigth + epsilon &&
             $ilit->height > $max_length + epsilon
-        )
-        {
+        ) {
             /**
              * infeasibility_count = infeasibility_count + 1
              */
@@ -6035,8 +6032,7 @@ function FeasibilityCheckData(int $infeasibility_count, string $infeasibility_st
             $ilit->length > $max_width + epsilon &&
             $ilit->length > $max_heigth + epsilon &&
             $ilit->length > $max_length + epsilon
-        )
-        {
+        ) {
             /**
              * infeasibility_count = infeasibility_count + 1
              */
@@ -6144,7 +6140,6 @@ function FeasibilityCheckData(int $infeasibility_count, string $infeasibility_st
 
 /**
  * Sub FeasibilityCheckDataAndSolution()
- *
  *
  */
 function FeasibilityCheckDataAndSolution()
@@ -6601,7 +6596,7 @@ function FeasibilityCheckDataAndSolution()
          * If (.mandatory = 1) And (.width > max_width + epsilon) And (.width > max_heigth + epsilon) And (.width > max_length + epsilon) Then
          */
         if (
-            $ilit->mandatory = 1 &&
+        $ilit->mandatory = 1 &&
             $ilit->width > $max_width + epsilon &&
             $ilit->width > $max_heigth + epsilon &&
             $ilit->width > $max_length + epsilon
@@ -6639,7 +6634,7 @@ function FeasibilityCheckDataAndSolution()
          * If (.mandatory = 1) And (.height > max_width + epsilon) And (.height > max_heigth + epsilon) And (.height > max_length + epsilon) Then
          */
         if (
-            $ilit->mandatory = 1 &&
+        $ilit->mandatory = 1 &&
             $ilit->height > $max_width + epsilon &&
             $ilit->height > $max_heigth + epsilon &&
             $ilit->height > $max_length + epsilon
@@ -6678,12 +6673,11 @@ function FeasibilityCheckDataAndSolution()
          * If (.mandatory = 1) And (.length > max_width + epsilon) And (.length > max_heigth + epsilon) And (.length > max_length + epsilon) Then
          */
         if (
-            $ilit->mandatory = 1 &&
+        $ilit->mandatory = 1 &&
             $ilit->length > $max_width + epsilon &&
             $ilit->length > $max_heigth + epsilon &&
             $ilit->length > $max_length + epsilon
-        )
-        {
+        ) {
             /**
              * infeasibility_count = infeasibility_count + 1
              */
@@ -6731,7 +6725,7 @@ function FeasibilityCheckDataAndSolution()
     /**
      * For i = 1 To container_list.num_container_types
      */
-    for ($i = 1; $i<=$container_list->num_container_types; ++$i) {
+    for ($i = 1; $i <= $container_list->num_container_types; ++$i) {
         /**
          * For j = 1 To container_list.container_types(i).number_available
          */
@@ -6744,52 +6738,52 @@ function FeasibilityCheckDataAndSolution()
                  * feasibility_flag = True
                  */
                 $feasibility_flag = true;
+                /**
+                 * For k = 1 To item_list.total_number_of_items
+                 *      If ThisWorkbook.Worksheets("3.Solution").Cells(5 + k, offset + 2) <> vbNullString Then
+                 *          feasibility_flag = False
+                 *          Exit For
+                 *      End If
+                 * Next k
+                 *
+                 * * * we'll see about this later.
+                 */
+
+                /**
+                 * If feasibility_flag = False Then
+                 */
+                if ($feasibility_flag == false) {
                     /**
-                     * For k = 1 To item_list.total_number_of_items
-                     *      If ThisWorkbook.Worksheets("3.Solution").Cells(5 + k, offset + 2) <> vbNullString Then
-                     *          feasibility_flag = False
-                     *          Exit For
-                     *      End If
-                     * Next k
-                     *
-                     * * * we'll see about this later.
+                     * infeasibility_count = infeasibility_count + 1
                      */
+                    $infeasibility_count = $infeasibility_count + 1;
 
                     /**
-                     * If feasibility_flag = False Then
+                     * If infeasibility_count < 5 Then
                      */
-                    if ($feasibility_flag == false) {
+                    if ($infeasibility_count < 5) {
                         /**
-                         * infeasibility_count = infeasibility_count + 1
+                         * infeasibility_string = infeasibility_string & "There are item(s) in the unavailable " & ThisWorkbook.Worksheets("3.Solution").Cells(3, offset + 1) & Chr(13)
                          */
-                        $infeasibility_count = $infeasibility_count + 1;
+                        $infeasibility_string = $infeasibility_string . "There are item(s) in the unavailable \"thing\"";
+                        /*
+                         * TODO: clarify "thing" :)
+                         * */
+                    }
 
+                    /**
+                     * If infeasibility_count = 5 Then
+                     */
+                    if ($infeasibility_count == 5) {
                         /**
-                         * If infeasibility_count < 5 Then
+                         * infeasibility_string = infeasibility_string & "More can be found in the list of detected infeasibilities in the solution worksheet." & Chr(13)
                          */
-                        if ($infeasibility_count < 5) {
-                            /**
-                             * infeasibility_string = infeasibility_string & "There are item(s) in the unavailable " & ThisWorkbook.Worksheets("3.Solution").Cells(3, offset + 1) & Chr(13)
-                             */
-                            $infeasibility_string = $infeasibility_string . "There are item(s) in the unavailable \"thing\"";
-                            /*
-                             * TODO: clarify "thing" :)
-                             * */
-                        }
+                        $infeasibility_string = $infeasibility_string . "More can be found in the list of detected infeasibilities in the solution worksheet.";
+                    }
 
-                        /**
-                         * If infeasibility_count = 5 Then
-                         */
-                        if ($infeasibility_count == 5) {
-                            /**
-                             * infeasibility_string = infeasibility_string & "More can be found in the list of detected infeasibilities in the solution worksheet." & Chr(13)
-                             */
-                            $infeasibility_string = $infeasibility_string . "More can be found in the list of detected infeasibilities in the solution worksheet.";
-                        }
-
-                        /**
-                         * ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + infeasibility_count, 1).Value = "There are item(s) in the unavailable " & ThisWorkbook.Worksheets("3.Solution").Cells(3, offset + 1)
-                         */
+                    /**
+                     * ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + infeasibility_count, 1).Value = "There are item(s) in the unavailable " & ThisWorkbook.Worksheets("3.Solution").Cells(3, offset + 1)
+                     */
                 }
             }
             $offset = $offset + column_offset;
@@ -6827,10 +6821,9 @@ function FeasibilityCheckDataAndSolution()
                      */
                     if (
                         ($incumbent->container[$container_index]->items[$k]->rotation == 3 ||
-                        $incumbent->container[$container_index]->items[$k]->rotation == 4) &&
+                            $incumbent->container[$container_index]->items[$k]->rotation == 4) &&
                         $item_list->item_types[$incumbent->container[$container_index]->items[$k]->item_type]->xy_rotatable == false
-                    )
-                    {
+                    ) {
                         /**
                          * container_name = ThisWorkbook.Worksheets("3.Solution").Cells(3, offset + 1)
                          */
@@ -6843,12 +6836,987 @@ function FeasibilityCheckDataAndSolution()
                          * infeasibility_count = infeasibility_count + 1
                          */
                         $infeasibility_count = $infeasibility_count + 1;
-                        ###BOOKMARK
+
+                        /**
+                         * If infeasibility_count < 5 Then
+                         */
+                        if ($infeasibility_count < 5) {
+                            /**
+                             * infeasibility_string = infeasibility_string & "Item " & k & " in " & container_name & " is placed on its xy surface, which is not allowed." & Chr(13)
+                             */
+                            $infeasibility_string = $infeasibility_string . "Item " . $k . " in " . $container_name . " is placed on its xy surface, which is not allowed.";
+                        }
+
+                        /**
+                         * If infeasibility_count = 5 Then
+                         */
+                        if ($infeasibility_count == 5) {
+                            /**
+                             * infeasibility_string = infeasibility_string & "More can be found in the list of detected infeasibilities in the solution worksheet." & Chr(13)
+                             */
+                            $infeasibility_string = $infeasibility_string . "More can be found in the list of detected infeasibilities in the solution worksheet.";
+                        }
+
+                        /**
+                         * ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + infeasibility_count, 1).Value = "Item " & k & " in " & container_name & " is placed on its xy surface, which is not allowed."
+                         */
+
+                    }
+
+                    /**
+                     * If ((incumbent.container(container_index).items(k).rotation = 5) Or (incumbent.container(container_index).items(k).rotation = 6)) And (item_list.item_types(incumbent.container(container_index).items(k).item_type).yz_rotatable = False) Then
+                     */
+                    if (
+                        (
+                            ($incumbent->container[$container_index]->items[$k]->rotation == 5) ||
+                            ($incumbent->container[$container_index]->items[$k]->rotation == 6)
+                        ) &&
+                        ($item_list->item_types[$incumbent->container[$container_index]->items[$k]->item_type]->yz_rotatable == false)
+                    ) {
+                        /**
+                         * container_name = ThisWorkbook.Worksheets("3.Solution").Cells(3, offset + 1)
+                         */
+                        $container_name = "";
+
+                        /**
+                         * infeasibility_count = infeasibility_count + 1
+                         */
+                        $infeasibility_count = $infeasibility_count + 1;
+
+                        /**
+                         * If infeasibility_count < 5 Then
+                         */
+                        if ($infeasibility_count < 5) {
+                            /**
+                             * infeasibility_string = infeasibility_string & "Item " & k & " in " & container_name & " is placed on its yz surface, which is not allowed." & Chr(13)
+                             */
+                            $infeasibility_string = $infeasibility_string . "Item " . $k . " in " . $container_name . " is placed on its yz surface, which is not allowed.";
+                        }
+
+                        /**
+                         * If infeasibility_count = 5 Then
+                         */
+                        if ($infeasibility_count == 5) {
+                            /**
+                             * infeasibility_string = infeasibility_string & "More can be found in the list of detected infeasibilities in the solution worksheet." & Chr(13)
+                             */
+                            $infeasibility_string = $infeasibility_string . "More can be found in the list of detected infeasibilities in the solution worksheet.";
+                        }
+
+                        /**
+                         * ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + infeasibility_count, 1).Value = "Item " & k & " in " & container_name & " is placed on its yz surface, which is not allowed."
+                         */
                     }
                 }
+
+                /**
+                 * container_index = container_index + 1
+                 */
+                $container_index = $container_index + 1;
+            }
+
+            /**
+             * offset = offset + column_offset
+             */
+            $offset = $offset + column_offset;
+        }
+    }
+
+    /**
+     * With incumbent
+     *
+     * * * $inc
+     */
+    $inc = $incumbent;
+
+    /**
+     * For i = 1 To item_list.num_item_types
+     */
+    for ($i = 1; $i <= $item_list->num_item_types; ++$i) {
+        /**
+         * If (item_list.item_types(i).mandatory = 1) And (.unpacked_item_count(i) > 0) Then
+         */
+        if ($item_list->item_types[$i]->mandatory == 1 && $inc->unpacked_item_count[$i] > 0) {
+            /**
+             * infeasibility_count = infeasibility_count + 1
+             */
+            $infeasibility_count = $infeasibility_count + 1;
+
+            /**
+             * If infeasibility_count < 5 Then
+             */
+            if ($infeasibility_count < 5) {
+                /**
+                 * infeasibility_string = infeasibility_string & "There are " & .unpacked_item_count(i) & " item(s) of type " & ThisWorkbook.Worksheets("1.Items").Cells(2 + i, 2) & " that are not packed in the available containers." & Chr(13)
+                 */
+                $infeasibility_string = $infeasibility_string . "There are " . $inc->unpacked_item_count[$i] . " item(s) of type \"thing\" that are not packed in the available containers.";
+                /*
+                 * TODO: figure out what "thing" is
+                 * */
+            }
+
+            /**
+             * If infeasibility_count = 5 Then
+             */
+            if ($infeasibility_count == 5) {
+                /**
+                 * infeasibility_string = infeasibility_string & "More can be found in the list of detected infeasibilities in the solution worksheet." & Chr(13)
+                 */
+                $infeasibility_string = $infeasibility_string . "More can be found in the list of detected infeasibilities in the solution worksheet.";
+            }
+
+            /**
+             * ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + infeasibility_count, 1).Value = "There are " & .unpacked_item_count(i) & " item(s) of type " & ThisWorkbook.Worksheets("1.Items").Cells(2 + i, 2) & " that are not packed in the available containers."
+             */
+        }
+
+        /**
+         * If .unpacked_item_count(i) < 0 Then
+         */
+        if ($inc->unpacked_item_count[$i] < 0) {
+            /**
+             * infeasibility_count = infeasibility_count + 1
+             */
+            $infeasibility_count = $infeasibility_string + 1;
+
+            /**
+             * If infeasibility_count < 5 Then
+             */
+            if ($infeasibility_string < 5) {
+                /**
+                 * infeasibility_string = infeasibility_string & "Too many item(s) of type " & ThisWorkbook.Worksheets("1.Items").Cells(2 + i, 2) & " are packed." & Chr(13)
+                 */
+                $infeasibility_string = $infeasibility_string . "Too many item(s) of type \"thing\" are packed.";
+            }
+
+            /**
+             * If infeasibility_count = 5 Then
+             */
+            if ($infeasibility_count == 5) {
+                /**
+                 * infeasibility_string = infeasibility_string & "More can be found in the list of detected infeasibilities in the solution worksheet." & Chr(13)
+                 */
+                $infeasibility_string = $infeasibility_string . "More can be found in the list of detected infeasibilities in the solution worksheet.";
+            }
+
+            /**
+             * ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + infeasibility_count, 1).Value = "Too many item(s) of type " & ThisWorkbook.Worksheets("1.Items").Cells(2 + i, 2) & " are packed."
+             */
+        }
+    }
+    /**
+     * End With
+     */
+
+    /**
+     * If instance.container_item_compatibility_worksheet = True Then
+     */
+    if ($instance->container_item_compatibility_worksheet == true) {
+        /**
+         * For i = 1 To item_list.num_item_types
+         */
+        for ($i = 1; $i <= $item_list->num_item_types; ++$i) {
+            /**
+             * feasibility_flag = False
+             */
+            $feasibility_flag = false;
+
+            /**
+             * For j = 1 To container_list.num_container_types
+             */
+            for ($j = 1; $j <= $container_list->num_container_types; ++$j) {
+                /**
+                 * If compatibility_list.container_to_item(j, i) = True Then
+                 */
+                if ($compatibility_list->container_to_item[$j][$i] == true) {
+                    /**
+                     * feasibility_flag = True
+                     */
+                    $feasibility_flag = true;
+
+                    /**
+                     * Exit For
+                     */
+                    break;
+                }
+            }
+
+            /**
+             * If feasibility_flag = False Then
+             */
+            if ($feasibility_flag == false) {
+                /**
+                 * infeasibility_count = infeasibility_count + 1
+                 */
+                $infeasibility_count = $infeasibility_count + 1;
+
+                /**
+                 * If infeasibility_count < 5 Then
+                 */
+                if ($infeasibility_count < 5) {
+                    /**
+                     * infeasibility_string = infeasibility_string & "Item type " & i & " is not compatible with any container." & Chr(13)
+                     */
+                    $infeasibility_string = $infeasibility_string . "Item type " . $i . " is not compatible with any container.";
+                }
+
+                /**
+                 * If infeasibility_count = 5 Then
+                 */
+                if ($infeasibility_count == 5) {
+                    /**
+                     * infeasibility_string = infeasibility_string & "More can be found in the list of detected infeasibilities in the solution worksheet." & Chr(13)
+                     */
+                    $infeasibility_string = $infeasibility_string . "More can be found in the list of detected infeasibilities in the solution worksheet.";
+                }
+
+                /**
+                 * ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + infeasibility_count, 1).Value = "Item type " & i & " is not compatible with any container."
+                 */
             }
         }
     }
 
+    /**
+     * If instance.item_item_compatibility_worksheet = True Then
+     */
+    if ($instance->item_item_compatibility_worksheet == true) {
+        /**
+         * offset = 0
+         */
+        $offset = 0;
 
+        /**
+         * container_index = 1
+         */
+        $container_index = 1;
+
+        /**
+         * For i = 1 To container_list.num_container_types
+         */
+        for ($j = 1; $j <= $container_list->num_container_types; ++$i) {
+            /**
+             * For j = 1 To container_list.container_types(i).number_available
+             */
+            for ($j = 1; $j <= $container_list->container_types[$i]->number_available; ++$j) {
+                /**
+                 * If container_list.container_types(i).mandatory >= 0 Then
+                 */
+                if ($container_list->container_types[$i]->mandatory >= 0) {
+                    /**
+                     * For k = 1 To incumbent.container(container_index).item_cnt
+                     */
+                    for ($k = 1; $incumbent->container[$container_index]->item_cnt; ++$k) {
+                        /**
+                         * For l = k + 1 To incumbent.container(container_index).item_cnt
+                         */
+                        for ($l = $k + 1; $l <= $incumbent->container[$container_index]->item_cnt; ++$l) {
+                            /**
+                             * If compatibility_list.item_to_item(incumbent.container(container_index).items(k).item_type, incumbent.container(container_index).items(l).item_type) = False Then
+                             */
+                            if ($compatibility_list->item_to_item[$incumbent->container[$container_index]->items[$k]->item_type][$incumbent->container[$container_index]->items[$l]->item_type] == false) {
+                                /**
+                                 * container_name = ThisWorkbook.Worksheets("3.Solution").Cells(3, offset + 1)
+                                 */
+                                $container_name = "";
+
+                                /*
+                                 * TODO: fix this. each container should have a name.
+                                 * */
+
+                                /**
+                                 * infeasibility_count = infeasibility_count + 1
+                                 */
+                                $infeasibility_count = $infeasibility_count + 1;
+
+                                /**
+                                 * If infeasibility_count < 5 Then
+                                 */
+                                if ($infeasibility_count < 5) {
+                                    /**
+                                     * infeasibility_string = infeasibility_string & "Items " & k & " and " & l & " in " & container_name & " are incompatible." & Chr(13)
+                                     */
+                                    $infeasibility_string = $infeasibility_string . "Items " . $k . " and " . $l . " in " . $container_name . " are incompatible.";
+                                }
+
+                                /**
+                                 * If infeasibility_count = 5 Then
+                                 */
+                                if ($infeasibility_count == 5) {
+                                    /**
+                                     * infeasibility_string = infeasibility_string & "More can be found in the list of detected infeasibilities in the solution worksheet." & Chr(13)
+                                     */
+                                    $infeasibility_string = $infeasibility_string . "More can be found in the list of detected infeasibilities in the solution worksheet.";
+                                }
+
+                                /**
+                                 * ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + infeasibility_count, 1).Value = "Items " & k & " and " & l & " in " & container_name & " are incompatible."
+                                 *
+                                 * * * Now i get it, this writes infeasibilities each and every single time. When there's more than 5, you should check this full list, since
+                                 * * * that many messages won't fit in a MsgBox
+                                 */
+                            }
+                        }
+                    }
+
+                    /**
+                     * container_index = container_index + 1
+                     */
+                    $container_index = $container_index + 1;
+                }
+                /**
+                 * offset = offset + column_offset
+                 */
+                $offset = $offset + column_offset;
+            }
+        }
+    }
+
+    /**
+     * offset = 0
+     */
+    $offset = 0;
+
+    /**
+     * container_index = 1
+     */
+    $container_index = 1;
+
+    /**
+     * For i = 1 To container_list.num_container_types
+     */
+    for ($i = 1; $i <= $container_list->num_container_types; ++$i) {
+        /**
+         * For j = 1 To container_list.container_types(i).number_available
+         */
+        for ($j = 1; $j <= $container_list->container_types[$i]->number_available; ++$j) {
+            /**
+             * If container_list.container_types(i).mandatory >= 0 Then
+             */
+            if ($container_list->container_types[$i]->mandatory >= 0) {
+                /**
+                 * With incumbent.container(container_index)
+                 *
+                 * $ic
+                 */
+                $ic = $incumbent->container[$container_index];
+
+                /**
+                 * For k = 1 To incumbent.container(container_index).item_cnt
+                 */
+                for ($k = 1; $k <= $incumbent->container[$container_index]->item_cnt; ++$k) {
+                    /**
+                     * If (.items(k).origin_y > epsilon) And (item_list.item_types(.items(k).item_type).heavy = True) Then
+                     */
+                    if ($ic->items[$k]->origin_y > epsilon && $item_list->item_types[$ic->items[$k]->item_type]->heavy == true) {
+                        /**
+                         * container_name = ThisWorkbook.Worksheets("3.Solution").Cells(3, offset + 1)
+                         */
+                        $container_name = "";
+
+                        /**
+                         * infeasibility_count = infeasibility_count + 1
+                         */
+                        $infeasibility_count = $infeasibility_count + 1;
+
+                        /**
+                         * If infeasibility_count < 5 Then
+                         */
+                        if ($infeasibility_count < 5) {
+                            /**
+                             * infeasibility_string = infeasibility_string & "Item " & k & " in " & container_name & " is a heavy item that rests on another item." & Chr(13)
+                             */
+                            $infeasibility_string = $infeasibility_string . "Item " . $k . " in " & $container_name & " is a heavy item that rests on another item.";
+                        }
+
+                        /**
+                         * If infeasibility_count = 5 Then
+                         */
+                        if ($infeasibility_count == 5) {
+                            /**
+                             * infeasibility_string = infeasibility_string & "More can be found in the list of detected infeasibilities in the solution worksheet." & Chr(13)
+                             */
+                            $infeasibility_string = $infeasibility_string . "More can be found in the list of detected infeasibilities in the solution worksheet.";
+                        }
+
+                        /**
+                         * ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + infeasibility_count, 1).Value = "Item " & k & " in " & container_name & " is a heavy item that rests on another item."
+                         */
+                    }
+
+                    /**
+                     * If (.items(k).opposite_x > container_list.container_types(i).width + epsilon) Or (.items(k).opposite_y > container_list.container_types(i).height + epsilon) Or (.items(k).opposite_z > container_list.container_types(i).length + epsilon) Then
+                     */
+                    if (
+                        ($ic->items[$k]->opposite_x > $container_list->container_types[$i]->width + epsilon) Or
+                        ($ic->items[$k]->opposite_y > $container_list->container_types[$i]->height + epsilon) Or
+                        ($ic->items[$k]->opposite_z > $container_list->container_types[$i]->length + epsilon)
+                    ) {
+                        /**
+                         * container_name = ThisWorkbook.Worksheets("3.Solution").Cells(3, offset + 1)
+                         */
+                        $container_name = "";
+                        /*
+                         * TODO: remember, the container name is important for easy identification.
+                         * */
+
+                        /**
+                         * infeasibility_count = infeasibility_count + 1
+                         */
+                        $infeasibility_count = $infeasibility_count + 1;
+
+                        /**
+                         * If infeasibility_count < 5 Then
+                         */
+                        if ($infeasibility_count < 5) {
+                            /**
+                             * infeasibility_string = infeasibility_string & "Item " & k & " in " & container_name & " is out of the bounds of the container." & Chr(13)
+                             */
+                            $infeasibility_string = $infeasibility_string . "Item " . $k . " in " . $container_name . " is out of the bounds of the container.";
+                        }
+
+                        /**
+                         * If infeasibility_count = 5 Then
+                         */
+                        if ($infeasibility_count == 5) {
+                            /**
+                             * infeasibility_string = infeasibility_string & "More can be found in the list of detected infeasibilities in the solution worksheet." & Chr(13)
+                             */
+                            $infeasibility_string = $infeasibility_string . "More can be found in the list of detected infeasibilities in the solution worksheet.";
+                        }
+
+                        /**
+                         * ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + infeasibility_count, 1).Value = "Item " & k & " in " & container_name & " is out of the bounds of the container."
+                         */
+                    }
+
+                    /**
+                     * For l = k + 1 To incumbent.container(container_index).item_cnt
+                     */
+                    for ($l = $k + 1; $l <= $incumbent->container[$container_index]->item_cnt; ++$l) {
+                        /**
+                         * If (.items(k).opposite_x < .items(l).origin_x + epsilon) Or _
+                         *      (.items(l).opposite_x < .items(k).origin_x + epsilon) Or _
+                         *      (.items(k).opposite_y < .items(l).origin_y + epsilon) Or _
+                         *      (.items(l).opposite_y < .items(k).origin_y + epsilon) Or _
+                         *      (.items(k).opposite_z < .items(l).origin_z + epsilon) Or _
+                         *      (.items(l).opposite_z < .items(k).origin_z + epsilon) Then
+                         */
+                        if (
+                            $ic->items[$k]->opposite_x < $ic->items[$l]->origin_x + epsilon ||
+                            $ic->items[$l]->opposite_x < $ic->items[$k]->origin_x + epsilon ||
+                            $ic->items[$k]->opposite_y < $ic->items[$l]->origin_y + epsilon ||
+                            $ic->items[$l]->opposite_y < $ic->items[$k]->origin_y + epsilon ||
+                            $ic->items[$k]->opposite_z < $ic->items[$l]->origin_z + epsilon ||
+                            $ic->items[$l]->opposite_z < $ic->items[$k]->origin_z + epsilon
+                        ) {
+                            /*
+                             * 'no conflict
+                             * */
+                            /**
+                             * Else
+                             */
+                        } else {
+                            /*
+                             * 'conflict
+                             * */
+
+                            /**
+                             * container_name = ThisWorkbook.Worksheets("3.Solution").Cells(3, offset + 1)
+                             */
+                            $container_name = "";
+
+                            /**
+                             * infeasibility_count = infeasibility_count + 1
+                             */
+                            $infeasibility_count = $infeasibility_count + 1;
+
+                            /**
+                             * If infeasibility_count < 5 Then
+                             */
+                            if ($infeasibility_count < 5) {
+                                /**
+                                 * infeasibility_string = infeasibility_string & "Items " & k & " and " & l & " in " & container_name & " are overlapping." & Chr(13)
+                                 */
+                                $infeasibility_string = $infeasibility_string . "Items " . $k . " and " . $l . " in " . $container_name . " are overlapping.";
+                            }
+
+                            /**
+                             * If infeasibility_count = 5 Then
+                             */
+                            if ($infeasibility_count == 5) {
+                                /**
+                                 * infeasibility_string = infeasibility_string & "More can be found in the list of detected infeasibilities in the solution worksheet." & Chr(13)
+                                 */
+                                $infeasibility_string = $infeasibility_string . "More can be found in the list of detected infeasibilities in the solution worksheet.";
+                            }
+
+                            /**
+                             * ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + infeasibility_count, 1).Value = "Items " & k & " and " & l & " in " & container_name & " are overlapping."
+                             */
+                        }
+                    }
+                }
+                /**
+                 * End With
+                 */
+
+                /**
+                 * container_index = container_index + 1
+                 */
+                $container_index = $container_index + 1;
+            }
+            /**
+             * offset = offset + column_offset
+             */
+            $offset = $offset + column_offset;
+        }
+    }
+
+    /*
+     * 'vertical support
+     * */
+
+    /**
+     * offset = 0
+     */
+    $offset = 0;
+
+    /**
+     * container_index = 1
+     */
+    $container_index = 1;
+
+    /**
+     * For i = 1 To container_list.num_container_types
+     */
+    for ($i = 1; $i <= $container_list->num_container_types; ++$i) {
+        /**
+         * For j = 1 To container_list.container_types(i).number_available
+         */
+        for ($j = 1; $j <= $container_list->container_types[$i]->number_available; ++$j) {
+            /**
+             * If container_list.container_types(i).mandatory >= 0 Then
+             */
+            if ($container_list->container_types[$i]->mandatory >= 0) {
+                /**
+                 * With incumbent.container(container_index)
+                 *
+                 * * * $ic
+                 */
+                $ic = $incumbent->container[$container_index];
+
+                /**
+                 * For k = 1 To incumbent.container(container_index).item_cnt
+                 */
+                for ($k = 1; $k <= $incumbent->container[$container_index]->item_cnt; ++$k) {
+                    /**
+                     * If .items(k).origin_y < epsilon Then
+                     */
+                    if ($ic->items[$k]->origin_y < epsilon) {
+                        /*
+                         * 'supported by the floor
+                         */
+                        /**
+                         * Else
+                         */
+                    } else {
+                        /**
+                         * area_supported = 0
+                         */
+                        $area_supported = 0;
+
+                        /**
+                         * For l = 1 To incumbent.container(container_index).item_cnt
+                         */
+                        for ($l = 1; $l <= $incumbent->container[$container_index]->item_cnt; ++$l) {
+                            /**
+                             * If (Abs(.items(k).origin_y - .items(l).opposite_y) < epsilon) Then
+                             */
+                            if (abs($ic->items[$k]->origin_y - $ic->items[$l]->opposite_y) < epsilon) {
+                                /*
+                                 * 'check for intersection
+                                 */
+
+                                /**
+                                 * intersection_right = .items(k).opposite_x
+                                 */
+                                $intersection_right = $ic->items[$k]->opposite_x;
+
+                                /**
+                                 * If intersection_right > .items(l).opposite_x Then intersection_right = .items(l).opposite_x
+                                 */
+                                if ($intersection_right > $ic->items[$l]->opposite_x) {
+                                    $intersection_right = $ic->items[$l]->opposite_x;
+                                }
+
+                                /**
+                                 * $intersection_left = .items(k).origin_x
+                                 */
+                                $intersection_left = $ic->items[$k]->origin_x;
+
+                                /**
+                                 * If intersection_left > .items(l).origin_x Then intersection_left = .items(l).origin_x
+                                 */
+                                if ($intersection_left > $ic->items[$l]->origin_x) {
+                                    $intersection_left = $ic->items[$l]->origin_x;
+                                }
+
+                                /**
+                                 * $intersection_top = .items(k).opposite_z
+                                 */
+                                $intersection_top = $ic->items[$k]->opposite_z;
+
+                                /**
+                                 * If intersection_top > .items(l).opposite_z Then intersection_top = .items(l).opposite_z
+                                 */
+                                if ($intersection_top > $ic->items[$l]->opposite_z) {
+                                    $intersection_top = $ic->items[$l]->opposite_z;
+                                }
+
+                                /**
+                                 * $intersection_bottom = .items(k).origin_z
+                                 */
+                                $intersection_bottom = $ic->items[$k]->origin_z;
+
+                                /**
+                                 * If intersection_bottom > .items(l).origin_z Then intersection_bottom = .items(l).origin_z
+                                 */
+                                if ($intersection_bottom > $ic->items[$l]->origin_z) {
+                                    $intersection_bottom = $ic->items[$l]->origin_z;
+                                }
+
+                                /**
+                                 * If (intersection_right > intersection_left) And (intersection_top > intersection_bottom) Then
+                                 */
+                                if ($intersection_right > $intersection_left && $intersection_top > $intersection_bottom) {
+                                    /**
+                                     * If item_list.item_types(.items(l).item_type).fragile = True Then
+                                     */
+                                    if ($item_list->item_types[$ic->items[$l]->item_type]->fragile == true) {
+                                        /*
+                                         * 'infeasible - resting on a fragile item
+                                         * */
+
+                                        /**
+                                         * container_name = ThisWorkbook.Worksheets("3.Solution").Cells(3, offset + 1)
+                                         */
+                                        $container_name = "";
+                                        /*
+                                         * TODO: important -> get container name
+                                         * */
+
+                                        /**
+                                         * infeasibility_count = infeasibility_count + 1
+                                         */
+                                        $infeasibility_count = $infeasibility_count + 1;
+
+                                        /**
+                                         * If infeasibility_count < 5 Then
+                                         */
+                                        if ($infeasibility_count < 5) {
+                                            /**
+                                             * infeasibility_string = infeasibility_string & "Item " & k & " in " & container_name & " is resting on fragile item " & l & "." & Chr(13)
+                                             */
+                                            $infeasibility_string = $infeasibility_string . "Item " . $k . " in " . $container_name . " is resting on fragile item " . $l . ".";
+                                        }
+
+                                        /**
+                                         * If infeasibility_count = 5 Then
+                                         */
+                                        if ($infeasibility_count == 5) {
+                                            /**
+                                             * infeasibility_string = infeasibility_string & "More can be found in the list of detected infeasibilities in the solution worksheet." & Chr(13)
+                                             */
+                                            $infeasibility_string = $infeasibility_string . "More can be found in the list of detected infeasibilities in the solution worksheet.";
+                                        }
+
+                                        /**
+                                         * ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + infeasibility_count, 1).Value = "Item " & k & " in " & container_name & " is resting on fragile item " & l & "."
+                                         */
+                                    }
+
+                                    /**
+                                     * area_supported = area_supported + (intersection_right - intersection_left) * (intersection_top - intersection_bottom)
+                                     */
+                                    $area_supported = $area_supported + ($intersection_right - $intersection_left) * ($intersection_top - $intersection_bottom);
+                                }
+                            }
+                        }
+
+                        /**
+                         * If area_supported < (.items(k).opposite_x - .items(k).origin_x) * (.items(k).opposite_z - .items(k).origin_z) - epsilon Then
+                         */
+                        if ($area_supported < ($ic->items[$k]->opposite_x - $ic->items[$k]->origin_x) * ($ic->items[$k]->opposite_z - $ic->items[$k]->origin_z) - epsilon) {
+                            /*
+                             * 'infeasible
+                             * */
+
+                            /**
+                             * container_name = ThisWorkbook.Worksheets("3.Solution").Cells(3, offset + 1)
+                             */
+                            $container_name = "";
+
+                            /**
+                             * infeasibility_count = infeasibility_count + 1
+                             */
+                            $infeasibility_count = $infeasibility_count + 1;
+
+                            /**
+                             * If infeasibility_count < 5 Then
+                             */
+                            if ($infeasibility_count < 5) {
+                                /**
+                                 * infeasibility_string = infeasibility_string & "Item " & k & " in " & container_name & " is not supported. " & area_supported & " " & (.items(k).opposite_x - .items(k).origin_x) * (.items(k).opposite_z - .items(k).origin_z) & Chr(13)
+                                 */
+                                $infeasibility_string = $infeasibility_string . "Item " . $k . " in " . $container_name . " is not supported. " . $area_supported . " " . ($ic->items[$k]->opposite_x - $ic->items[$k]->origin_x) * ($ic->items[$k]->opposite_z - $ic->items[$k]->origin_z);
+                            }
+
+                            /**
+                             * If infeasibility_count = 5 Then
+                             */
+                            if ($infeasibility_count == 5) {
+                                /**
+                                 * infeasibility_string = infeasibility_string & "More can be found in the list of detected infeasibilities in the solution worksheet." & Chr(13)
+                                 */
+                                $infeasibility_string = $infeasibility_string . "More can be found in the list of detected infeasibilities in the solution worksheet.";
+                            }
+
+                            /**
+                             * ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + infeasibility_count, 1).Value = "Item " & k & " in " & container_name & " is not supported."
+                             */
+                        }
+                    }
+                }
+                /**
+                 * End With
+                 */
+
+                /**
+                 * container_index = container_index + 1
+                 */
+                $container_index = $container_index + 1;
+            }
+
+            /**
+             * offset = offset + column_offset
+             */
+            $offset = $offset + column_offset;
+        }
+    }
+
+    /*
+     * 'front side support
+     * */
+
+    /**
+     * If instance.front_side_support = True Then
+     */
+    if ($instance->front_side_support == true) {
+        /**
+         * offset = 0
+         */
+        $offset = 0;
+
+        /**
+         * container_index = 1
+         */
+        $container_index = 1;
+
+        /**
+         * For i = 1 To container_list.num_container_types
+         */
+        for ($i = 1; $i <= $container_list->num_container_types; ++$i) {
+            /**
+             * For j = 1 To container_list.container_types(i).number_available
+             */
+            for ($j = 1; $j <= $container_list->container_types[$i]->number_available; ++$j) {
+                /**
+                 * If container_list.container_types(i).mandatory >= 0 Then
+                 */
+                if ($container_list->container_types[$i]->mandatory >= 0) {
+                    /**
+                     * With incumbent.container(container_index)
+                     *
+                     * * * $ic
+                     */
+                    $ic = $incumbent->container[$container_index];
+
+                    /**
+                     * For k = 1 To incumbent.container(container_index).item_cnt
+                     */
+                    for ($k = 1; $k <= $incumbent->container[$container_index]->item_cnt; ++$k) {
+                        /**
+                         * If .items(k).origin_z < epsilon Then
+                         */
+                        if ($ic->items[$k]->origin_z < epsilon) {
+                            /*
+                             * 'supported by the front wall
+                             * */
+                        /**
+                         * Else
+                         */
+                        } else {
+                            /**
+                             * area_supported = 0
+                             */
+                            $area_supported = 0;
+
+                            /**
+                             * For l = 1 To incumbent.container(container_index).item_cnt
+                             */
+                            for ($l = 1; $l <= $incumbent->container[$container_index]->item_cnt; ++$l) {
+                                /**
+                                 * If (Abs(.items(k).origin_z - .items(l).opposite_z) < epsilon) Then
+                                 */
+                                if (abs($ic->items[$k]->origin_z - $ic->items[$l]->opposite_z) < epsilon) {
+                                    /*
+                                     * 'check for intersection
+                                     * */
+
+                                    /**
+                                     * intersection_right = .items(k).opposite_x
+                                     */
+                                    $intersection_right = $ic->items[$k]->opposite_x;
+
+                                    /**
+                                     * If intersection_right > .items(l).opposite_x Then intersection_right = .items(l).opposite_x
+                                     */
+                                    if ($intersection_right > $ic->items[$l]->opposite_x) {
+                                        $intersection_right = $ic->items[$l]->opposite_x;
+                                    }
+
+                                    /**
+                                     * intersection_left = .items(k).origin_x
+                                     */
+                                    $intersection_left = $ic->items[$k]->origin_x;
+
+                                    /**
+                                     * If intersection_left > .items(l).origin_x Then intersection_left = .items(l).origin_x
+                                     */
+                                    if ($intersection_left > $ic->items[$l]->origin_x) {
+                                        $intersection_left = $ic->items[$l]->origin_x;
+                                    }
+
+                                    /**
+                                     * intersection_top = .items(k).opposite_y
+                                     */
+                                    $intersection_top = $ic->items[$k]->opposite_y;
+
+                                    /**
+                                     * If intersection_top > .items(l).opposite_y Then intersection_top = .items(l).opposite_y
+                                     */
+                                    if ($intersection_top > $ic->items[$l]->opposite_y) {
+                                        $intersection_top = $ic->items[$l]->opposite_y;
+                                    }
+
+                                    /**
+                                     * intersection_bottom = .items(k).origin_y
+                                     */
+                                    $intersection_bottom = $ic->items[$k]->origin_y;
+
+                                    /**
+                                     * If intersection_bottom > .items(l).origin_y Then intersection_bottom = .items(l).origin_y
+                                     */
+                                    if ($intersection_bottom > $ic->items[$l]->origin_y) {
+                                        $intersection_bottom = $ic->items[$l]->origin_y;
+                                    }
+
+                                    /**
+                                     * If (intersection_right > intersection_left) And (intersection_top > intersection_bottom) Then
+                                     */
+                                    if ($intersection_right > $intersection_left && $intersection_top > $intersection_bottom) {
+                                        /**
+                                         * area_supported = area_supported + (intersection_right - intersection_left) * (intersection_top - intersection_bottom)
+                                         */
+                                        $area_supported = $area_supported + ($intersection_right - $intersection_left) * ($intersection_top - $intersection_bottom);
+                                    }
+                                }
+                            }
+
+                            /**
+                             * If area_supported < (.items(k).opposite_x - .items(k).origin_x) * (.items(k).opposite_y - .items(k).origin_y) - epsilon Then
+                             */
+                            if ($area_supported < ($ic->items[$k]->opposite_x - $ic->items[$k]->origin_x) * ($ic->items[$k]->opposite_y - $ic->items[$k]->origin_y) - epsilon) {
+                                /*
+                                 * 'infeasible
+                                 * */
+
+                                /**
+                                 * container_name = ThisWorkbook.Worksheets("3.Solution").Cells(3, offset + 1)
+                                 */
+                                $container_name = "";
+                                /*
+                                 * TODO: remember to get the container name
+                                 * */
+
+                                /**
+                                 * infeasibility_count = infeasibility_count + 1
+                                 */
+                                $infeasibility_count = $infeasibility_count + 1;
+
+                                /**
+                                 * If infeasibility_count < 5 Then
+                                 */
+                                if ($infeasibility_count < 5) {
+                                    /**
+                                     * infeasibility_string = infeasibility_string & "Item " & k & " in " & container_name & " does not have sufficient front side support. " & area_supported & " " & (.items(k).opposite_x - .items(k).origin_x) * (.items(k).opposite_z - .items(k).origin_z) & Chr(13)
+                                     */
+                                    $infeasibility_string = $infeasibility_string . "Item " . $k . " in " . $container_name . " does not have sufficient front side support. " . $area_supported . " " . ($ic->items[$k]->opposite_x - $ic->items[$k]->origin_x) * ($ic->items[$k]->opposite_z - $ic->items[$k]->origin_z);
+                                }
+
+                                /**
+                                 * If infeasibility_count = 5 Then
+                                 */
+                                if ($infeasibility_count == 5) {
+                                    /**
+                                     * infeasibility_string = infeasibility_string & "More can be found in the list of detected infeasibilities in the solution worksheet." & Chr(13)
+                                     */
+                                    $infeasibility_string = $infeasibility_string . "More can be found in the list of detected infeasabilities in the solution worksheet.";
+                                }
+
+                                /**
+                                 * ThisWorkbook.Worksheets("3.Solution").Cells(item_list.total_number_of_items + 8 + infeasibility_count, 1).Value = "Item " & k & " in " & container_name & " does not have sufficient front side support."
+                                 */
+                            }
+                        }
+                    }
+                    /**
+                     * End With
+                     */
+
+                    /**
+                     * container_index = container_index + 1
+                     */
+                    $container_index = $container_index + 1;
+                }
+                /**
+                 * offset = offset + column_offset
+                 */
+                $offset = $offset + column_offset;
+            }
+        }
+    }
+
+    /**
+     * If infeasibility_count > 0 Then
+     *      Cells(2, 1) = "Warning: Last infeasibility check found problems with the solution."
+     *      Range(Cells(2, 1), Cells(2, 10)).Interior.ColorIndex = 45
+     *      Range(Cells(2, 1), Cells(2, 10)).Font.Bold = True
+     *      infeasibility_string = infeasibility_string & "The solution is infeasible."
+     *      MsgBox (infeasibility_string)
+     *      Cells(7 + item_list.total_number_of_items, 1).Select
+     * Else
+     *      MsgBox ("The solution is feasible.")
+     *      Cells(1, 1).Select
+     * End If
+     *
+     * Application.ScreenUpdating = True
+     * Application.Calculation = xlCalculationAutomatic
+     *
+     * * * I only see the need to run the if then append to the $infeasibility_string. The rest if "frontend" stuff.
+     */
+    if ($infeasibility_count > 0) {
+        $infeasibility_string = $infeasibility_string . "The solution is infeasible.";
+    }
 }
