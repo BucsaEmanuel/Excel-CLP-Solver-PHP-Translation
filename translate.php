@@ -1390,6 +1390,7 @@ function PerturbRotationAndOrderOfItems(solution_data $solution, item_list_data 
  * @param compatibility_data $compatibility_list
  * @param item_list_data $item_list
  * @param solver_option_data $solver_options
+ * @return bool
  */
 function AddItemToContainer(solution_data $solution, int $container_index, int $item_type_index, int $add_type, bool $item_cohesion, instance_data $instance, compatibility_data $compatibility_list, item_list_data $item_list, solver_option_data $solver_options)
 {
@@ -2413,6 +2414,7 @@ function AddItemToContainer(solution_data $solution, int $container_index, int $
  * @param float $candidate_rotation
  * @param item_list_data $item_list
  * @param int $add_type
+ * @return bool
  */
 function AddItemToContainer_Finish(float $candidate_position, solution_data $solution, int $container_index, int $item_type_index, float $candidate_rotation, item_list_data $item_list, int $add_type)
 {
@@ -4133,7 +4135,9 @@ function WriteSolution(solution_data $solution, container_list_data $container_l
 /**
  * Sub ReadSolution(solution As solution_data)
  *
- *
+ * @param solution_data $solution
+ * @param container_list_data $container_list
+ * @param item_list_data $item_list
  */
 function ReadSolution(solution_data $solution, container_list_data $container_list, item_list_data $item_list)
 {
@@ -5625,9 +5629,13 @@ function CLP_Solver_Finish(solution_data $best_known)
 
 /**
  * Sub FeasibilityCheckData(infeasibility_count As Long, infeasibility_string As String)
- *
+ * @param int $infeasibility_count
+ * @param string $infeasibility_string
+ * @param item_list_data $item_list
+ * @param container_list_data $container_list
+ * @param instance_data $instance
  */
-function FeasibilityCheckData(int $infeasibility_count, string $infeasibility_string, item_list_data $item_list, container_list_data $container_list, instance_data $instance, )
+function FeasibilityCheckData(int $infeasibility_count, string $infeasibility_string, item_list_data $item_list, container_list_data $container_list, instance_data $instance)
 {
     /**
      * Dim i As Long
@@ -5776,7 +5784,7 @@ function FeasibilityCheckData(int $infeasibility_count, string $infeasibility_st
             /**
              * weight_capacity_required = weight_capacity_required + (.item_types(i).weight * .item_types(i).number_requested)
              */
-            $weight_capacity_required = $weight_capacity_required + ($il->item_types[$i]->weight)
+            $weight_capacity_required = $weight_capacity_required + ($il->item_types[$i]->weight);
         }
     }
     /**
