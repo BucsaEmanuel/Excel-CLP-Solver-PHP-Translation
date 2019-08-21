@@ -283,6 +283,7 @@ Sub SetupConsoleWorksheet()
     Selection.Font.Bold = True
     Cells(1, 1).Select
 End Sub
+
 Sub SetupItemsWorksheet()
    
     Dim WorksheetExists As Boolean
@@ -556,14 +557,14 @@ Sub SetupItemsWorksheet()
         End With
     Next i
     
-'    Cells(2, 15).Value = "Total volume requirement:"
-'    Cells(3, 15).Formula = "=SUMPRODUCT(" & Cells(3, 7).Address(False, False) & ":" & Cells(2 + num_item_types, 7).Address(False, False) & "," & Cells(3, 14).Address(False, False) & ":" & Cells(2 + num_item_types, 14).Address(False, False) & ")"
-'
-'    Cells(3, 15).Interior.ColorIndex = 36
-'    Cells(3, 15).Font.ColorIndex = 1
-'    Cells(3, 15).NumberFormat = "0.00"
+   ' Cells(2, 15).Value = "Total volume requirement:"
+   ' Cells(3, 15).Formula = "=SUMPRODUCT(" & Cells(3, 7).Address(False, False) & ":" & Cells(2 + num_item_types, 7).Address(False, False) & "," & Cells(3, 14).Address(False, False) & ":" & Cells(2 + num_item_types, 14).Address(False, False) & ")"
+
+   ' Cells(3, 15).Interior.ColorIndex = 36
+   ' Cells(3, 15).Font.ColorIndex = 1
+   ' Cells(3, 15).NumberFormat = "0.00"
     
-    ' Display all duplicate values in red
+   '  Display all duplicate values in red
     Dim uv As UniqueValues
     Set uv = Range(Cells(2, 2), Cells(1 + num_item_types, 2)).FormatConditions.AddUniqueValues
     uv.DupeUnique = xlDuplicate
@@ -623,6 +624,7 @@ Sub SetupItemsWorksheet()
     
     Cells(1, 1).Select
 End Sub
+
 Sub SetupContainersWorksheet()
    
     Dim WorksheetExists As Boolean
@@ -796,14 +798,14 @@ Sub SetupContainersWorksheet()
         End With
     Next i
     
-'    Cells(1, 11).Value = "Total volume capacity:"
-'    Cells(2, 11).Formula = "=SUMPRODUCT(" & Cells(2, 6).Address(False, False) & ":" & Cells(1 + num_container_types, 6).Address(False, False) & "," & Cells(2, 10).Address(False, False) & ":" & Cells(1 + num_container_types, 10).Address(False, False) & ")"
-'
-'    Cells(2, 11).Interior.ColorIndex = 36
-'    Cells(2, 11).Font.ColorIndex = 1
-'    Cells(2, 11).NumberFormat = "0.00"
+   ' Cells(1, 11).Value = "Total volume capacity:"
+   ' Cells(2, 11).Formula = "=SUMPRODUCT(" & Cells(2, 6).Address(False, False) & ":" & Cells(1 + num_container_types, 6).Address(False, False) & "," & Cells(2, 10).Address(False, False) & ":" & Cells(1 + num_container_types, 10).Address(False, False) & ")"
+
+   ' Cells(2, 11).Interior.ColorIndex = 36
+   ' Cells(2, 11).Font.ColorIndex = 1
+   ' Cells(2, 11).NumberFormat = "0.00"
     
-    ' Display all duplicate values in red
+   '  Display all duplicate values in red
     Dim uv As UniqueValues
     Set uv = Range(Cells(2, 2), Cells(1 + num_container_types, 2)).FormatConditions.AddUniqueValues
     uv.DupeUnique = xlDuplicate
@@ -817,6 +819,7 @@ Sub SetupContainersWorksheet()
     
     Cells(1, 1).Select
 End Sub
+
 Sub SetupItemItemCompatibilityWorksheet()
    
     Dim WorksheetExists As Boolean
@@ -1073,6 +1076,7 @@ Sub SetupContainerItemCompatibilityWorksheet()
     
     Cells(1, 1).Select
 End Sub
+
 Sub SetupSolutionWorksheet()
     
     Dim WorksheetExists As Boolean
@@ -1249,10 +1253,10 @@ Sub SetupSolutionWorksheet()
                 .Validation.Add Type:=xlValidateDecimal, AlertStyle:=xlValidAlertStop, Operator:=xlGreater, Formula1:=-epsilon
                 .Validation.ErrorMessage = "Please enter a nonnegative value"
                 
-'                .FormatConditions.Add Type:=xlCellValue, Operator:=xlGreater, Formula1:=temp_upper_bound
-'                .FormatConditions(1).Interior.Pattern = xlNone
-'                .FormatConditions(1).Interior.ColorIndex = 3
-'                .FormatConditions(1).StopIfTrue = True
+               ' .FormatConditions.Add Type:=xlCellValue, Operator:=xlGreater, Formula1:=temp_upper_bound
+               ' .FormatConditions(1).Interior.Pattern = xlNone
+               ' .FormatConditions(1).Interior.ColorIndex = 3
+               ' .FormatConditions(1).StopIfTrue = True
                 
             End With
 
@@ -1264,10 +1268,10 @@ Sub SetupSolutionWorksheet()
                 .Validation.Add Type:=xlValidateDecimal, AlertStyle:=xlValidAlertStop, Operator:=xlGreater, Formula1:=-epsilon
                 .Validation.ErrorMessage = "Please enter a nonnegative value"
                 
-'                .FormatConditions.Add Type:=xlCellValue, Operator:=xlGreater, Formula1:=temp_upper_bound
-'                .FormatConditions(1).Interior.Pattern = xlNone
-'                .FormatConditions(1).Interior.ColorIndex = 3
-'                .FormatConditions(1).StopIfTrue = True
+               ' .FormatConditions.Add Type:=xlCellValue, Operator:=xlGreater, Formula1:=temp_upper_bound
+               ' .FormatConditions(1).Interior.Pattern = xlNone
+               ' .FormatConditions(1).Interior.ColorIndex = 3
+               ' .FormatConditions(1).StopIfTrue = True
                 
             End With
             
@@ -1291,10 +1295,10 @@ Sub SetupSolutionWorksheet()
                 .FormatConditions(1).Interior.ColorIndex = 36
                 .FormatConditions(1).StopIfTrue = True
     
-'                .FormatConditions.Add Type:=xlCellValue, Operator:=xlGreater, Formula1:=temp_upper_bound
-'                .FormatConditions(2).Interior.Pattern = xlNone
-'                .FormatConditions(2).Interior.ColorIndex = 3
-'                .FormatConditions(2).StopIfTrue = True
+               ' .FormatConditions.Add Type:=xlCellValue, Operator:=xlGreater, Formula1:=temp_upper_bound
+               ' .FormatConditions(2).Interior.Pattern = xlNone
+               ' .FormatConditions(2).Interior.ColorIndex = 3
+               ' .FormatConditions(2).StopIfTrue = True
             
             End With
             
@@ -1308,10 +1312,10 @@ Sub SetupSolutionWorksheet()
                 .FormatConditions(1).Interior.ColorIndex = 36
                 .FormatConditions(1).StopIfTrue = True
     
-'                .FormatConditions.Add Type:=xlCellValue, Operator:=xlGreater, Formula1:=temp_upper_bound
-'                .FormatConditions(2).Interior.Pattern = xlNone
-'                .FormatConditions(2).Interior.ColorIndex = 3
-'                .FormatConditions(2).StopIfTrue = True
+               ' .FormatConditions.Add Type:=xlCellValue, Operator:=xlGreater, Formula1:=temp_upper_bound
+               ' .FormatConditions(2).Interior.Pattern = xlNone
+               ' .FormatConditions(2).Interior.ColorIndex = 3
+               ' .FormatConditions(2).StopIfTrue = True
                 
             End With
             
@@ -1574,8 +1578,8 @@ Sub SetupSolutionWorksheet()
     Cells(1, 1).Select
     
     MsgBox ("Solution worksheet setup complete.")
-    
 End Sub
+
 Sub SetupVisualizationWorksheet()
 
     Dim WorksheetExists As Boolean
@@ -1641,6 +1645,7 @@ Sub SetupVisualizationWorksheet()
     
     Call RefreshVisualizationWorksheet
 End Sub
+
 Sub RefreshVisualizationWorksheet()
     
     Dim WorksheetExists As Boolean
@@ -2023,9 +2028,7 @@ Sub RefreshVisualizationWorksheet()
     Cells(1, 1).Select
     
     Application.ScreenUpdating = True
-    
 End Sub
-
 
 Sub AnimateVisualizationWorksheet()
 
@@ -2139,20 +2142,19 @@ Sub AnimateVisualizationWorksheet()
     ActiveWindow.Zoom = original_zoom
     
     reply = MsgBox("Animation finished.         ", vbOKOnly, "CLP Spreadsheet Solver")
-    
 End Sub
-
 
 Private Sub About()
     Dim reply As Integer
     
     reply = MsgBox("CLP Spreadsheet Solver v1.2 (Release 2)" & Chr(13) & "Open source, developed by Dr Gunes Erdogan, 2019 (G.Erdogan@bath.ac.uk), School of Management, University of Bath." & Chr(13) _
-& Chr(13) & "The latest version of the solver can be downloaded at: http://people.bath.ac.uk/ge277/index.php/clp-spreadsheet-solver/" & Chr(13) & Chr(13) & "DISCLAIMER: THIS SOFTWARE IS PROVIDED 'AS IS' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE ORIGINAL DEVELOPER BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,  WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.", vbOKOnly, "CLP Spreadsheet Solver")
-End Sub
-Private Sub SendFeedback()
-    ThisWorkbook.FollowHyperlink "mailto:G.Erdogan@bath.ac.uk&subject=CLP Spreadsheet Solver"
+    & Chr(13) & "The latest version of the solver can be downloaded at: http://people.bath.ac.uk/ge277/index.php/clp-spreadsheet-solver/" & Chr(13) & Chr(13) & "DISCLAIMER: THIS SOFTWARE IS PROVIDED 'AS IS' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE ORIGINAL DEVELOPER BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,  WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.", vbOKOnly, "CLP Spreadsheet Solver")
 End Sub
 
+Private Sub SendFeedback()
+
+    ThisWorkbook.FollowHyperlink "mailto:G.Erdogan@bath.ac.uk&subject=CLP Spreadsheet Solver"
+End Sub
 
 Private Sub ResetWorkbook()
 
@@ -2281,7 +2283,6 @@ Sub SortItemTypes()
     Range(Cells(3, 2), Cells(num_item_types + 2, 16)).Select
     
     Selection.Sort Key1:=Columns("B"), Order1:=xlAscending, Header:=xlNo
-    
 End Sub
 
 Sub SortContainerTypes()
@@ -2332,61 +2333,89 @@ Sub SortContainerTypes()
     Range(Cells(2, 2), Cells(num_container_types + 1, 10)).Select
     
     Selection.Sort Key1:=Columns("B"), Order1:=xlAscending, Header:=xlNo
-    
 End Sub
+
 Sub SetupMenuItems()
+
     Call ThisWorkbook.Workbook_Activate
 End Sub
 
 Private Sub WatchTutorial()
+
     ThisWorkbook.FollowHyperlink "https://www.youtube.com/watch?v=-0MCkd-CjD0"
 End Sub
-
 
 ' ribbon calls and tab activation
 
 #If Win32 Or Win64 Or (MAC_OFFICE_VERSION >= 15) Then
 
 Sub ResetWorkbookRibbonCall(control As IRibbonControl)
+
     Call ResetWorkbook
 End Sub
+
 Sub SetupItemsWorksheetRibbonCall(control As IRibbonControl)
+
     Call SetupItemsWorksheet
 End Sub
+
 Sub SortItemsRibbonCall(control As IRibbonControl)
+
     Call SortItemTypes
 End Sub
+
 Sub SetupItemItemCompatibilityWorksheetRibbonCall(control As IRibbonControl)
+
     Call SetupItemItemCompatibilityWorksheet
 End Sub
+
 Sub SetupContainersWorksheetRibbonCall(control As IRibbonControl)
+
     Call SetupContainersWorksheet
 End Sub
+
 Sub SortContainerTypesRibbonCall(control As IRibbonControl)
+
     Call SortContainerTypes
 End Sub
+
 Sub SetupContainerItemCompatibilityWorksheetRibbonCall(control As IRibbonControl)
+
     Call SetupContainerItemCompatibilityWorksheet
 End Sub
+
 Sub SetupSolutionWorksheetRibbonCall(control As IRibbonControl)
+
     Call SetupSolutionWorksheet
 End Sub
+
 Sub SetupVisualizationWorksheetRibbonCall(control As IRibbonControl)
+
     Call SetupVisualizationWorksheet
 End Sub
+
 Sub AnimateVisualizationWorksheetRibbonCall(control As IRibbonControl)
+
     Call AnimateVisualizationWorksheet
 End Sub
+
 Private Sub SendFeedbackRibbonCall(control As IRibbonControl)
+
     Call SendFeedback
 End Sub
+
 Private Sub WatchTutorialRibbonCall(control As IRibbonControl)
+
     Call WatchTutorial
 End Sub
+
 Private Sub AboutRibbonCall(control As IRibbonControl)
+
     Call About
 End Sub
+
 Sub tabActivate(ribbon As IRibbonUI)
+    
     ribbon.ActivateTab ("CLPSpreadsheetSolver")
 End Sub
 
