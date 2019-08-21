@@ -8029,3 +8029,120 @@ function CalculateDistance(solution_data $solution, int $container_id)
      * End With
      */
 }
+
+/**
+ * Private Sub CalculateDispersion(solution As solution_data)
+ *
+ */
+function CalculateDispersion(solution_data $solution, item_list_data $item_list)
+{
+    /**
+     * Dim i As Long
+     * @var integer
+     */
+    $i = 0;
+
+    /**
+     * Dim j As Long
+     * @var integer
+     */
+    $j = 0;
+
+    /**
+     * Dim k As Long
+     * @var integer
+     */
+    $k = 0;
+
+    /**
+     * Dim max_z As Double
+     * @var float
+     */
+    $max_z = 0;
+
+    /**
+     * Dim item_flag As Boolean
+     * @var boolean
+     */
+    $item_flag = true;
+
+    /**
+     * Dim container_count As Long
+     * @var integer
+     */
+    $container_count = 0;
+
+    /**
+     * With solution
+     *
+     * * * $s
+     */
+    $s = $solution;
+
+    /**
+     * .total_dispersion = 0
+     */
+    $s->total_dispersion = 0;
+
+    /**
+     * For i = 1 To item_list.num_item_types
+     */
+    for ($i = 1; $i <= $item_list->num_item_types; ++$i) {
+        /**
+         * container_count = 0
+         */
+        $container_count = 0;
+
+        /**
+         * For j = 1 To .num_containers
+         */
+        for ($j = 1; $j <= $s->num_containers; ++$j) {
+            /**
+             * With .container(j)
+             *
+             * * * $sc
+             */
+            $sc = $solution->container[$j];
+
+            /**
+             * item_flag = False
+             */
+            $item_flag  = false;
+
+            /**
+             * For k = 1 To .item_cnt
+             */
+            for ($k = 1; $k <= $sc->item_cnt; ++$k) {
+                /**
+                 * If .items(k).item_type = i Then
+                 */
+                if ($sc->items[$k]->item_type == $i) {
+                    /**
+                     * item_flag = True
+                     */
+                    $item_flag = true;
+                    /**
+                     * Exit For
+                     */
+                    break;
+                }
+            }
+
+            /**
+             * If item_flag = True Then container_count = container_count + 1
+             */
+            if ($item_flag == true) {
+                $container_count = $container_count + 1;
+            }
+
+            /**
+             * End With
+             */
+        }
+
+        $solution->total_dispersion = $solution->total_dispersion + $container_count * $container_count;
+    }
+    /**
+     * End With
+     */
+}

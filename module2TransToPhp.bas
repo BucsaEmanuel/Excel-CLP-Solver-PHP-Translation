@@ -2723,42 +2723,42 @@
     
 ' End Sub
 
-Private Sub CalculateDispersion(solution As solution_data)
+' Private Sub CalculateDispersion(solution As solution_data)
 
-    Dim i As Long
-    Dim j As Long
-    Dim k As Long
-    Dim max_z As Double
-    Dim item_flag As Boolean
-    Dim container_count As Long
+'     Dim i As Long
+'     Dim j As Long
+'     Dim k As Long
+'     Dim max_z As Double
+'     Dim item_flag As Boolean
+'     Dim container_count As Long
     
-    With solution
+'     With solution
     
-        .total_dispersion = 0
+'         .total_dispersion = 0
 
-        For i = 1 To item_list.num_item_types
-            container_count = 0
-            For j = 1 To .num_containers
+'         For i = 1 To item_list.num_item_types
+'             container_count = 0
+'             For j = 1 To .num_containers
 
-                 With .container(j)
-                     item_flag = False
-                     For k = 1 To .item_cnt
-                            If .items(k).item_type = i Then
-                                item_flag = True
-                                Exit For
-                            End If
-                     Next k
+'                  With .container(j)
+'                      item_flag = False
+'                      For k = 1 To .item_cnt
+'                             If .items(k).item_type = i Then
+'                                 item_flag = True
+'                                 Exit For
+'                             End If
+'                      Next k
 
-                     If item_flag = True Then container_count = container_count + 1
-                 End With
+'                      If item_flag = True Then container_count = container_count + 1
+'                  End With
 
-            Next j
+'             Next j
 
-            solution.total_dispersion = solution.total_dispersion + container_count * container_count
-        Next i
-    End With
+'             solution.total_dispersion = solution.total_dispersion + container_count * container_count
+'         Next i
+'     End With
     
-End Sub
+' End Sub
 
 ' ribbon calls and tab activation
 
