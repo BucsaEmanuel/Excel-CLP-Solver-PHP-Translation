@@ -2762,13 +2762,13 @@
 
 ' ribbon calls and tab activation
 
-#If Win32 Or Win64 Or (MAC_OFFICE_VERSION >= 15) Then
+' #If Win32 Or Win64 Or (MAC_OFFICE_VERSION >= 15) Then
 
-Sub CLP_Solver_ribbon_call(control As IRibbonControl)
-    Call CLP_Solver
-End Sub
-Sub FeasibilityCheckDataAndSolutionRibbonCall(control As IRibbonControl)
-    Call FeasibilityCheckDataAndSolution
-End Sub
+' Sub CLP_Solver_ribbon_call(control As IRibbonControl)
+'     Call CLP_Solver
+' End Sub
+' Sub FeasibilityCheckDataAndSolutionRibbonCall(control As IRibbonControl)
+'     Call FeasibilityCheckDataAndSolution
+' End Sub
 
-#End If
+' #End If
