@@ -1,12 +1,12 @@
-Attribute VB_Name = "Module1"
-'This work is licensed under the Creative Commons Attribution 4.0 International License. To view a copy of this license, visit http://creativecommons.org/licenses/by/4.0/.
+' Attribute VB_Name = "Module1"
+' 'This work is licensed under the Creative Commons Attribution 4.0 International License. To view a copy of this license, visit http://creativecommons.org/licenses/by/4.0/.
 
-Option Explicit
-Const epsilon As Double = 0.0001
-Const column_offset As Long = 11
-Const width_limit As Double = 300
-Const height_limit As Double = 300
-Const displacement_multiplier As Double = 0.353
+' Option Explicit
+' Const epsilon As Double = 0.0001
+' Const column_offset As Long = 11
+' Const width_limit As Double = 300
+' Const height_limit As Double = 300
+' Const displacement_multiplier As Double = 0.353
 
 Function CheckWorksheetExistence(sheetName As String) As Boolean
     
